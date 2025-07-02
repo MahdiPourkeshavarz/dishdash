@@ -1,10 +1,18 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
+import localFont from "next/font/local";
 import "./globals.css";
 
 const inter = Inter({
   subsets: ["latin"],
+  display: "swap",
   variable: "--font-inter",
+});
+
+const nahidFont = localFont({
+  src: "../assets/font/Nahid.woff",
+  display: "swap",
+  variable: "--font-nahid",
 });
 
 export const metadata: Metadata = {
@@ -19,7 +27,9 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className={inter.variable}>{children}</body>
+      <body className={`${inter.variable} ${nahidFont.variable}`}>
+        {children}
+      </body>
     </html>
   );
 }
