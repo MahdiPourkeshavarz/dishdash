@@ -12,7 +12,7 @@ import markerIcon from "leaflet/dist/images/marker-icon.png";
 import markerShadow from "leaflet/dist/images/marker-shadow.png";
 import { posts } from "@/lib/posts";
 import PostMarker from "../post/PostMarker";
-import { useState } from "react";
+import { useThemeStore } from "@/store/useThemeStore";
 
 delete (L.Icon.Default.prototype as any)._getIconUrl;
 L.Icon.Default.mergeOptions({
@@ -27,7 +27,7 @@ interface MapViewProps {
 
 const MapView: React.FC<MapViewProps> = () => {
   const defaultPosition: [number, number] = [35.6892, 51.389];
-  const [isDarkMode, setIsDarkMode] = useState(true);
+  const { theme, toggleTheme } = useThemeStore();
 
   const tileLayers = {
     voyager: {
@@ -52,7 +52,11 @@ const MapView: React.FC<MapViewProps> = () => {
         zoomControl={false}
       >
         <TileLayer
-          url={isDarkMode ? tileLayers.darkMatter.url : tileLayers.voyager.url}
+          url={
+            theme === "dark"
+              ? tileLayers.darkMatter.url
+              : tileLayers.voyager.url
+          }
         />
 
         {posts.map((post) => (
@@ -61,10 +65,10 @@ const MapView: React.FC<MapViewProps> = () => {
       </MapContainer>
 
       <button
-        onClick={() => setIsDarkMode(!isDarkMode)}
+        onClick={toggleTheme}
         className="absolute bottom-4 right-4 z-10 bg-white/80 backdrop-blur-sm p-2 rounded-full shadow-md hover:bg-white transition-colors"
       >
-        {isDarkMode ? (
+        {theme === "dark" ? (
           <Sun className="w-10 h-10 text-blue-600" />
         ) : (
           <Moon className="w-10 h-10 text-blue-600" />
