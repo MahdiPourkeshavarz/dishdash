@@ -5,13 +5,10 @@ import Link from "next/link";
 import Image from "next/image";
 import { LogOut, X } from "lucide-react";
 import { motion, Variants } from "framer-motion";
-
-interface User {
-  username: string;
-  imgUrl: string;
-}
+import { User } from "@/types";
 
 const mockUser: User | null = {
+  id: "varagh",
   username: "محمد محمدی",
   imgUrl: "/user-photo.jpg",
 };
