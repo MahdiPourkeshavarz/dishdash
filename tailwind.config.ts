@@ -25,7 +25,11 @@ const config: Config = {
         danger: "#DC2626", // red-600
       },
       fontFamily: {
+        // Inter remains the default sans-serif font
         sans: ["var(--font-inter)", "sans-serif"],
+
+        // Add a new font family for Farsi
+        farsi: ["var(--font-nahid)", "sans-serif"],
       },
     },
   },

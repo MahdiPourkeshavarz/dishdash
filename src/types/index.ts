@@ -1,11 +1,14 @@
 export type SatisfactionStatus = "awesome" | "good" | "bad";
 
 export interface Post {
-  id: number;
+  id: string;
   position: [number, number];
   satisfaction: SatisfactionStatus;
-  title: string;
-  author: string;
+  user: {
+    id: string;
+    username: string;
+    imgUrl: string;
+  };
   description: string;
   imageUrl: string;
 }
