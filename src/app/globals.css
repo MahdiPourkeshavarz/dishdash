@@ -46,12 +46,10 @@ body {
   background: transparent !important;
   box-shadow: none !important;
 }
-
 .custom-popup .leaflet-popup-content {
   margin: 0 !important;
   padding: 0 !important;
 }
-
 .custom-popup .leaflet-popup-close-button {
   top: 8px !important;
   right: unset !important;
@@ -69,12 +67,10 @@ body {
   line-height: 24px !important;
   transition: background 0.2s ease !important;
 }
-
 .custom-popup .leaflet-popup-close-button:hover {
   background: #fff !important;
   color: #1e3a8a !important;
 }
-
 .custom-popup .leaflet-popup-close-button span {
   line-height: 24px !important;
 }
