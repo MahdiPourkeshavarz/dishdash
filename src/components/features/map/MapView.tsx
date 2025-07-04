@@ -16,6 +16,7 @@ import { useStore } from "@/store/useStoreStore";
 import { User } from "@/types";
 import UserLocationMarker from "./UserLocationMarker";
 import ChangeView from "./ChangeView";
+import { useEffect, useState } from "react";
 
 delete (L.Icon.Default.prototype as any)._getIconUrl;
 L.Icon.Default.mergeOptions({
@@ -39,6 +40,12 @@ const MapView: React.FC<MapViewProps> = ({ center, user, onMarkerClick }) => {
   const { theme, toggleTheme } = useStore();
 
   const zoomLevel = 13;
+
+  const [isMounted, setIsMounted] = useState(false);
+
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
 
   const tileLayers = {
     voyager: {
@@ -86,16 +93,18 @@ const MapView: React.FC<MapViewProps> = ({ center, user, onMarkerClick }) => {
         ))}
       </MapContainer>
 
-      <button
-        onClick={toggleTheme}
-        className="absolute bottom-4 right-4 z-10 bg-white/80 backdrop-blur-sm p-2 rounded-full shadow-md hover:bg-white transition-colors"
-      >
-        {theme === "dark" ? (
-          <Sun className="w-10 h-10 text-blue-600" />
-        ) : (
-          <Moon className="w-10 h-10 text-blue-600" />
-        )}
-      </button>
+      {isMounted && (
+        <button
+          onClick={toggleTheme}
+          className="absolute bottom-4 right-4 z-10 bg-white/80 backdrop-blur-sm p-2 rounded-full shadow-md hover:bg-white transition-colors"
+        >
+          {theme === "dark" ? (
+            <Sun className="w-10 h-10 text-blue-600" />
+          ) : (
+            <Moon className="w-10 h-10 text-blue-600" />
+          )}
+        </button>
+      )}
     </div>
   );
 };

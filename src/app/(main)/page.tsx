@@ -50,15 +50,27 @@ export default function HomePage() {
     <main className="w-screen h-screen relative">
       <Navbar />
 
-      <motion.button
-        onClick={handleToggleModal}
-        className="fixed bottom-4 left-4 z-[1000] flex items-center justify-center w-14 h-14 rounded-full bg-blue-600 text-white shadow-lg hover:bg-blue-700 transition-colors"
-        whileHover={{ scale: 1.1 }}
-        whileTap={{ scale: 0.9 }}
-        aria-label="Create new post"
-      >
-        <Plus className="w-6 h-6" />
-      </motion.button>
+      <div className="fixed bottom-4 left-4 z-[1000]">
+        <motion.div
+          className="relative w-16 h-16 rounded-full p-[3px] bg-[conic-gradient(from_180deg_at_50%_50%,#F4B400_0deg,#9B59B6_120deg,#4285F4_240deg,#F4B400_360deg)]"
+          animate={{ rotate: 90 }}
+          transition={{
+            duration: 46,
+            ease: "linear",
+            repeat: Infinity,
+          }}
+        >
+          <motion.button
+            onClick={handleToggleModal}
+            className="relative flex items-center justify-center w-full h-full rounded-full bg-gray-900 text-white shadow-lg"
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.9 }}
+            aria-label="Create new post"
+          >
+            <Plus className="w-7 h-7" />
+          </motion.button>
+        </motion.div>
+      </div>
 
       <PostModal
         isOpen={isModalOpen}
