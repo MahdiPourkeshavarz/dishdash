@@ -2,7 +2,7 @@ import type { Post } from "@/types";
 import Image from "next/image";
 import { useState } from "react";
 import { motion, Variants } from "framer-motion";
-import { useThemeStore } from "@/store/useThemeStore";
+import { useStore } from "@/store/useStoreStore";
 
 const cardVariants: Variants = {
   hidden: { opacity: 0, x: 30, scale: 0.9, rotate: 5 },
@@ -57,7 +57,7 @@ interface PostCardProps {
 const PostCard: React.FC<PostCardProps> = ({ post }) => {
   const [isUserCardOpen, setIsUserCardOpen] = useState(false);
 
-  const { theme } = useThemeStore();
+  const { theme } = useStore();
 
   const cardClasses =
     theme === "dark"
@@ -110,7 +110,7 @@ const PostCard: React.FC<PostCardProps> = ({ post }) => {
         <motion.p
           variants={childVariants}
           custom={3}
-          className="mb-3 text-sm text-gray-600 leading-relaxed line-clamp-3"
+          className="mb-3 text-sm text-blue-400 leading-relaxed line-clamp-3"
         >
           {post.description}
         </motion.p>

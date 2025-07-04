@@ -12,7 +12,10 @@ import markerIcon from "leaflet/dist/images/marker-icon.png";
 import markerShadow from "leaflet/dist/images/marker-shadow.png";
 import { posts } from "@/lib/posts";
 import PostMarker from "../post/PostMarker";
-import { useThemeStore } from "@/store/useThemeStore";
+import { useStore } from "@/store/useStoreStore";
+import { User } from "@/types";
+import UserLocationMarker from "./UserLocationMarker";
+import ChangeView from "./ChangeView";
 
 delete (L.Icon.Default.prototype as any)._getIconUrl;
 L.Icon.Default.mergeOptions({
@@ -25,9 +28,17 @@ interface MapViewProps {
   // We can add props later, e.g., for posts, user location, etc.
 }
 
-const MapView: React.FC<MapViewProps> = () => {
+interface MapViewProps {
+  center?: [number, number] | null;
+  user: User | null;
+  onMarkerClick: () => void;
+}
+
+const MapView: React.FC<MapViewProps> = ({ center, user, onMarkerClick }) => {
   const defaultPosition: [number, number] = [35.6892, 51.389];
-  const { theme, toggleTheme } = useThemeStore();
+  const { theme, toggleTheme } = useStore();
+
+  const zoomLevel = 13;
 
   const tileLayers = {
     voyager: {
@@ -42,11 +53,13 @@ const MapView: React.FC<MapViewProps> = () => {
     },
   };
 
+  const mapCenter = center || defaultPosition;
+
   return (
     <div className="relative overflow-hidden w-screen h-screen" dir="rtl">
       <MapContainer
-        center={defaultPosition}
-        zoom={12}
+        center={mapCenter}
+        zoom={zoomLevel}
         scrollWheelZoom={true}
         className="w-full h-full !z-0"
         zoomControl={false}
@@ -58,6 +71,15 @@ const MapView: React.FC<MapViewProps> = () => {
               : tileLayers.voyager.url
           }
         />
+        <ChangeView center={mapCenter} zoom={zoomLevel} />
+
+        {center && (
+          <UserLocationMarker
+            position={center}
+            user={user}
+            onClick={onMarkerClick}
+          />
+        )}
 
         {posts.map((post) => (
           <PostMarker key={post.id} post={post} />

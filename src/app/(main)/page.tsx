@@ -5,9 +5,10 @@ import { Navbar } from "@/components/layout/Navbar";
 import { posts } from "@/lib/posts";
 import { Post, User } from "@/types";
 import dynamic from "next/dynamic";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { motion } from "framer-motion";
 import { Plus } from "lucide-react";
+import { useStore } from "@/store/useStoreStore";
 
 const currentUser: User = {
   id: "currentUser123",
@@ -19,6 +20,8 @@ export default function HomePage() {
   const [mockPosts, setPosts] = useState<Post[]>(posts);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
+  const { location, fetchUserLocation } = useStore();
+
   const handleToggleModal = () => setIsModalOpen((prev) => !prev);
 
   const handlePostSubmit = (newPostData: Omit<Post, "id">) => {
@@ -29,6 +32,10 @@ export default function HomePage() {
     setPosts((prevPosts) => [newPost, ...prevPosts]);
     setIsModalOpen(false);
   };
+
+  useEffect(() => {
+    fetchUserLocation();
+  }, [fetchUserLocation]);
 
   const MapView = useMemo(
     () =>
@@ -61,7 +68,11 @@ export default function HomePage() {
         key={mockPosts.length}
       />
 
-      <MapView />
+      <MapView
+        center={location.coords}
+        user={currentUser}
+        onMarkerClick={handleToggleModal}
+      />
     </main>
   );
 }
