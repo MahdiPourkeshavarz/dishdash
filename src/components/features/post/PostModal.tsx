@@ -1,4 +1,5 @@
 /* eslint-disable react/jsx-no-undef */
+import { useStore } from "@/store/useStoreStore";
 import { User } from "@/types";
 import { Variants, motion } from "framer-motion";
 import { Upload, X } from "lucide-react";
@@ -50,6 +51,20 @@ const PostModal: React.FC<PostModalProps> = ({
   >("");
   const modalRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const { theme, location } = useStore();
+
+  const modalClasses =
+    theme === "dark"
+      ? "bg-gray-900/90 text-gray-200 border-gray-700"
+      : "bg-white/95 border-gray-100";
+  const inputClasses =
+    theme === "dark"
+      ? "bg-gray-800 border-gray-600 text-gray-100 placeholder:text-gray-400"
+      : "bg-white border-gray-200 text-gray-800";
+  const uploadAreaClasses =
+    theme === "dark"
+      ? "border-blue-800 bg-gray-800/50 hover:bg-gray-800"
+      : "border-blue-200 bg-gray-50 hover:bg-gray-100";
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -86,12 +101,18 @@ const PostModal: React.FC<PostModalProps> = ({
       alert("لطفاً تصویر، توضیحات و وضعیت را وارد کنید");
       return;
     }
+
+    if (!location.coords) {
+      alert("Location not available. Please wait or enable location services.");
+      return;
+    }
+
     onSubmit({
       user,
       description,
       satisfaction,
       imageUrl: imagePreview || "/default-post.jpg",
-      position: [35.6892, 51.389], // Mock position (replace with actual, e.g., map click)
+      position: location.coords,
     });
     setImageFile(null);
     setImagePreview(null);
@@ -118,7 +139,7 @@ const PostModal: React.FC<PostModalProps> = ({
         animate="visible"
         exit="hidden"
         ref={modalRef}
-        className="w-[90vw] max-w-[400px] rounded-xl bg-white/95 backdrop-blur-md shadow-lg border border-gray-100 p-4 sm:p-6"
+        className={`w-[90vw] max-w-[400px] rounded-xl backdrop-blur-md shadow-lg border p-4 sm:p-6 ${modalClasses}`}
         dir="rtl"
       >
         <button
@@ -132,10 +153,9 @@ const PostModal: React.FC<PostModalProps> = ({
           onSubmit={handleSubmit}
           className="flex flex-col gap-4 pt-6 sm:pt-0"
         >
-          {/* Image Input */}
           <label
             htmlFor="image-upload"
-            className="relative flex h-32 w-full items-center justify-center rounded-lg border-2 border-dashed border-blue-200 bg-gray-50 hover:bg-gray-100 transition-colors cursor-pointer"
+            className={`relative flex h-32 w-full items-center justify-center rounded-lg border-2 border-dashed transition-colors cursor-pointer ${uploadAreaClasses}`}
           >
             {imagePreview ? (
               <Image
@@ -182,7 +202,7 @@ const PostModal: React.FC<PostModalProps> = ({
                   setDescription(e.target.value);
                 }
               }}
-              className="w-full rounded-lg border border-gray-200 p-3 text-sm text-gray-800 resize-none"
+              className={`w-full rounded-lg border p-3 text-sm resize-none ${inputClasses}`}
               rows={4}
               placeholder="توضیحات (حداکثر ۲۵۰ کاراکتر)"
               dir="rtl"
@@ -197,7 +217,7 @@ const PostModal: React.FC<PostModalProps> = ({
             onChange={(e) =>
               setSatisfaction(e.target.value as "awesome" | "good" | "bad")
             }
-            className="rounded-lg border border-gray-200 p-3 text-sm text-gray-800"
+            className={`rounded-lg border p-3 text-sm ${inputClasses}`}
             dir="rtl"
           >
             <option value="" disabled>
@@ -207,6 +227,25 @@ const PostModal: React.FC<PostModalProps> = ({
             <option value="good">خوب</option>
             <option value="bad">بد</option>
           </select>
+
+          <div className="flex items-center gap-2 rounded-lg bg-blue-50 dark:bg-blue-900/50 p-3 text-sm text-blue-700 dark:text-blue-300">
+            <Image
+              className="h-5 w-5 flex-shrink-0"
+              src={"/person.png"}
+              width={24}
+              height={24}
+              alt="location"
+            />
+            {location.areaName ? (
+              <span>
+                Posting from: <strong>{location.areaName}</strong>
+              </span>
+            ) : location.error ? (
+              <span className="text-red-500">{location.error}</span>
+            ) : (
+              <span>Detecting your location...</span>
+            )}
+          </div>
 
           <motion.button
             type="submit"

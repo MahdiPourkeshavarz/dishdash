@@ -2,6 +2,7 @@ import type { Post } from "@/types";
 import Image from "next/image";
 import { useState } from "react";
 import { motion, Variants } from "framer-motion";
+import { useStore } from "@/store/useStoreStore";
 
 const cardVariants: Variants = {
   hidden: { opacity: 0, x: 30, scale: 0.9, rotate: 5 },
@@ -56,13 +57,21 @@ interface PostCardProps {
 const PostCard: React.FC<PostCardProps> = ({ post }) => {
   const [isUserCardOpen, setIsUserCardOpen] = useState(false);
 
+  const { theme } = useStore();
+
+  const cardClasses =
+    theme === "dark"
+      ? "bg-gray-800/90 text-gray-200 border-gray-700"
+      : "bg-white/95 border-gray-100";
+  const textClasses = theme === "dark" ? "text-gray-300" : "text-gray-600";
+
   return (
     <motion.div
       variants={cardVariants}
       initial="hidden"
       animate="visible"
       whileHover={{ scale: 1.05, rotate: -2, transition: { duration: 0.2 } }}
-      className="relative w-72 overflow-hidden rounded-2xl bg-white/95 backdrop-blur-md shadow-lg border border-gray-100"
+      className={`relative w-72 overflow-hidden rounded-2xl backdrop-blur-md shadow-lg border ${cardClasses}`}
       dir="rtl"
     >
       <div className="relative">
@@ -70,7 +79,7 @@ const PostCard: React.FC<PostCardProps> = ({ post }) => {
           <Image
             src={post.imageUrl}
             alt={post.id}
-            className="h-40 w-full object-cover rounded-t-2xl"
+            className={`mb-3 text-sm leading-relaxed line-clamp-3 ${textClasses}`}
             width={288}
             height={160}
             priority
@@ -101,7 +110,7 @@ const PostCard: React.FC<PostCardProps> = ({ post }) => {
         <motion.p
           variants={childVariants}
           custom={3}
-          className="mb-3 text-sm text-gray-600 leading-relaxed line-clamp-3"
+          className="mb-3 text-sm text-blue-400 leading-relaxed line-clamp-3"
         >
           {post.description}
         </motion.p>
@@ -134,7 +143,7 @@ const PostCard: React.FC<PostCardProps> = ({ post }) => {
           initial="hidden"
           animate="visible"
           exit="hidden"
-          className="absolute top-12 right-2 z-50 w-48 rounded-xl bg-white/95 p-4 shadow-lg backdrop-blur-md border border-gray-100"
+          className={`absolute top-12 right-2 z-50 w-48 rounded-xl p-4 shadow-lg backdrop-blur-md border ${cardClasses}`}
         >
           <div className="flex flex-col items-center">
             <Image

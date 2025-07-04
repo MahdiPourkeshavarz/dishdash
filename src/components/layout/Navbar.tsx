@@ -69,7 +69,7 @@ export function Navbar() {
                   width={40}
                   height={40}
                 />
-                <span className="text-xs sm:text-sm font-medium text-gray-800 max-w-[100px] sm:max-w-[150px] truncate">
+                <span className="text-xs sm:text-sm font-medium text-blue-500 max-w-[100px] sm:max-w-[150px] truncate pl-4">
                   {mockUser!.username}
                 </span>
               </motion.button>
