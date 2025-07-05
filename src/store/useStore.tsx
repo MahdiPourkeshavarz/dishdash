@@ -31,7 +31,11 @@ type Store = StoreState & StoreActions;
 export const useStore = create<Store>()(
   persist(
     (set) => ({
-      theme: "dark",
+      theme:
+        typeof window !== "undefined" &&
+        window.matchMedia("(prefers-color-scheme: dark)").matches
+          ? "dark"
+          : "light",
       user: null,
       accessToken: null,
       posts: initialState,

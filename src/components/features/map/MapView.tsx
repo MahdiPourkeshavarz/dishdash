@@ -10,7 +10,7 @@ import { Sun, Moon } from "lucide-react";
 import markerIcon2x from "leaflet/dist/images/marker-icon-2x.png";
 import markerIcon from "leaflet/dist/images/marker-icon.png";
 import markerShadow from "leaflet/dist/images/marker-shadow.png";
-import { useStore } from "@/store/useStoreStore";
+import { useStore } from "@/store/useStore";
 import { Post, User } from "@/types";
 import UserLocationMarker from "./UserLocationMarker";
 import ChangeView from "./ChangeView";
