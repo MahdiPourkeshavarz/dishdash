@@ -13,7 +13,6 @@ type Satisfaction = "awesome" | "good" | "bad" | "";
 interface PostModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onSubmit: (post: Omit<Post, "id" | "user"> & { user: User }) => void;
   user: User | null;
 }
 
@@ -26,7 +25,6 @@ const modalVariants: Variants = {
 export const PostModal: React.FC<PostModalProps> = ({
   isOpen,
   onClose,
-  onSubmit,
   user,
 }) => {
   const keyboardHeight = useVirtualKeyboard();
@@ -36,7 +34,7 @@ export const PostModal: React.FC<PostModalProps> = ({
   const [description, setDescription] = useState("");
   const [satisfaction, setSatisfaction] = useState<Satisfaction>("");
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const { location } = useStore();
+  const { location, addPost } = useStore();
 
   const satisfactionOptions = [
     {
@@ -90,13 +88,15 @@ export const PostModal: React.FC<PostModalProps> = ({
       alert("Please complete all fields.");
       return;
     }
-    onSubmit({
+    const newPost: Post = {
+      id: `post_${Date.now()}`,
       user,
       description,
       satisfaction,
-      imageUrl: imagePreview!,
+      imageUrl: "/food.webp",
       position: location.coords,
-    });
+    };
+    addPost(newPost);
     handleClose();
   };
 

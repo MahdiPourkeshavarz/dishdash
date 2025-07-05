@@ -2,13 +2,12 @@
 import { MapLoader } from "@/components/features/map/MapLoader";
 import PostModal from "@/components/features/post/PostModal";
 import { Navbar } from "@/components/layout/Navbar";
-import { posts } from "@/lib/posts";
-import { Post, User } from "@/types";
 import dynamic from "next/dynamic";
 import { useEffect, useMemo, useState } from "react";
 import { motion } from "framer-motion";
 import { Plus } from "lucide-react";
 import { useStore } from "@/store/useStoreStore";
+import { User } from "@/types";
 
 const currentUser: User = {
   id: "currentUser123",
@@ -17,21 +16,11 @@ const currentUser: User = {
 };
 
 export default function HomePage() {
-  const [mockPosts, setPosts] = useState<Post[]>(posts);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const { location, fetchUserLocation } = useStore();
 
   const handleToggleModal = () => setIsModalOpen((prev) => !prev);
-
-  const handlePostSubmit = (newPostData: Omit<Post, "id">) => {
-    const newPost: Post = {
-      ...newPostData,
-      id: `post_${Date.now()}`,
-    };
-    setPosts((prevPosts) => [newPost, ...prevPosts]);
-    setIsModalOpen(false);
-  };
 
   useEffect(() => {
     fetchUserLocation();
@@ -75,9 +64,7 @@ export default function HomePage() {
       <PostModal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
-        onSubmit={handlePostSubmit}
         user={currentUser}
-        key={mockPosts.length}
       />
 
       <MapView

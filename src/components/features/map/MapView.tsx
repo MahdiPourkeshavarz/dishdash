@@ -10,7 +10,6 @@ import { Sun, Moon } from "lucide-react";
 import markerIcon2x from "leaflet/dist/images/marker-icon-2x.png";
 import markerIcon from "leaflet/dist/images/marker-icon.png";
 import markerShadow from "leaflet/dist/images/marker-shadow.png";
-import { posts } from "@/lib/posts";
 import PostMarker from "../post/PostMarker";
 import { useStore } from "@/store/useStoreStore";
 import { User } from "@/types";
@@ -26,10 +25,6 @@ L.Icon.Default.mergeOptions({
 });
 
 interface MapViewProps {
-  // We can add props later, e.g., for posts, user location, etc.
-}
-
-interface MapViewProps {
   center?: [number, number] | null;
   user: User | null;
   onMarkerClick: () => void;
@@ -37,9 +32,9 @@ interface MapViewProps {
 
 const MapView: React.FC<MapViewProps> = ({ center, user, onMarkerClick }) => {
   const defaultPosition: [number, number] = [35.6892, 51.389];
-  const { theme, toggleTheme } = useStore();
+  const { theme, toggleTheme, posts } = useStore();
 
-  const zoomLevel = 13;
+  const zoomLevel = 15;
 
   const [isMounted, setIsMounted] = useState(false);
 

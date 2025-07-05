@@ -1,8 +1,8 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
-import { User } from "@/types";
-
+import { Post, User } from "@/types";
+import { posts as initialState } from "@/lib/posts";
 export interface LocationState {
   coords: [number, number] | null;
   areaName: string | null;
@@ -14,6 +14,7 @@ interface StoreState {
   user: User | null;
   accessToken: string | null;
   location: LocationState;
+  posts: Post[];
 }
 
 interface StoreActions {
@@ -22,6 +23,7 @@ interface StoreActions {
   setAccessToken: (token: string | null) => void;
   logout: () => void;
   fetchUserLocation: () => Promise<void>;
+  addPost: (post: Post) => void;
 }
 
 type Store = StoreState & StoreActions;
@@ -32,6 +34,7 @@ export const useStore = create<Store>()(
       theme: "dark",
       user: null,
       accessToken: null,
+      posts: initialState,
       location: {
         coords: null,
         areaName: null,
@@ -93,6 +96,11 @@ export const useStore = create<Store>()(
         );
       },
 
+      addPost: (newPost) =>
+        set((state) => ({
+          posts: [newPost, ...state.posts],
+        })),
+
       toggleTheme: () =>
         set((state) => ({
           theme: state.theme === "dark" ? "light" : "dark",
@@ -110,6 +118,7 @@ export const useStore = create<Store>()(
         theme: state.theme,
         user: state.user,
         accessToken: state.accessToken,
+        posts: state.posts,
       }),
     }
   )
