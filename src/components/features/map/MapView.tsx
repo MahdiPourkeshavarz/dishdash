@@ -10,12 +10,12 @@ import { Sun, Moon } from "lucide-react";
 import markerIcon2x from "leaflet/dist/images/marker-icon-2x.png";
 import markerIcon from "leaflet/dist/images/marker-icon.png";
 import markerShadow from "leaflet/dist/images/marker-shadow.png";
-import { posts } from "@/lib/posts";
-import PostMarker from "../post/PostMarker";
 import { useStore } from "@/store/useStoreStore";
-import { User } from "@/types";
+import { Post, User } from "@/types";
 import UserLocationMarker from "./UserLocationMarker";
 import ChangeView from "./ChangeView";
+import { useEffect, useMemo, useState } from "react";
+import PostMarker from "../post/PostMarker";
 
 delete (L.Icon.Default.prototype as any)._getIconUrl;
 L.Icon.Default.mergeOptions({
@@ -25,10 +25,6 @@ L.Icon.Default.mergeOptions({
 });
 
 interface MapViewProps {
-  // We can add props later, e.g., for posts, user location, etc.
-}
-
-interface MapViewProps {
   center?: [number, number] | null;
   user: User | null;
   onMarkerClick: () => void;
@@ -36,9 +32,27 @@ interface MapViewProps {
 
 const MapView: React.FC<MapViewProps> = ({ center, user, onMarkerClick }) => {
   const defaultPosition: [number, number] = [35.6892, 51.389];
-  const { theme, toggleTheme } = useStore();
+  const { theme, toggleTheme, posts } = useStore();
 
-  const zoomLevel = 13;
+  const zoomLevel = 15;
+
+  const [isMounted, setIsMounted] = useState(false);
+
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
+
+  const groupedPosts = useMemo(() => {
+    const groups: { [key: string]: Post[] } = {};
+    posts.forEach((post) => {
+      const key = post.position.join(",");
+      if (!groups[key]) {
+        groups[key] = [];
+      }
+      groups[key].push(post);
+    });
+    return Object.values(groups);
+  }, [posts]);
 
   const tileLayers = {
     voyager: {
@@ -81,21 +95,23 @@ const MapView: React.FC<MapViewProps> = ({ center, user, onMarkerClick }) => {
           />
         )}
 
-        {posts.map((post) => (
-          <PostMarker key={post.id} post={post} />
+        {groupedPosts.map((postGroup) => (
+          <PostMarker key={postGroup[0].id} posts={postGroup} theme={theme} />
         ))}
       </MapContainer>
 
-      <button
-        onClick={toggleTheme}
-        className="absolute bottom-4 right-4 z-10 bg-white/80 backdrop-blur-sm p-2 rounded-full shadow-md hover:bg-white transition-colors"
-      >
-        {theme === "dark" ? (
-          <Sun className="w-10 h-10 text-blue-600" />
-        ) : (
-          <Moon className="w-10 h-10 text-blue-600" />
-        )}
-      </button>
+      {isMounted && (
+        <button
+          onClick={toggleTheme}
+          className="absolute bottom-4 right-4 z-10 bg-white/80 backdrop-blur-sm p-2 rounded-full shadow-md hover:bg-white transition-colors"
+        >
+          {theme === "dark" ? (
+            <Sun className="w-10 h-10 text-blue-600" />
+          ) : (
+            <Moon className="w-10 h-10 text-blue-600" />
+          )}
+        </button>
+      )}
     </div>
   );
 };
