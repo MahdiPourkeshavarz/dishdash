@@ -1,5 +1,5 @@
 /* eslint-disable react/jsx-no-undef */
-import { useStore } from "@/store/useStoreStore";
+import { useStore } from "@/store/useStore";
 import { Post, User } from "@/types";
 import { motion, AnimatePresence, Variants } from "framer-motion";
 import { Image as ImageIcon, Send, MapPin, X } from "lucide-react";

@@ -6,7 +6,7 @@ import dynamic from "next/dynamic";
 import { useEffect, useMemo, useState } from "react";
 import { motion } from "framer-motion";
 import { Plus } from "lucide-react";
-import { useStore } from "@/store/useStoreStore";
+import { useStore } from "@/store/useStore";
 import { User } from "@/types";
 
 const currentUser: User = {

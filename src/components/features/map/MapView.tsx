@@ -10,7 +10,7 @@ import { Sun, Moon } from "lucide-react";
 import markerIcon2x from "leaflet/dist/images/marker-icon-2x.png";
 import markerIcon from "leaflet/dist/images/marker-icon.png";
 import markerShadow from "leaflet/dist/images/marker-shadow.png";
-import { useStore } from "@/store/useStoreStore";
+import { useStore } from "@/store/useStore";
 import { Post, User } from "@/types";
 import UserLocationMarker from "./UserLocationMarker";
 import ChangeView from "./ChangeView";
@@ -103,12 +103,12 @@ const MapView: React.FC<MapViewProps> = ({ center, user, onMarkerClick }) => {
       {isMounted && (
         <button
           onClick={toggleTheme}
-          className="absolute bottom-4 right-4 z-10 bg-white/80 backdrop-blur-sm p-2 rounded-full shadow-md hover:bg-white transition-colors"
+          className="absolute bottom-22 md:bottom-4 lg:bottom-4 right-4 z-10 bg-blue/70 backdrop-blur-sm p-2 rounded-full shadow-lg hover:bg-white transition-colors"
         >
           {theme === "dark" ? (
-            <Sun className="w-10 h-10 text-blue-600" />
+            <Sun className="w-12 h-12 text-blue-600" />
           ) : (
-            <Moon className="w-10 h-10 text-blue-600" />
+            <Moon className="w-12 h-12 text-blue-600" />
           )}
         </button>
       )}
