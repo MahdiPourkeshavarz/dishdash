@@ -10,12 +10,12 @@ import { Sun, Moon } from "lucide-react";
 import markerIcon2x from "leaflet/dist/images/marker-icon-2x.png";
 import markerIcon from "leaflet/dist/images/marker-icon.png";
 import markerShadow from "leaflet/dist/images/marker-shadow.png";
-import PostMarker from "../post/PostMarker";
 import { useStore } from "@/store/useStoreStore";
-import { User } from "@/types";
+import { Post, User } from "@/types";
 import UserLocationMarker from "./UserLocationMarker";
 import ChangeView from "./ChangeView";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+import PostMarker from "../post/PostMarker";
 
 delete (L.Icon.Default.prototype as any)._getIconUrl;
 L.Icon.Default.mergeOptions({
@@ -41,6 +41,18 @@ const MapView: React.FC<MapViewProps> = ({ center, user, onMarkerClick }) => {
   useEffect(() => {
     setIsMounted(true);
   }, []);
+
+  const groupedPosts = useMemo(() => {
+    const groups: { [key: string]: Post[] } = {};
+    posts.forEach((post) => {
+      const key = post.position.join(",");
+      if (!groups[key]) {
+        groups[key] = [];
+      }
+      groups[key].push(post);
+    });
+    return Object.values(groups);
+  }, [posts]);
 
   const tileLayers = {
     voyager: {
@@ -83,8 +95,8 @@ const MapView: React.FC<MapViewProps> = ({ center, user, onMarkerClick }) => {
           />
         )}
 
-        {posts.map((post) => (
-          <PostMarker key={post.id} post={post} />
+        {groupedPosts.map((postGroup) => (
+          <PostMarker key={postGroup[0].id} posts={postGroup} theme={theme} />
         ))}
       </MapContainer>
 
