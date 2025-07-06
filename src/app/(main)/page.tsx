@@ -8,6 +8,7 @@ import { motion } from "framer-motion";
 import { Plus } from "lucide-react";
 import { useStore } from "@/store/useStore";
 import { User } from "@/types";
+import { AuthModal } from "@/components/features/auth/AuthModal";
 
 const currentUser: User = {
   id: "currentUser123",
@@ -17,6 +18,7 @@ const currentUser: User = {
 
 export default function HomePage() {
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isAuthModalOpen, setAuthModalOpen] = useState(false);
 
   const { location, fetchUserLocation, theme } = useStore();
 
@@ -37,7 +39,7 @@ export default function HomePage() {
 
   return (
     <main className="w-screen h-screen relative">
-      <Navbar />
+      <Navbar onLoginClick={() => setAuthModalOpen(true)} />
 
       <div className="fixed bottom-4 left-4 z-[1000]">
         <motion.div
@@ -81,6 +83,11 @@ export default function HomePage() {
         center={location.coords}
         user={currentUser}
         onMarkerClick={handleToggleModal}
+      />
+
+      <AuthModal
+        isOpen={isAuthModalOpen}
+        onClose={() => setAuthModalOpen(false)}
       />
     </main>
   );

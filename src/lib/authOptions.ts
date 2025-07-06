@@ -1,20 +1,38 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { NextAuthOptions } from "next-auth";
-import GoogleProvider from "next-auth/providers/google"; // ✅ Import GoogleProvider
+import GoogleProvider from "next-auth/providers/google";
+import CredentialsProvider from "next-auth/providers/credentials";
 
 export const authOptions: NextAuthOptions = {
-  // ✅ Configure the Google OAuth Provider
   providers: [
     GoogleProvider({
       clientId: process.env.GOOGLE_CLIENT_ID as string,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET as string,
     }),
+    CredentialsProvider({
+      name: "Credentials",
+      credentials: {
+        email: { label: "Email", type: "text" },
+        password: { label: "Password", type: "password" },
+      },
+      async authorize(credentials, req) {
+        if (
+          credentials?.email === "test@example.com" &&
+          credentials?.password === "password"
+        ) {
+          return {
+            id: "varagh",
+            name: "محمد محمدی",
+            email: "test@example.com",
+            image: "/user-photo.jpg",
+            username: "mohammadi",
+          };
+        }
+        return null;
+      },
+    }),
   ],
-
-  pages: {
-    signIn: "/signin",
-  },
 
   callbacks: {
     jwt: async ({ token, user }) => {

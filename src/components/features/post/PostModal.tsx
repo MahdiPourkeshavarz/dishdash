@@ -104,7 +104,7 @@ export const PostModal: React.FC<PostModalProps> = ({
     <AnimatePresence>
       {isOpen && (
         <motion.div
-          className="fixed inset-0 z-[1000] flex items-end justify-center bg-black/50"
+          className="fixed inset-0 z-[1000] pb-22 flex items-end justify-center bg-black/50"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
@@ -128,13 +128,13 @@ export const PostModal: React.FC<PostModalProps> = ({
               className={`absolute -top-10 right-0 z-20 transition-colors ${
                 theme === "dark"
                   ? "text-white/80 hover:text-white"
-                  : "text-gray-800/80 hover:text-black"
+                  : "text-gray-900/80 hover:text-black"
               }`}
               initial={{ y: 20, opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
               transition={{ delay: 0.2 }}
             >
-              <X size={24} />
+              <X size={28} />
             </motion.button>
 
             <div className="relative rounded-2xl">
