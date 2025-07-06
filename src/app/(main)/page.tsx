@@ -18,7 +18,7 @@ const currentUser: User = {
 export default function HomePage() {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  const { location, fetchUserLocation } = useStore();
+  const { location, fetchUserLocation, theme } = useStore();
 
   const handleToggleModal = () => setIsModalOpen((prev) => !prev);
 
@@ -48,13 +48,23 @@ export default function HomePage() {
             ease: "linear",
             repeat: Infinity,
           }}
+          suppressHydrationWarning={true}
         >
           <motion.button
             onClick={handleToggleModal}
-            className="relative flex items-center justify-center w-full h-full rounded-full bg-gray-900 text-white shadow-lg"
+            className={`
+                      relative flex items-center justify-center w-full h-full rounded-full shadow-lg
+                      transition-colors duration-200
+                      ${
+                        theme === "dark"
+                          ? "bg-gray-900 text-white hover:bg-gray-700"
+                          : "bg-white text-blue-600 hover:bg-gray-200"
+                      }
+                    `}
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.9 }}
             aria-label="Create new post"
+            suppressHydrationWarning={true}
           >
             <Plus className="w-7 h-7" />
           </motion.button>

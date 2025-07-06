@@ -3,9 +3,10 @@
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { LogOut, X } from "lucide-react";
+import { LogIn, LogOut, X } from "lucide-react";
 import { motion } from "framer-motion";
 import { useSession, signIn, signOut } from "next-auth/react";
+import { useStore } from "@/store/useStore";
 
 export function Navbar() {
   const [isProfileOpen, setIsProfileOpen] = useState(false);
@@ -14,6 +15,8 @@ export function Navbar() {
   const { data: session, status } = useSession();
   const isLoggedIn = status === "authenticated";
   const user = session?.user;
+
+  const { theme } = useStore();
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -29,10 +32,7 @@ export function Navbar() {
   }, []);
 
   return (
-    <header
-      className="fixed top-0 left-0 right-0 z-[1500] backdrop-blur-md"
-      dir="rtl"
-    >
+    <header className="fixed top-5 left-0 right-2 z-[1500]" dir="rtl">
       <div className="mx-auto flex h-14 items-center justify-between px-3 sm:px-4 max-w-screen-2xl">
         <div className="flex items-center gap-3 sm:gap-4">
           {isLoggedIn ? (
@@ -87,13 +87,29 @@ export function Navbar() {
               )}
             </div>
           ) : (
-            <motion.button
-              // ... animation props
-              className="rounded-lg bg-gradient-to-r from-blue-600 to-blue-400 px-3 sm:px-4 py-1.5 sm:py-2 text-xs sm:text-sm font-semibold text-white hover:from-blue-700 hover:to-blue-500 transition-all"
-              onClick={() => signIn()}
-            >
-              ورود
-            </motion.button>
+            <div className="relative group" suppressHydrationWarning={true}>
+              <motion.div className="rounded-full p-[3px] bg-gradient-to-r from-purple-600/25 via-blue-500/25 to-orange-400/25 shadow-md">
+                <motion.button
+                  onClick={() => signIn()}
+                  className={`
+                              flex items-center gap-2.5 w-full justify-center
+                              px-5 py-2.5 text-sm font-bold rounded-full
+                              transition-colors duration-300
+                              ${
+                                theme === "dark"
+                                  ? "bg-gray-900/70 text-white hover:bg-gray-800"
+                                  : "bg-white/70 text-gray-700 hover:bg-gray-100"
+                              }
+                            `}
+                  whileHover={{ scale: 1.03 }}
+                  whileTap={{ scale: 0.95 }}
+                  suppressHydrationWarning={true}
+                >
+                  <LogIn size={18} />
+                  <span>ورود</span>
+                </motion.button>
+              </motion.div>
+            </div>
           )}
         </div>
         <Link
@@ -101,7 +117,21 @@ export function Navbar() {
           className="flex items-center gap-1 text-lg sm:text-xl font-bold text-blue-600"
         >
           DISHDASH
-          <Image src={"/Logo.png"} alt="logo" width={76} height={76} />
+          <Image
+            src={"/Logo.png"}
+            alt="logo"
+            width={76}
+            height={76}
+            className={`
+                      transition-all duration-300
+                      ${
+                        theme === "dark"
+                          ? "[filter:drop-shadow(0_2px_3px_rgba(255,255,255,0.15))]"
+                          : "[filter:drop-shadow(0_2px_3px_rgba(0,0,0,0.25))]"
+                      }
+            `}
+            suppressHydrationWarning={true}
+          />
         </Link>
       </div>
     </header>
