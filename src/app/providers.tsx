@@ -1,5 +1,6 @@
 "use client";
 
+import { MapStyleProvider } from "@/store/useMapStyle";
 import { SessionProvider } from "next-auth/react";
 
 interface ProvidersProps {
@@ -7,5 +8,11 @@ interface ProvidersProps {
 }
 
 export const Providers: React.FC<ProvidersProps> = ({ children }) => {
-  return <SessionProvider>{children}</SessionProvider>;
+  return (
+    <>
+      <SessionProvider>
+        <MapStyleProvider>{children}</MapStyleProvider>
+      </SessionProvider>
+    </>
+  );
 };
