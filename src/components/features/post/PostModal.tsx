@@ -34,7 +34,7 @@ export const PostModal: React.FC<PostModalProps> = ({
   const [description, setDescription] = useState("");
   const [satisfaction, setSatisfaction] = useState<Satisfaction>("");
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const { location, addPost } = useStore();
+  const { location, addPost, theme } = useStore();
 
   const satisfactionOptions = [
     {
@@ -104,7 +104,7 @@ export const PostModal: React.FC<PostModalProps> = ({
     <AnimatePresence>
       {isOpen && (
         <motion.div
-          className="fixed inset-0 z-[1000] flex items-end justify-center bg-black/50"
+          className="fixed inset-0 z-[1000] pb-22 flex items-end justify-center bg-black/50"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
@@ -125,17 +125,27 @@ export const PostModal: React.FC<PostModalProps> = ({
           >
             <motion.button
               onClick={handleClose}
-              className="absolute -top-10 right-0 text-white/80 hover:text-white z-20"
+              className={`absolute -top-10 right-0 z-20 transition-colors ${
+                theme === "dark"
+                  ? "text-white/80 hover:text-white"
+                  : "text-gray-900/80 hover:text-black"
+              }`}
               initial={{ y: 20, opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
               transition={{ delay: 0.2 }}
             >
-              <X size={24} />
+              <X size={28} />
             </motion.button>
 
             <div className="relative rounded-2xl">
-              <div className="absolute inset-0 bg-[conic-gradient(from_180deg_at_50%_50%,#F4B400_0deg,#9B59B6_120deg,#4285F4_240deg,#F4B400_360deg)] rounded-2xl blur-lg opacity-75" />
-              <div className="relative z-10 bg-gray-900/80 backdrop-blur-md text-white rounded-2xl shadow-2xl overflow-hidden">
+              <div className="absolute inset-0 bg-gemini-gradient rounded-2xl blur-lg opacity-75" />
+              <div
+                className={`relative z-10 backdrop-blur-md rounded-2xl shadow-2xl overflow-hidden ${
+                  theme === "dark"
+                    ? "bg-gray-900/80 text-white"
+                    : "bg-slate-100/90 text-gray-900"
+                }`}
+              >
                 {view === "expanded" && (
                   <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
                     <form
@@ -156,16 +166,23 @@ export const PostModal: React.FC<PostModalProps> = ({
                         value={description}
                         onChange={(e) => setDescription(e.target.value)}
                         placeholder="اینجا بنویس ..."
-                        className="w-full bg-gray-800/50 p-2 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        className={`w-full p-2 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none ${
+                          theme === "dark"
+                            ? "bg-gray-800/50 placeholder:text-gray-400"
+                            : "bg-white/60 placeholder:text-gray-500"
+                        }`}
                         rows={3}
                         dir="rtl"
                       />
                       <div className="flex items-center justify-between text-sm">
-                        <div className="flex items-center gap-2 text-gray-400">
+                        <div
+                          className={`flex items-center gap-2 ${
+                            theme === "dark" ? "text-gray-400" : "text-gray-600"
+                          }`}
+                        >
                           <MapPin size={16} />
                           <span>{location.areaName || "Location"}</span>
                         </div>
-
                         <div className="flex items-center gap-3">
                           {satisfactionOptions.map((option) => {
                             const isSelected = satisfaction === option.name;
@@ -202,7 +219,6 @@ export const PostModal: React.FC<PostModalProps> = ({
                     </form>
                   </motion.div>
                 )}
-
                 <div className="flex items-center gap-2 p-3">
                   <label htmlFor="image-upload-gemini">
                     <input
@@ -213,12 +229,22 @@ export const PostModal: React.FC<PostModalProps> = ({
                       onChange={handleImageChange}
                       ref={fileInputRef}
                     />
-                    <ImageIcon className="text-gray-400 hover:text-white cursor-pointer" />
+                    <ImageIcon
+                      className={`cursor-pointer ${
+                        theme === "dark"
+                          ? "text-gray-400 hover:text-white"
+                          : "text-gray-500 hover:text-black"
+                      }`}
+                    />
                   </label>
                   <input
                     type="text"
                     placeholder="از تجربه جدیدت برامون بگو 😋"
-                    className="flex-1 bg-transparent text-white placeholder-gray-400 focus:outline-none"
+                    className={`flex-1 bg-transparent focus:outline-none ${
+                      theme === "dark"
+                        ? "text-white placeholder:text-gray-400"
+                        : "text-black placeholder:text-gray-500"
+                    }`}
                     onFocus={() => setView("expanded")}
                     onChange={(e) => {
                       setDescription(e.target.value);
@@ -226,11 +252,10 @@ export const PostModal: React.FC<PostModalProps> = ({
                     }}
                     dir="rtl"
                   />
-                  {/* ✅ The Post Button is now here */}
                   <button
                     type="submit"
-                    form="post-form" // This links the button to the form
-                    className="flex items-center gap-2 bg-blue-600 px-4 py-2 rounded-full text-sm font-semibold hover:bg-blue-500"
+                    form="post-form"
+                    className="flex items-center gap-2 bg-blue-600 px-4 py-2 rounded-full text-sm font-semibold text-white hover:bg-blue-500"
                   >
                     Post <Send size={16} />
                   </button>

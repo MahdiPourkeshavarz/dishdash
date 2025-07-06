@@ -16,6 +16,7 @@ import UserLocationMarker from "./UserLocationMarker";
 import ChangeView from "./ChangeView";
 import { useEffect, useMemo, useState } from "react";
 import PostMarker from "../post/PostMarker";
+import { useMapStyle } from "@/store/useMapStyle";
 
 delete (L.Icon.Default.prototype as any)._getIconUrl;
 L.Icon.Default.mergeOptions({
@@ -38,6 +39,8 @@ const MapView: React.FC<MapViewProps> = ({ center, user, onMarkerClick }) => {
 
   const [isMounted, setIsMounted] = useState(false);
 
+  const mapStyles = useMapStyle();
+
   useEffect(() => {
     setIsMounted(true);
   }, []);
@@ -54,19 +57,6 @@ const MapView: React.FC<MapViewProps> = ({ center, user, onMarkerClick }) => {
     return Object.values(groups);
   }, [posts]);
 
-  const tileLayers = {
-    voyager: {
-      url: "https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png",
-      attribution:
-        '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors | <a href="https://carto.com/attributions">CARTO</a>',
-    },
-    darkMatter: {
-      url: "https://{s}.basemaps.cartocdn.com/rastertiles/dark_all/{z}/{x}/{y}{r}.png",
-      attribution:
-        '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors | <a href="https://carto.com/attributions">CARTO</a>',
-    },
-  };
-
   const mapCenter = center || defaultPosition;
 
   return (
@@ -79,10 +69,11 @@ const MapView: React.FC<MapViewProps> = ({ center, user, onMarkerClick }) => {
         zoomControl={false}
       >
         <TileLayer
-          url={
+          url={theme === "dark" ? mapStyles.dark.url : mapStyles.light.url}
+          attribution={
             theme === "dark"
-              ? tileLayers.darkMatter.url
-              : tileLayers.voyager.url
+              ? mapStyles.dark.attribution
+              : mapStyles.light.attribution
           }
         />
         <ChangeView center={mapCenter} zoom={zoomLevel} />
