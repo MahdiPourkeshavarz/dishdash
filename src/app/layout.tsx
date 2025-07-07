@@ -1,20 +1,7 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
-import localFont from "next/font/local";
 import "./globals.css";
 import { Providers } from "./providers";
-
-const inter = Inter({
-  subsets: ["latin"],
-  display: "swap",
-  variable: "--font-inter",
-});
-
-const nahidFont = localFont({
-  src: "../assets/font/Nahid.woff",
-  display: "swap",
-  variable: "--font-nahid",
-});
+import { inter, nabla, nahid } from "@/lib/fonts";
 
 export const metadata: Metadata = {
   title: "DishDash",
@@ -28,7 +15,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className={`${inter.variable} ${nahidFont.variable}`}>
+      <body className={`${inter.variable} ${nahid.variable} ${nabla.variable}`}>
         <Providers>{children}</Providers>
       </body>
     </html>

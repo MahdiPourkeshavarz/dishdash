@@ -7,6 +7,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { X } from "lucide-react";
 import { Input } from "./Input";
 import { useStore } from "@/store/useStore";
+import Image from "next/image";
 
 const GoogleIcon = () => (
   <svg className="w-5 h-5" viewBox="0 0 48 48">
@@ -35,7 +36,9 @@ interface AuthModalProps {
 }
 
 export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
-  const [authType, setAuthType] = useState<"signin" | "signup">("signin");
+  const [authType, setAuthType] = useState<
+    "signin" | "signup" | "success" | "error"
+  >("signin");
   const [error, setError] = useState<string | null>(null);
   const { theme } = useStore();
 
@@ -50,7 +53,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
     const result = await signIn("credentials", {
       email,
       password,
-      redirect: false, // This remains essential
+      redirect: false,
     });
 
     setIsLoading(false);
@@ -71,8 +74,11 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
       username: formData.get("username"),
       email: formData.get("email"),
     });
-    alert("ثبت‌نام موفقیت‌آمیز بود! اکنون می‌توانید وارد شوید.");
-    setAuthType("signin");
+    setAuthType("success");
+
+    setTimeout(() => {
+      setAuthType("signin");
+    }, 3000);
   };
 
   const modalBgClass = theme === "dark" ? "bg-gray-900/80" : "bg-white/80";
@@ -140,13 +146,18 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
 
             <AnimatePresence mode="wait">
               {authType === "signin" ? (
-                <motion.div key="signin" /* ... */>
+                <motion.div
+                  key="signin"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                >
                   <div className="flex flex-col gap-4">
                     <Input
                       label="ایمیل"
                       type="email"
                       required
-                      value={email} // Controlled input
+                      value={email}
                       onChange={(e) => setEmail(e.target.value)}
                       dir="ltr"
                     />
@@ -154,23 +165,28 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
                       label="رمز عبور"
                       type="password"
                       required
-                      value={password} // Controlled input
+                      value={password}
                       onChange={(e) => setPassword(e.target.value)}
                       dir="ltr"
                     />
                     {error && <p className="text-red-400 text-sm">{error}</p>}
                     <motion.button
-                      onClick={handleSignIn} // ✅ 4. Button now calls the new handler
+                      onClick={handleSignIn}
                       disabled={isLoading}
-                      className="w-full mt-2 p-3 rounded-lg font-semibold text-white bg-gradient-to-r from-blue-600 to-purple-600 hover:opacity-90 transition-opacity disabled:opacity-50"
+                      className={`${primaryButtonClass} disabled:opacity-50`}
                       whileTap={{ scale: 0.95 }}
                     >
                       {isLoading ? "در حال ورود..." : "ورود"}
                     </motion.button>
                   </div>
                 </motion.div>
-              ) : (
-                <motion.div key="signup" /* ... */>
+              ) : authType === "signup" ? (
+                <motion.div
+                  key="signup"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                >
                   <form onSubmit={handleSignUp} className="flex flex-col gap-4">
                     <Input
                       name="fullName"
@@ -200,30 +216,91 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
                     />
                     <motion.button
                       type="submit"
-                      className={primaryButtonClass}
+                      disabled={isLoading}
+                      className={`${primaryButtonClass} disabled:opacity-50`}
                       whileTap={{ scale: 0.95 }}
                     >
-                      ساخت حساب کاربری
+                      {isLoading ? "در حال ساخت..." : "ساخت حساب کاربری"}
                     </motion.button>
                   </form>
+                </motion.div>
+              ) : authType === "success" ? (
+                <motion.div
+                  key="success"
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -20 }}
+                  className="flex flex-col items-center justify-center gap-4 text-center py-8"
+                >
+                  <Image
+                    src="/success.gif"
+                    alt="Success"
+                    width={120}
+                    height={120}
+                    unoptimized
+                    className="rounded-full"
+                  />
+                  <h2 className="text-2xl font-bold">
+                    ثبت‌نام موفقیت‌آمیز بود
+                  </h2>
+                  <p className={inactiveTabClass}>
+                    حالا به صفحه ورود هدایت می‌شوید تا وارد حساب خود شوید.
+                  </p>
+                </motion.div>
+              ) : (
+                <motion.div
+                  key="error"
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -20 }}
+                  className="flex flex-col items-center justify-center gap-4 text-center py-8"
+                >
+                  <Image
+                    src="/error.gif"
+                    alt="Error"
+                    width={120}
+                    height={120}
+                    unoptimized
+                    className="rounded-lg"
+                  />
+                  <h2 className="text-2xl font-bold text-red-500">
+                    اوه! مشکلی پیش آمد
+                  </h2>
+                  <p className={inactiveTabClass}>
+                    لطفاً دوباره تلاش کنید. اگر مشکل ادامه داشت، با پشتیبانی
+                    تماس بگیرید.
+                  </p>
+                  <motion.button
+                    onClick={() => setAuthType("signup")}
+                    className="w-full max-w-xs mt-4 p-3 bg-red-600 rounded-lg font-semibold text-white hover:bg-red-500 transition-colors"
+                    whileTap={{ scale: 0.95 }}
+                  >
+                    تلاش مجدد
+                  </motion.button>
                 </motion.div>
               )}
             </AnimatePresence>
 
-            <div className="flex items-center gap-4 my-6">
-              <hr className={`flex-grow ${dividerClass}`} />
-              <span className={`text-sm ${inactiveTabClass}`}>یا ورود با</span>
-              <hr className={`flex-grow ${dividerClass}`} />
-            </div>
+            {(authType === "signin" || authType === "signup") && (
+              <>
+                <div className="flex items-center gap-4 my-6">
+                  <hr className={`flex-grow ${dividerClass}`} />
+                  <span className={`text-sm ${inactiveTabClass}`}>
+                    یا ورود با
+                  </span>
+                  <hr className={`flex-grow ${dividerClass}`} />
+                </div>
 
-            <div className="flex justify-center">
-              <button
-                onClick={() => signIn("google")}
-                className={`p-3 border flex gap-1 items-center rounded-full transition-colors ${socialButtonClass}`}
-              >
-                <GoogleIcon /> Google
-              </button>
-            </div>
+                <div className="flex justify-center">
+                  <button
+                    onClick={() => signIn("google")}
+                    className={`p-3 border flex gap-1 items-center rounded-full transition-colors ${socialButtonClass}`}
+                  >
+                    <GoogleIcon /> Google
+                  </button>
+                </div>
+              </>
+            )}
           </motion.div>
         </motion.div>
       )}
