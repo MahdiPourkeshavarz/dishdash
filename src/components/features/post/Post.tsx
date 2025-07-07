@@ -71,7 +71,7 @@ const PostCard: React.FC<PostCardProps> = ({ post }) => {
   return (
     <div className="relative w-full max-w-xs pt-10">
       <div
-        className={`rounded-xl shadow-lg pt-20 pb-4 px-4 flex flex-col ${
+        className={`relative z-10 rounded-xl shadow-lg pt-20 pb-4 px-4 flex flex-col ${
           theme === "dark" ? styles.bgGradientDark : styles.bgGradientLight
         }`}
       >
@@ -104,17 +104,25 @@ const PostCard: React.FC<PostCardProps> = ({ post }) => {
             >
               <ThumbsUp
                 size={18}
-                className={`transition-colors ${
+                className={`transition-colors duration-200 ${
                   vote === "like"
-                    ? "text-blue-500 fill-blue-500/30"
-                    : "text-gray-400 group-hover:text-white"
+                    ? theme === "dark"
+                      ? "text-blue-500 fill-blue-500/30"
+                      : "text-blue-600 fill-blue-600/20"
+                    : theme === "dark"
+                    ? "text-gray-400 group-hover:text-white"
+                    : "text-gray-500 group-hover:text-black"
                 }`}
               />
               <span
-                className={`text-sm transition-colors ${
+                className={`text-sm font-mono transition-colors duration-200 ${
                   vote === "like"
-                    ? "text-blue-400"
-                    : "text-gray-400 group-hover:text-white"
+                    ? theme === "dark"
+                      ? "text-blue-400"
+                      : "text-blue-600"
+                    : theme === "dark"
+                    ? "text-gray-400 group-hover:text-white"
+                    : "text-gray-500 group-hover:text-black"
                 }`}
               >
                 {likeCount}
@@ -126,17 +134,25 @@ const PostCard: React.FC<PostCardProps> = ({ post }) => {
             >
               <ThumbsDown
                 size={18}
-                className={`transition-colors ${
+                className={`transition-colors duration-200 ${
                   vote === "dislike"
-                    ? "text-red-500 fill-red-500/30"
-                    : "text-gray-400 group-hover:text-white"
+                    ? theme === "dark"
+                      ? "text-red-500 fill-red-500/30"
+                      : "text-red-600 fill-red-600/20"
+                    : theme === "dark"
+                    ? "text-gray-400 group-hover:text-white"
+                    : "text-gray-500 group-hover:text-black"
                 }`}
               />
               <span
-                className={`text-sm transition-colors ${
+                className={`text-sm font-mono transition-colors duration-200 ${
                   vote === "dislike"
-                    ? "text-red-400"
-                    : "text-gray-400 group-hover:text-white"
+                    ? theme === "dark"
+                      ? "text-red-400"
+                      : "text-red-600"
+                    : theme === "dark"
+                    ? "text-gray-400 group-hover:text-white"
+                    : "text-gray-500 group-hover:text-black"
                 }`}
               >
                 {dislikeCount}
@@ -146,7 +162,7 @@ const PostCard: React.FC<PostCardProps> = ({ post }) => {
         </div>
       </div>
 
-      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-11/12 h-40 rounded-xl shadow-lg overflow-hidden">
+      <div className="absolute z-20 top-0 left-1/2 -translate-x-1/2 w-11/12 h-40 rounded-xl shadow-lg overflow-hidden">
         <Image
           src={post.imageUrl}
           alt={post.id}
@@ -184,19 +200,29 @@ const PostCard: React.FC<PostCardProps> = ({ post }) => {
           <Image
             src={styles.emoji}
             alt={post.satisfaction}
-            width={post.satisfaction === "awesome" ? 45 : 70}
-            height={48}
+            width={post.satisfaction === "awesome" ? 47 : 70}
+            height={47}
             className="drop-shadow-lg"
+            style={{
+              width:
+                post.satisfaction === "good"
+                  ? 77
+                  : post.satisfaction === "awesome"
+                  ? 47
+                  : 67,
+            }}
           />
         </motion.div>
       </div>
 
       <AnimatePresence>
         {isProfileCardVisible && (
-          <ProfileCard
-            user={post.user}
-            onClose={() => setProfileCardVisible(false)}
-          />
+          <div className="absolute inset-0 z-30">
+            <ProfileCard
+              user={post.user}
+              onClose={() => setProfileCardVisible(false)}
+            />
+          </div>
         )}
       </AnimatePresence>
     </div>

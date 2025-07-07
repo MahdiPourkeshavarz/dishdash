@@ -208,8 +208,8 @@ export const PostModal: React.FC<PostModalProps> = ({
                                         : "opacity-60 hover:opacity-100 hover:scale-105"
                                     }
                                   `}
-                                  width={option.name === "bad" ? 28 : 40}
-                                  height={option.name === "bad" ? 28 : 40}
+                                  width={option.name === "good" ? 53 : 39}
+                                  height={option.name === "good" ? 53 : 39}
                                 />
                               </motion.button>
                             );
