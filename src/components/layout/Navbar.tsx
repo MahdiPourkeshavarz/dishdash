@@ -89,7 +89,7 @@ export function Navbar({ onLoginClick }: NavbarProps) {
             </div>
           ) : (
             <div className="relative group">
-              <motion.div className="rounded-full p-[3px] bg-gradient-to-r from-purple-600/25 via-blue-500/25 to-orange-400/25 shadow-md">
+              <motion.div className="rounded-full p-[1px] shadow-lg">
                 <motion.button
                   onClick={onLoginClick}
                   className={`
@@ -98,7 +98,7 @@ export function Navbar({ onLoginClick }: NavbarProps) {
                     transition-colors duration-300
                     ${
                       theme === "dark"
-                        ? "bg-gray-900/70 text-white hover:bg-gray-800"
+                        ? "bg-gray-800/70 text-white hover:bg-gray-800"
                         : "bg-white/70 text-gray-700 hover:bg-gray-100"
                     }
                   `}
