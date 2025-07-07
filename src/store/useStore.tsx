@@ -15,6 +15,7 @@ interface StoreState {
   accessToken: string | null;
   location: LocationState;
   posts: Post[];
+  isProfileModalOpen: boolean;
 }
 
 interface StoreActions {
@@ -24,6 +25,7 @@ interface StoreActions {
   logout: () => void;
   fetchUserLocation: () => Promise<void>;
   addPost: (post: Post) => void;
+  toggleProfileModal: () => void;
 }
 
 type Store = StoreState & StoreActions;
@@ -39,11 +41,15 @@ export const useStore = create<Store>()(
       user: null,
       accessToken: null,
       posts: initialState,
+      isProfileModalOpen: false,
       location: {
         coords: null,
         areaName: null,
         error: null,
       },
+
+      toggleProfileModal: () =>
+        set((state) => ({ isProfileModalOpen: !state.isProfileModalOpen })),
 
       fetchUserLocation: async () => {
         if (!navigator.geolocation) {
