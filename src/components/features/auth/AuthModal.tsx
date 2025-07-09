@@ -4,10 +4,18 @@
 import { useState } from "react";
 import { signIn } from "next-auth/react";
 import { motion, AnimatePresence } from "framer-motion";
-import { X } from "lucide-react";
 import { Input } from "./Input";
 import { useStore } from "@/store/useStore";
 import Image from "next/image";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import {
+  SignInSchema,
+  SignInData,
+  SignUpSchema,
+  SignUpData,
+} from "@/lib/authValidation";
+import { PasswordStrength } from "./PasswordStrength";
 
 const GoogleIcon = () => (
   <svg className="w-5 h-5" viewBox="0 0 48 48">
@@ -39,46 +47,58 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
   const [authType, setAuthType] = useState<
     "signin" | "signup" | "success" | "error"
   >("signin");
-  const [error, setError] = useState<string | null>(null);
+  const [serverError, setServerError] = useState<string | null>(null);
   const { theme } = useStore();
-
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
-  const handleSignIn = async () => {
-    setIsLoading(true);
-    setError(null);
+  const {
+    register: registerSignIn,
+    handleSubmit: handleSignInSubmit,
+    formState: { errors: signInErrors },
+  } = useForm<SignInData>({
+    resolver: zodResolver(SignInSchema),
+  });
 
+  const {
+    register: registerSignUp,
+    handleSubmit: handleSignUpSubmit,
+    watch,
+    formState: { errors: signUpErrors },
+  } = useForm<SignUpData>({
+    resolver: zodResolver(SignUpSchema),
+  });
+
+  const passwordValue = watch("password", "");
+
+  const onSignIn = async (data: SignInData) => {
+    setIsLoading(true);
+    setServerError(null);
     const result = await signIn("credentials", {
-      email,
-      password,
+      ...data,
       redirect: false,
     });
-
     setIsLoading(false);
-
     if (result?.error) {
-      setError("ایمیل یا رمز عبور اشتباه است.");
+      setServerError("ایمیل یا رمز عبور اشتباه است.");
     } else if (result?.ok) {
       onClose();
     }
   };
 
-  const handleSignUp = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    setError(null);
-    const formData = new FormData(e.currentTarget);
-    console.log("New user signing up:", {
-      fullName: formData.get("fullName"),
-      username: formData.get("username"),
-      email: formData.get("email"),
-    });
-    setAuthType("success");
+  const onSignUp = async (data: SignUpData) => {
+    setIsLoading(true);
+    setServerError(null);
+    console.log("New user signing up:", data);
 
-    setTimeout(() => {
-      setAuthType("signin");
-    }, 3000);
+    await new Promise((resolve) => setTimeout(resolve, 1500));
+
+    if (Math.random() > 0.5) {
+      setAuthType("success");
+      setTimeout(() => setAuthType("signin"), 3000);
+    } else {
+      setAuthType("error");
+    }
+    setIsLoading(false);
   };
 
   const modalBgClass = theme === "dark" ? "bg-gray-900/80" : "bg-white/80";
@@ -121,28 +141,30 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
               />
             </div>
 
-            <div className={`flex gap-4 border-b mb-6 ${dividerClass}`}>
-              <button
-                onClick={() => setAuthType("signin")}
-                className={`pb-2 ${
-                  authType === "signin"
-                    ? "text-blue-500 border-b-2 border-blue-500"
-                    : inactiveTabClass
-                }`}
-              >
-                ورود
-              </button>
-              <button
-                onClick={() => setAuthType("signup")}
-                className={`pb-2 ${
-                  authType === "signup"
-                    ? "text-blue-500 border-b-2 border-blue-500"
-                    : inactiveTabClass
-                }`}
-              >
-                ثبت‌نام
-              </button>
-            </div>
+            {(authType === "signin" || authType === "signup") && (
+              <div className={`flex gap-4 border-b mb-6 ${dividerClass}`}>
+                <button
+                  onClick={() => setAuthType("signin")}
+                  className={`pb-2 ${
+                    authType === "signin"
+                      ? "text-blue-500 border-b-2 border-blue-500"
+                      : inactiveTabClass
+                  }`}
+                >
+                  ورود
+                </button>
+                <button
+                  onClick={() => setAuthType("signup")}
+                  className={`pb-2 ${
+                    authType === "signup"
+                      ? "text-blue-500 border-b-2 border-blue-500"
+                      : inactiveTabClass
+                  }`}
+                >
+                  ثبت‌نام
+                </button>
+              </div>
+            )}
 
             <AnimatePresence mode="wait">
               {authType === "signin" ? (
@@ -152,33 +174,36 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
                   animate={{ opacity: 1 }}
                   exit={{ opacity: 0 }}
                 >
-                  <div className="flex flex-col gap-4">
+                  <form
+                    onSubmit={handleSignInSubmit(onSignIn)}
+                    className="flex flex-col gap-4"
+                  >
                     <Input
                       label="ایمیل"
                       type="email"
-                      required
-                      value={email}
-                      onChange={(e) => setEmail(e.target.value)}
                       dir="ltr"
+                      {...registerSignIn("email")}
+                      error={signInErrors.email?.message}
                     />
                     <Input
                       label="رمز عبور"
                       type="password"
-                      required
-                      value={password}
-                      onChange={(e) => setPassword(e.target.value)}
                       dir="ltr"
+                      {...registerSignIn("password")}
+                      error={signInErrors.password?.message}
                     />
-                    {error && <p className="text-red-400 text-sm">{error}</p>}
+                    {serverError && (
+                      <p className="text-red-400 text-sm">{serverError}</p>
+                    )}
                     <motion.button
-                      onClick={handleSignIn}
+                      type="submit"
                       disabled={isLoading}
                       className={`${primaryButtonClass} disabled:opacity-50`}
                       whileTap={{ scale: 0.95 }}
                     >
                       {isLoading ? "در حال ورود..." : "ورود"}
                     </motion.button>
-                  </div>
+                  </form>
                 </motion.div>
               ) : authType === "signup" ? (
                 <motion.div
@@ -187,33 +212,37 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
                   animate={{ opacity: 1 }}
                   exit={{ opacity: 0 }}
                 >
-                  <form onSubmit={handleSignUp} className="flex flex-col gap-4">
+                  <form
+                    onSubmit={handleSignUpSubmit(onSignUp)}
+                    className="flex flex-col gap-4"
+                  >
                     <Input
-                      name="fullName"
                       label="نام کامل"
                       type="text"
-                      required
+                      {...registerSignUp("fullName")}
+                      error={signUpErrors.fullName?.message}
                     />
                     <Input
-                      name="username"
                       label="نام کاربری"
                       type="text"
-                      required
+                      {...registerSignUp("username")}
+                      error={signUpErrors.username?.message}
                     />
                     <Input
-                      name="email"
                       label="ایمیل"
                       type="email"
-                      required
                       dir="ltr"
+                      {...registerSignUp("email")}
+                      error={signUpErrors.email?.message}
                     />
                     <Input
-                      name="password"
                       label="رمز عبور"
                       type="password"
-                      required
                       dir="ltr"
+                      {...registerSignUp("password")}
+                      error={signUpErrors.password?.message}
                     />
+                    <PasswordStrength password={passwordValue} />
                     <motion.button
                       type="submit"
                       disabled={isLoading}
@@ -238,7 +267,6 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
                     width={120}
                     height={120}
                     unoptimized
-                    className="rounded-full"
                   />
                   <h2 className="text-2xl font-bold">
                     ثبت‌نام موفقیت‌آمیز بود
@@ -261,7 +289,6 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
                     width={120}
                     height={120}
                     unoptimized
-                    className="rounded-lg"
                   />
                   <h2 className="text-2xl font-bold text-red-500">
                     اوه! مشکلی پیش آمد
@@ -294,9 +321,10 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
                 <div className="flex justify-center">
                   <button
                     onClick={() => signIn("google")}
-                    className={`p-3 border flex gap-1 items-center rounded-full transition-colors ${socialButtonClass}`}
+                    className={`p-3 border flex items-center gap-3 rounded-full transition-colors ${socialButtonClass}`}
                   >
-                    <GoogleIcon /> Google
+                    <GoogleIcon />
+                    <span className="font-semibold text-sm">Google</span>
                   </button>
                 </div>
               </>
