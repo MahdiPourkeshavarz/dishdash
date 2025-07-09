@@ -51,7 +51,7 @@ export function MapStyleSwitcher() {
   return (
     <div
       ref={switcherRef}
-      className="absolute top-1/3 -translate-y-1/2 right-4 z-[1001]"
+      className="absolute top-3/6 -translate-y-1/2 right-4 z-[1001]"
     >
       <div className="relative flex items-center">
         <AnimatePresence>

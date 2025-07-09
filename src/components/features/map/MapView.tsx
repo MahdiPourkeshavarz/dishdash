@@ -17,6 +17,7 @@ import { useEffect, useMemo, useState } from "react";
 import PostMarker from "../post/PostMarker";
 import { useMapStyle } from "@/store/useMapStyle";
 import { MapStyleSwitcher } from "./MapStyleSwticher";
+import { FindLocationButton } from "./FindLocationButton";
 
 delete (L.Icon.Default.prototype as any)._getIconUrl;
 L.Icon.Default.mergeOptions({
@@ -91,7 +92,12 @@ const MapView: React.FC<MapViewProps> = ({ center, user, onMarkerClick }) => {
         ))}
       </MapContainer>
 
-      {isMounted && <MapStyleSwitcher />}
+      {isMounted && (
+        <>
+          <MapStyleSwitcher />
+          <FindLocationButton />
+        </>
+      )}
     </div>
   );
 };
