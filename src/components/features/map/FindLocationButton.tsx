@@ -87,7 +87,7 @@ export function FindLocationButton() {
       >
         {status === "loading" && (
           <motion.div
-            className="absolute inset-0 border-4 border-blue-500 border-t-transparent rounded-full"
+            className="absolute inset-0 border-2 border-blue-500 border-t-transparent rounded-full"
             animate={{ rotate: 360 }}
             transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
           />
