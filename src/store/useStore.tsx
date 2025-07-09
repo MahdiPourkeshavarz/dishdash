@@ -68,7 +68,7 @@ export const useStore = create<Store>()(
           }
 
           const options: PositionOptions = {
-            enableHighAccuracy: true,
+            enableHighAccuracy: false,
             timeout: 10000,
             maximumAge: 30000,
           };

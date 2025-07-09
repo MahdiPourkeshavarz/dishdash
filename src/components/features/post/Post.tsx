@@ -3,8 +3,9 @@ import type { Post } from "@/types";
 import Image from "next/image";
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { ThumbsUp, ThumbsDown } from "lucide-react";
+import { ThumbsUp, ThumbsDown, Navigation } from "lucide-react";
 import ProfileCard from "../user/ProfileCard";
+import { DirectionsModal } from "../map/DirectionModal";
 
 const satisfactionStyles = {
   awesome: {
@@ -45,6 +46,8 @@ const PostCard: React.FC<PostCardProps> = ({ post }) => {
   const [vote, setVote] = useState<"like" | "dislike" | null>(null);
   const [likeCount, setLikeCount] = useState(132);
   const [dislikeCount, setDislikeCount] = useState(12);
+
+  const [isDirectionsModalOpen, setDirectionsModalOpen] = useState(false);
 
   const handleLike = () => {
     if (vote === "like") {
@@ -159,6 +162,13 @@ const PostCard: React.FC<PostCardProps> = ({ post }) => {
               </span>
             </button>
           </div>
+          <button
+            onClick={() => setDirectionsModalOpen(true)}
+            className={`p-2 rounded-full ...`}
+            title="Get Directions"
+          >
+            <Navigation size={20} />
+          </button>
         </div>
       </div>
 
@@ -225,6 +235,11 @@ const PostCard: React.FC<PostCardProps> = ({ post }) => {
           </div>
         )}
       </AnimatePresence>
+      <DirectionsModal
+        isOpen={isDirectionsModalOpen}
+        onClose={() => setDirectionsModalOpen(false)}
+        post={post}
+      />
     </div>
   );
 };
