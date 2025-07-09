@@ -5,7 +5,6 @@
 import { MapContainer, TileLayer } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 import L from "leaflet";
-import { Sun, Moon } from "lucide-react";
 
 import markerIcon2x from "leaflet/dist/images/marker-icon-2x.png";
 import markerIcon from "leaflet/dist/images/marker-icon.png";
@@ -17,6 +16,7 @@ import ChangeView from "./ChangeView";
 import { useEffect, useMemo, useState } from "react";
 import PostMarker from "../post/PostMarker";
 import { useMapStyle } from "@/store/useMapStyle";
+import { MapStyleSwitcher } from "./MapStyleSwticher";
 
 delete (L.Icon.Default.prototype as any)._getIconUrl;
 L.Icon.Default.mergeOptions({
@@ -33,7 +33,7 @@ interface MapViewProps {
 
 const MapView: React.FC<MapViewProps> = ({ center, user, onMarkerClick }) => {
   const defaultPosition: [number, number] = [35.6892, 51.389];
-  const { theme, toggleTheme, posts } = useStore();
+  const { theme, posts } = useStore();
 
   const zoomLevel = 15;
 
@@ -91,18 +91,7 @@ const MapView: React.FC<MapViewProps> = ({ center, user, onMarkerClick }) => {
         ))}
       </MapContainer>
 
-      {isMounted && (
-        <button
-          onClick={toggleTheme}
-          className="absolute bottom-22 md:bottom-4 lg:bottom-4 right-4 z-10 bg-blue/70 backdrop-blur-sm p-2 rounded-full shadow-lg hover:bg-white transition-colors"
-        >
-          {theme === "dark" ? (
-            <Sun className="w-12 h-12 text-blue-600" />
-          ) : (
-            <Moon className="w-12 h-12 text-blue-600" />
-          )}
-        </button>
-      )}
+      {isMounted && <MapStyleSwitcher />}
     </div>
   );
 };

@@ -16,6 +16,7 @@ import {
   SignUpData,
 } from "@/lib/authValidation";
 import { PasswordStrength } from "./PasswordStrength";
+import { X } from "lucide-react";
 
 const GoogleIcon = () => (
   <svg className="w-5 h-5" viewBox="0 0 48 48">
@@ -133,6 +134,17 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
             }`}
             dir="rtl"
           >
+            <button
+              onClick={onClose}
+              className={`absolute top-6 left-5 z-10 p-1 rounded-full border border-gray-400 transition-colors ${
+                theme === "dark"
+                  ? "text-gray-500 hover:text-white hover:bg-gray-700"
+                  : "text-gray-500 hover:text-black hover:bg-gray-200"
+              }`}
+              aria-label="Close"
+            >
+              <X size={24} />
+            </button>
             <div className="flex justify-center mb-4">
               <div
                 className={`w-12 h-1.5 rounded-full ${

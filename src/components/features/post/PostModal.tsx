@@ -104,7 +104,7 @@ export const PostModal: React.FC<PostModalProps> = ({
     <AnimatePresence>
       {isOpen && (
         <motion.div
-          className="fixed inset-0 z-[1000] pb-22 flex items-end justify-center bg-black/50"
+          className="fixed inset-0 z-[100000] pb-22 flex items-end justify-center bg-black/50"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
@@ -137,10 +137,10 @@ export const PostModal: React.FC<PostModalProps> = ({
               <X size={28} />
             </motion.button>
 
-            <div className="relative rounded-2xl">
+            <div className="relative rounded-3xl">
               <div className="absolute inset-0 bg-gemini-gradient rounded-2xl blur-lg opacity-75" />
               <div
-                className={`relative z-10 backdrop-blur-md rounded-2xl shadow-2xl overflow-hidden ${
+                className={`relative z-10 backdrop-blur-md rounded-3xl shadow-2xl overflow-hidden ${
                   theme === "dark"
                     ? "bg-gray-900/80 text-white"
                     : "bg-slate-100/90 text-gray-900"
@@ -219,7 +219,7 @@ export const PostModal: React.FC<PostModalProps> = ({
                     </form>
                   </motion.div>
                 )}
-                <div className="flex items-center gap-2 p-3">
+                <div className="flex items-center gap-2 p-3 py-6">
                   <label htmlFor="image-upload-gemini">
                     <input
                       id="image-upload-gemini"

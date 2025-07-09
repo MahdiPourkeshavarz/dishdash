@@ -26,6 +26,7 @@ interface StoreActions {
   fetchUserLocation: () => Promise<void>;
   addPost: (post: Post) => void;
   toggleProfileModal: () => void;
+  setTheme: (theme: "light" | "dark") => void;
 }
 
 type Store = StoreState & StoreActions;
@@ -47,6 +48,8 @@ export const useStore = create<Store>()(
         areaName: null,
         error: null,
       },
+
+      setTheme: (theme) => set({ theme }),
 
       toggleProfileModal: () =>
         set((state) => ({ isProfileModalOpen: !state.isProfileModalOpen })),
