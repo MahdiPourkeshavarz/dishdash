@@ -18,14 +18,15 @@ const ProfileCard: React.FC<ProfileCardProps> = ({ user, onClose }) => {
 
   return (
     <motion.div
-      ref={cardRef}
+      onClick={onClose}
       className="absolute inset-0 z-20 flex items-center justify-center bg-black/20 backdrop-blur-sm"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
     >
       <motion.div
-        className="flex flex-col items-center gap-2 p-2 rounded-2xl shadow-2xl bg-gray-700/80 border border-gray-500"
+        onClick={(e) => e.stopPropagation()}
+        className="flex flex-col items-center gap-3 p-4 rounded-2xl shadow-2xl bg-gray-700/80 border border-gray-500"
         initial={{ scale: 0.8, y: 20 }}
         animate={{ scale: 1, y: 0 }}
         exit={{ scale: 0.8, y: 20 }}

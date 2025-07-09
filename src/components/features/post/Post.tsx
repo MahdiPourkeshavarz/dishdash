@@ -3,6 +3,7 @@ import type { Post } from "@/types";
 import Image from "next/image";
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { ThumbsUp, ThumbsDown } from "lucide-react";
 import ProfileCard from "../user/ProfileCard";
 
 const satisfactionStyles = {
@@ -41,10 +42,36 @@ const PostCard: React.FC<PostCardProps> = ({ post }) => {
   const styles = satisfactionStyles[post.satisfaction];
   const [isProfileCardVisible, setProfileCardVisible] = useState(false);
 
+  const [vote, setVote] = useState<"like" | "dislike" | null>(null);
+  const [likeCount, setLikeCount] = useState(132);
+  const [dislikeCount, setDislikeCount] = useState(12);
+
+  const handleLike = () => {
+    if (vote === "like") {
+      setVote(null);
+      setLikeCount(likeCount - 1);
+    } else {
+      if (vote === "dislike") setDislikeCount(dislikeCount - 1);
+      setVote("like");
+      setLikeCount(likeCount + 1);
+    }
+  };
+
+  const handleDislike = () => {
+    if (vote === "dislike") {
+      setVote(null);
+      setDislikeCount(dislikeCount - 1);
+    } else {
+      if (vote === "like") setLikeCount(likeCount - 1);
+      setVote("dislike");
+      setDislikeCount(dislikeCount + 1);
+    }
+  };
+
   return (
     <div className="relative w-full max-w-xs pt-10">
       <div
-        className={`rounded-xl shadow-lg pt-20 pb-2 px-4 ${
+        className={`relative z-10 rounded-xl shadow-lg pt-20 pb-4 px-4 flex flex-col ${
           theme === "dark" ? styles.bgGradientDark : styles.bgGradientLight
         }`}
       >
@@ -58,7 +85,6 @@ const PostCard: React.FC<PostCardProps> = ({ post }) => {
               {post.user.username}
             </span>
           </div>
-
           <p
             className={`text-base font-bold leading-tight ${
               theme === "dark" ? "text-white" : "text-gray-900"
@@ -66,25 +92,77 @@ const PostCard: React.FC<PostCardProps> = ({ post }) => {
           >
             {post.description}
           </p>
-          <div className="flex justify-start pt-1">
-            <div
-              className={`flex items-center gap-2 px-3 py-1 rounded-full text-lg font-bold ${
-                theme === "dark" ? styles.badgeDark : styles.badge
-              }`}
+        </div>
+
+        <div className="flex-grow"></div>
+
+        <div className="flex justify-center items-center pt-3 mt-3 border-t border-white/10">
+          <div className="flex items-center gap-6">
+            <button
+              onClick={handleLike}
+              className="flex items-center gap-1.5 group"
             >
-              <Image
-                src={styles.emoji}
-                alt={post.satisfaction}
-                width={28}
-                height={28}
+              <ThumbsUp
+                size={18}
+                className={`transition-colors duration-200 ${
+                  vote === "like"
+                    ? theme === "dark"
+                      ? "text-blue-500 fill-blue-500/30"
+                      : "text-blue-600 fill-blue-600/20"
+                    : theme === "dark"
+                    ? "text-gray-400 group-hover:text-white"
+                    : "text-gray-500 group-hover:text-black"
+                }`}
               />
-              <span>{styles.text}</span>
-            </div>
+              <span
+                className={`text-sm font-mono transition-colors duration-200 ${
+                  vote === "like"
+                    ? theme === "dark"
+                      ? "text-blue-400"
+                      : "text-blue-600"
+                    : theme === "dark"
+                    ? "text-gray-400 group-hover:text-white"
+                    : "text-gray-500 group-hover:text-black"
+                }`}
+              >
+                {likeCount}
+              </span>
+            </button>
+            <button
+              onClick={handleDislike}
+              className="flex items-center gap-1.5 group"
+            >
+              <ThumbsDown
+                size={18}
+                className={`transition-colors duration-200 ${
+                  vote === "dislike"
+                    ? theme === "dark"
+                      ? "text-red-500 fill-red-500/30"
+                      : "text-red-600 fill-red-600/20"
+                    : theme === "dark"
+                    ? "text-gray-400 group-hover:text-white"
+                    : "text-gray-500 group-hover:text-black"
+                }`}
+              />
+              <span
+                className={`text-sm font-mono transition-colors duration-200 ${
+                  vote === "dislike"
+                    ? theme === "dark"
+                      ? "text-red-400"
+                      : "text-red-600"
+                    : theme === "dark"
+                    ? "text-gray-400 group-hover:text-white"
+                    : "text-gray-500 group-hover:text-black"
+                }`}
+              >
+                {dislikeCount}
+              </span>
+            </button>
           </div>
         </div>
       </div>
 
-      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-11/12 h-40 rounded-xl shadow-lg overflow-hidden">
+      <div className="absolute z-20 top-0 left-1/2 -translate-x-1/2 w-11/12 h-40 rounded-xl shadow-lg overflow-hidden">
         <Image
           src={post.imageUrl}
           alt={post.id}
@@ -110,14 +188,41 @@ const PostCard: React.FC<PostCardProps> = ({ post }) => {
             />
           </motion.button>
         </div>
+
+        <motion.div
+          className={`absolute bottom-0 left-1/2 -translate-x-1/2 ${
+            post.satisfaction === "awesome" ? "bottom-2.5" : ""
+          }`}
+          initial={{ y: 20, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          transition={{ type: "spring", delay: 0.2 }}
+        >
+          <Image
+            src={styles.emoji}
+            alt={post.satisfaction}
+            width={post.satisfaction === "awesome" ? 47 : 70}
+            height={47}
+            className="drop-shadow-lg"
+            style={{
+              width:
+                post.satisfaction === "good"
+                  ? 77
+                  : post.satisfaction === "awesome"
+                  ? 47
+                  : 67,
+            }}
+          />
+        </motion.div>
       </div>
 
       <AnimatePresence>
         {isProfileCardVisible && (
-          <ProfileCard
-            user={post.user}
-            onClose={() => setProfileCardVisible(false)}
-          />
+          <div className="absolute inset-0 z-30">
+            <ProfileCard
+              user={post.user}
+              onClose={() => setProfileCardVisible(false)}
+            />
+          </div>
         )}
       </AnimatePresence>
     </div>

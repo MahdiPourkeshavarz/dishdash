@@ -57,6 +57,7 @@ body {
   padding: 0 !important;
 }
 .custom-popup .leaflet-popup-close-button {
+  z-index: 40;
   top: 8px !important;
   right: unset !important;
   left: 38px !important;
