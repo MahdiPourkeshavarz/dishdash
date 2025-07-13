@@ -3,9 +3,14 @@ export interface Poi {
   lat: number;
   lon: number;
   tags: {
+    [key: string]: string | undefined;
     name?: string;
     amenity?: string;
     cuisine?: string;
+    phone?: string;
+    website?: string;
+    opening_hours?: string;
+    "addr:street"?: string;
   };
 }
 

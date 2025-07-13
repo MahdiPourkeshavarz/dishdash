@@ -2,7 +2,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
-import { MapContainer, Marker, Popup, TileLayer } from "react-leaflet";
+import { MapContainer, TileLayer } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 import L from "leaflet";
 
@@ -20,18 +20,13 @@ import { MapStyleSwitcher } from "./MapStyleSwticher";
 import { FindLocationButton } from "./FindLocationButton";
 import { Poi } from "@/services/osmService";
 import { PoiLoader } from "./PoiLoader";
+import { PlacesMarker } from "./PlacesMarker";
 
 delete (L.Icon.Default.prototype as any)._getIconUrl;
 L.Icon.Default.mergeOptions({
   iconUrl: markerIcon.src,
   iconRetinaUrl: markerIcon2x.src,
   shadowUrl: markerShadow.src,
-});
-
-const poiIcon = L.divIcon({
-  html: `<div class="w-2 h-2 bg-orange-400 rounded-full border border-white/50"></div>`,
-  className: "bg-transparent border-none",
-  iconSize: [8, 8],
 });
 
 interface MapViewProps {
@@ -90,23 +85,7 @@ const MapView: React.FC<MapViewProps> = ({ center, user, onMarkerClick }) => {
 
         <PoiLoader setPois={setPois} />
 
-        {pois.map((poi) => {
-          // We only render a marker if the place has a name
-          if (!poi.tags?.name) return null;
-
-          return (
-            <Marker key={poi.id} position={[poi.lat, poi.lon]} icon={poiIcon}>
-              <Popup>
-                <div className="p-1 text-center">
-                  <h3 className="font-bold text-gray-800">{poi.tags.name}</h3>
-                  <p className="text-sm text-gray-500 capitalize">
-                    {poi.tags.amenity}
-                  </p>
-                </div>
-              </Popup>
-            </Marker>
-          );
-        })}
+        {pois && <PlacesMarker pois={pois} />}
 
         {center && (
           <UserLocationMarker
