@@ -18,6 +18,9 @@ import PostMarker from "../post/PostMarker";
 import { useMapStyle } from "@/store/useMapStyle";
 import { MapStyleSwitcher } from "./MapStyleSwticher";
 import { FindLocationButton } from "./FindLocationButton";
+import { Poi } from "@/services/osmService";
+import { PoiLoader } from "./PoiLoader";
+import { PlacesMarker } from "./PlacesMarker";
 
 delete (L.Icon.Default.prototype as any)._getIconUrl;
 L.Icon.Default.mergeOptions({
@@ -35,6 +38,7 @@ interface MapViewProps {
 const MapView: React.FC<MapViewProps> = ({ center, user, onMarkerClick }) => {
   const defaultPosition: [number, number] = [35.6892, 51.389];
   const { theme, posts } = useStore();
+  const [pois, setPois] = useState<Poi[]>([]);
 
   const zoomLevel = 15;
 
@@ -78,6 +82,10 @@ const MapView: React.FC<MapViewProps> = ({ center, user, onMarkerClick }) => {
           }
         />
         <ChangeView center={mapCenter} zoom={zoomLevel} />
+
+        <PoiLoader setPois={setPois} />
+
+        {pois && <PlacesMarker pois={pois} />}
 
         {center && (
           <UserLocationMarker

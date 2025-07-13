@@ -81,3 +81,18 @@ body {
 .custom-popup .leaflet-popup-close-button span {
   line-height: 24px !important;
 }
+
+.custom-popupp .leaflet-popup-content-wrapper {
+  background: transparent;
+  box-shadow: none;
+  padding: 0;
+  border: none;
+}
+
+.custom-popupp .leaflet-popup-content {
+  margin: 0 !important;
+}
+
+.custom-popupp .leaflet-popup-tip-container {
+  display: none;
+}

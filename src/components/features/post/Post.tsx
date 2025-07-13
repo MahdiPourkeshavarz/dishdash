@@ -5,6 +5,7 @@ import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ThumbsUp, ThumbsDown } from "lucide-react";
 import ProfileCard from "../user/ProfileCard";
+import { DirectionsPill } from "./DirectionPill";
 
 const satisfactionStyles = {
   awesome: {
@@ -20,16 +21,16 @@ const satisfactionStyles = {
     badgeDark: "bg-green-900/50 text-green-300",
     text: "Good",
     emoji: "/good.png",
-    bgGradientLight: "bg-gradient-to-t from-green-400/60 to-gray-50",
-    bgGradientDark: "bg-gradient-to-t from-green-500/40 to-gray-800",
+    bgGradientLight: "bg-gradient-to-t from-green-400/70 to-gray-50",
+    bgGradientDark: "bg-gradient-to-t from-green-500/50 to-gray-800",
   },
   bad: {
     badge: "bg-red-100 text-red-800",
     badgeDark: "bg-red-900/50 text-red-300",
     text: "Bad",
     emoji: "/bad.png",
-    bgGradientLight: "bg-gradient-to-t from-red-400/60 to-gray-50",
-    bgGradientDark: "bg-gradient-to-t from-red-500/40 to-gray-800",
+    bgGradientLight: "bg-gradient-to-t from-red-400/70 to-gray-50",
+    bgGradientDark: "bg-gradient-to-t from-red-500/50 to-gray-800",
   },
 };
 
@@ -41,6 +42,7 @@ const PostCard: React.FC<PostCardProps> = ({ post }) => {
   const { theme } = useStore();
   const styles = satisfactionStyles[post.satisfaction];
   const [isProfileCardVisible, setProfileCardVisible] = useState(false);
+  const [isDirectionsPillOpen, setDirectionsPillOpen] = useState(false);
 
   const [vote, setVote] = useState<"like" | "dislike" | null>(null);
   const [likeCount, setLikeCount] = useState(132);
@@ -68,8 +70,14 @@ const PostCard: React.FC<PostCardProps> = ({ post }) => {
     }
   };
 
+  const handleCardClick = () => {
+    if (isDirectionsPillOpen) {
+      setDirectionsPillOpen(false);
+    }
+  };
+
   return (
-    <div className="relative w-full max-w-xs pt-10">
+    <div className="relative w-full max-w-xs pt-10" onClick={handleCardClick}>
       <div
         className={`relative z-10 rounded-xl shadow-lg pt-20 pb-4 px-4 flex flex-col ${
           theme === "dark" ? styles.bgGradientDark : styles.bgGradientLight
@@ -96,8 +104,12 @@ const PostCard: React.FC<PostCardProps> = ({ post }) => {
 
         <div className="flex-grow"></div>
 
-        <div className="flex justify-center items-center pt-3 mt-3 border-t border-white/10">
-          <div className="flex items-center gap-6">
+        <motion.div
+          className="flex justify-center items-center pt-3 mt-3 border-t border-white/10"
+          layout
+          transition={{ duration: 0.3, ease: "easeOut" }}
+        >
+          <div className="flex items-center gap-4">
             <button
               onClick={handleLike}
               className="flex items-center gap-1.5 group"
@@ -159,7 +171,18 @@ const PostCard: React.FC<PostCardProps> = ({ post }) => {
               </span>
             </button>
           </div>
-        </div>
+          <motion.div
+            className="pr-2.5"
+            layout
+            transition={{ duration: 0.3, ease: "easeOut" }}
+          >
+            <DirectionsPill
+              post={post}
+              isOpen={isDirectionsPillOpen}
+              setIsOpen={setDirectionsPillOpen}
+            />
+          </motion.div>
+        </motion.div>
       </div>
 
       <div className="absolute z-20 top-0 left-1/2 -translate-x-1/2 w-11/12 h-40 rounded-xl shadow-lg overflow-hidden">
