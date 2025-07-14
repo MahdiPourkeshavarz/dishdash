@@ -1,24 +1,38 @@
-import { MapPin } from "lucide-react";
+"use client";
+
+import Lottie from "lottie-react";
+import loader from "../../../../public/loader.json";
+import { useStore } from "@/store/useStore";
 
 export function MapLoader() {
-  return (
-    <div className="flex h-full w-full flex-col items-center justify-center bg-slate-50">
-      <div className="relative flex items-center justify-center">
-        <div className="absolute h-16 w-16 rounded-full bg-brand-primary/30 animate-ping"></div>
+  const { theme } = useStore();
 
-        <div className="relative flex h-12 w-12 items-center justify-center rounded-full bg-brand-primary">
-          <MapPin className="h-6 w-6 text-black" />
+  return (
+    <div
+      className={`flex h-full w-full flex-col items-center justify-center transition-colors
+      ${theme === "dark" ? "bg-gray-900" : "bg-gray-100"}
+    `}
+    >
+      <div
+        className={`w-full max-w-sm p-8 flex flex-col items-center justify-center rounded-2xl
+        ${theme === "dark" ? "bg-black/20" : "bg-white/30"}
+        backdrop-blur-lg border ${
+          theme === "dark" ? "border-white/10" : "border-black/10"
+        }
+      `}
+      >
+        <div className="w-48 h-48">
+          <Lottie animationData={loader} loop={true} />
         </div>
+
+        <p
+          className={`mt-4 text-lg font-semibold ${
+            theme === "dark" ? "text-slate-300" : "text-slate-700"
+          }`}
+        >
+          در حال بارگذاری نقشه...
+        </p>
       </div>
-      <p className="mt-4 text-lg font-semibold text-slate-600">
-        Loading Map...
-      </p>
-      {/* <Image
-        src={"/dots-loading.git"}
-        alt="Map is Loading ..."
-        width={80}
-        height={80}
-      /> */}
     </div>
   );
 }
