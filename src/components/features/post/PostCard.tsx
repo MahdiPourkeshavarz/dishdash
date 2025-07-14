@@ -77,22 +77,13 @@ const PostCard: React.FC<PostCardProps> = ({ post }) => {
   };
 
   return (
-    <div className="relative w-full max-w-xs pt-10" onClick={handleCardClick}>
+    <div className="relative w-full max-w-sm pt-7" onClick={handleCardClick}>
       <div
-        className={`relative z-10 rounded-xl shadow-lg pt-20 pb-4 px-4 flex flex-col ${
+        className={`relative z-10 rounded-xl shadow-lg pt-20 pb-2 px-4 flex flex-col ${
           theme === "dark" ? styles.bgGradientDark : styles.bgGradientLight
         }`}
       >
-        <div className="flex flex-col gap-2 text-right">
-          <div className="flex items-center gap-2 justify-end">
-            <span
-              className={`text-sm font-semibold ${
-                theme === "dark" ? "text-gray-300" : "text-gray-700"
-              }`}
-            >
-              {post.user.username}
-            </span>
-          </div>
+        <div className="flex flex-col mt-8 pt-5 text-right">
           <p
             className={`text-base font-bold leading-tight ${
               theme === "dark" ? "text-white" : "text-gray-900"
@@ -105,7 +96,7 @@ const PostCard: React.FC<PostCardProps> = ({ post }) => {
         <div className="flex-grow"></div>
 
         <motion.div
-          className="flex justify-center items-center pt-3 mt-3 border-t border-white/10"
+          className="flex justify-center items-center pt-1 mt-3 border-t border-white/10"
           layout
           transition={{ duration: 0.3, ease: "easeOut" }}
         >

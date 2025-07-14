@@ -2,7 +2,7 @@ import { Post } from "@/types";
 import { useState } from "react";
 import { ArrowLeft, ArrowRight } from "lucide-react";
 import { motion, AnimatePresence, PanInfo } from "framer-motion";
-import PostCard from "./Post";
+import PostCard from "./PostCard";
 
 interface PostCarouselProps {
   posts: Post[];
@@ -25,7 +25,7 @@ const variants = {
   }),
 };
 
-// ✅ Defines how far the user needs to swipe to trigger a page change.
+// Defines how far the user needs to swipe to trigger a page change.
 const swipeConfidenceThreshold = 10000;
 
 const PostCarousel: React.FC<PostCarouselProps> = ({ posts }) => {
@@ -43,7 +43,7 @@ const PostCarousel: React.FC<PostCarouselProps> = ({ posts }) => {
     }
   };
 
-  // ✅ This function will be triggered when the user finishes a swipe gesture.
+  // This function will be triggered when the user finishes a swipe gesture.
   const handleDragEnd = (
     e: MouseEvent | TouchEvent | PointerEvent,
     { offset, velocity }: PanInfo
@@ -58,7 +58,7 @@ const PostCarousel: React.FC<PostCarouselProps> = ({ posts }) => {
   };
 
   return (
-    <div>
+    <div className="w-full max-w-md mx-auto">
       <AnimatePresence initial={false} custom={direction} mode="wait">
         <motion.div
           key={page}
@@ -71,11 +71,11 @@ const PostCarousel: React.FC<PostCarouselProps> = ({ posts }) => {
             x: { type: "spring", stiffness: 300, damping: 30 },
             opacity: { duration: 0.2 },
           }}
-          // ✅ These props enable horizontal dragging (swiping)
           drag="x"
           dragConstraints={{ left: 0, right: 0 }}
           dragElastic={1}
           onDragEnd={handleDragEnd}
+          className="flex justify-center"
         >
           <PostCard post={posts[page]} />
         </motion.div>
@@ -86,6 +86,7 @@ const PostCarousel: React.FC<PostCarouselProps> = ({ posts }) => {
           <button
             onClick={() => paginate(-1)}
             className="hidden md:block bg-gray-700/50 text-white p-2 rounded-full hover:bg-gray-600"
+            aria-label="Previous post"
           >
             <ArrowLeft size={16} />
           </button>
@@ -97,6 +98,7 @@ const PostCarousel: React.FC<PostCarouselProps> = ({ posts }) => {
           <button
             onClick={() => paginate(1)}
             className="hidden md:block bg-gray-700/50 text-white p-2 rounded-full hover:bg-gray-600"
+            aria-label="Next post"
           >
             <ArrowRight size={16} />
           </button>

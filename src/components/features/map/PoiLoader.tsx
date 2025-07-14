@@ -17,7 +17,7 @@ export const PoiLoader: React.FC<PoiLoaderProps> = ({ setPois }) => {
       if (isLoading) return;
 
       // We only fetch POIs if the zoom level is close enough
-      if (map.getZoom() < 14) {
+      if (map.getZoom() < 16) {
         setPois([]); // Clear POIs if zoomed out too far
         return;
       }

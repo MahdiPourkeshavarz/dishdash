@@ -21,6 +21,8 @@ import { FindLocationButton } from "./FindLocationButton";
 import { Poi } from "@/services/osmService";
 import { PoiLoader } from "./PoiLoader";
 import { PlacesMarker } from "./PlacesMarker";
+import { PostCarouselOverlay } from "./PostCarouselOverlay";
+import { LocationDetailCard } from "./LocationDetailCard";
 
 delete (L.Icon.Default.prototype as any)._getIconUrl;
 L.Icon.Default.mergeOptions({
@@ -39,6 +41,7 @@ const MapView: React.FC<MapViewProps> = ({ center, user, onMarkerClick }) => {
   const defaultPosition: [number, number] = [35.6892, 51.389];
   const { theme, posts } = useStore();
   const [pois, setPois] = useState<Poi[]>([]);
+  const [selectedPoi, setSelectedPoi] = useState<Poi | null>(null);
 
   const zoomLevel = 15;
 
@@ -62,6 +65,14 @@ const MapView: React.FC<MapViewProps> = ({ center, user, onMarkerClick }) => {
     return Object.values(groups);
   }, [posts]);
 
+  const handlePoiSelect = (poi: Poi) => {
+    setSelectedPoi(poi);
+  };
+
+  const handleCloseDetail = () => {
+    setSelectedPoi(null);
+  };
+
   const mapCenter = center || defaultPosition;
 
   return (
@@ -69,7 +80,8 @@ const MapView: React.FC<MapViewProps> = ({ center, user, onMarkerClick }) => {
       <MapContainer
         center={mapCenter}
         zoom={zoomLevel}
-        scrollWheelZoom={true}
+        scrollWheelZoom={!selectedPoi}
+        dragging={!selectedPoi}
         className="w-full h-full !z-0"
         zoomControl={false}
       >
@@ -85,7 +97,7 @@ const MapView: React.FC<MapViewProps> = ({ center, user, onMarkerClick }) => {
 
         <PoiLoader setPois={setPois} />
 
-        {pois && <PlacesMarker pois={pois} />}
+        <PlacesMarker pois={pois} onPoiClick={handlePoiSelect} />
 
         {center && (
           <UserLocationMarker
@@ -99,6 +111,16 @@ const MapView: React.FC<MapViewProps> = ({ center, user, onMarkerClick }) => {
           <PostMarker key={postGroup[0].id} posts={postGroup} theme={theme} />
         ))}
       </MapContainer>
+
+      <PostCarouselOverlay poi={selectedPoi} posts={posts} />
+      <LocationDetailCard
+        poi={selectedPoi}
+        onClose={handleCloseDetail}
+        onAddPost={() => {
+          handleCloseDetail(); // Close the detail card first
+          onMarkerClick(); // Then open the PostModal
+        }}
+      />
 
       {isMounted && (
         <>

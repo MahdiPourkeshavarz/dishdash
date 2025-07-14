@@ -16,6 +16,7 @@ interface StoreState {
   location: LocationState;
   posts: Post[];
   isProfileModalOpen: boolean;
+  postTargetLocation: [number, number] | null;
 }
 
 interface StoreActions {
@@ -27,6 +28,7 @@ interface StoreActions {
   addPost: (post: Post) => void;
   toggleProfileModal: () => void;
   setTheme: (theme: "light" | "dark") => void;
+  setPostTargetLocation: (coords: [number, number] | null) => void;
 }
 
 type Store = StoreState & StoreActions;
@@ -43,6 +45,7 @@ export const useStore = create<Store>()(
       accessToken: null,
       posts: initialState,
       isProfileModalOpen: false,
+      postTargetLocation: null,
       location: {
         coords: null,
         areaName: null,
@@ -129,6 +132,8 @@ export const useStore = create<Store>()(
           );
         });
       },
+
+      setPostTargetLocation: (coords) => set({ postTargetLocation: coords }),
 
       addPost: (newPost) =>
         set((state) => ({

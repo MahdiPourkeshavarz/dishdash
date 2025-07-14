@@ -34,7 +34,13 @@ export const PostModal: React.FC<PostModalProps> = ({
   const [description, setDescription] = useState("");
   const [satisfaction, setSatisfaction] = useState<Satisfaction>("");
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const { location, addPost, theme } = useStore();
+  const {
+    location: userLocation,
+    addPost,
+    theme,
+    postTargetLocation,
+    setPostTargetLocation,
+  } = useStore();
 
   const satisfactionOptions = [
     {
@@ -55,7 +61,6 @@ export const PostModal: React.FC<PostModalProps> = ({
   ];
 
   const resetForm = () => {
-    // Delay resetting the view to allow the exit animation to complete smoothly
     setTimeout(() => setView("initial"), 300);
     setImageFile(null);
     setImagePreview(null);
@@ -64,6 +69,7 @@ export const PostModal: React.FC<PostModalProps> = ({
   };
 
   const handleClose = () => {
+    setPostTargetLocation(null);
     resetForm();
     onClose();
   };
@@ -82,8 +88,9 @@ export const PostModal: React.FC<PostModalProps> = ({
   };
 
   const handleSubmit = (e: React.FormEvent) => {
+    const positionToUse = postTargetLocation || userLocation.coords;
     e.preventDefault();
-    if (!user || !location.coords) return;
+    if (!user || !positionToUse) return;
     if (!imageFile || !description || !satisfaction) {
       alert("Please complete all fields.");
       return;
@@ -94,7 +101,7 @@ export const PostModal: React.FC<PostModalProps> = ({
       description,
       satisfaction,
       imageUrl: "/food.webp",
-      position: location.coords,
+      position: positionToUse,
     };
     addPost(newPost);
     handleClose();
@@ -181,7 +188,7 @@ export const PostModal: React.FC<PostModalProps> = ({
                           }`}
                         >
                           <MapPin size={16} />
-                          <span>{location.areaName || "Location"}</span>
+                          <span>{userLocation.areaName || "Location"}</span>
                         </div>
                         <div className="flex items-center gap-3">
                           {satisfactionOptions.map((option) => {
