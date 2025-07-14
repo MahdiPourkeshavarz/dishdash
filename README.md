@@ -1,154 +1,142 @@
-DishDash 🍔🗺️
-DishDash is a modern, map-based web application for discovering and sharing food experiences at any location. Built with a full suite of modern technologies including Next.js, TypeScript, and Zustand, it features a highly interactive and beautifully designed user interface.
+# DishDash 🍔🗺️
 
-Users can sign in via Google or credentials, see their real-time location, explore nearby restaurants and cafes, get directions, and post their own food experiences with a satisfaction rating.
+**DishDash** is a modern, map-based web application for discovering and sharing food experiences at any location. Built with Next.js and TypeScript, it features a highly interactive and beautifully designed user interface, inspired by modern design principles.
 
-(A placeholder image showing the main map view with themed tiles, custom-colored user post markers, a live places layer, and the interactive UI elements.)
+Users can sign in, see their real-time location, explore nearby restaurants and cafes fetched live from OpenStreetMap, get directions using their preferred map application, and create visually rich posts about their own experiences.
 
-✨ Features
-Full Authentication System: Powered by NextAuth.js, supporting both traditional credentials (email/password) and Google OAuth.
+---
 
-Advanced Auth UI: A sleek, theme-aware, bottom-sheet modal for Sign In & Sign Up, with integrated validation.
+## ✨ Features
 
-Interactive Map View: A fast and fluid map experience using Leaflet with custom map tiles from a centralized Map Style Provider.
+- **Full Authentication System**: Powered by **NextAuth.js**, supporting both traditional credentials (email/password) and **Google OAuth** for secure sign-in.
+- **Advanced Auth UI**: A sleek, theme-aware, "bottom-sheet" style modal for Sign In & Sign Up, with integrated validation and success/error states.
+- **Interactive Map View**: A fast and fluid map experience powered by **Leaflet** and React-Leaflet, with map styles managed by a clean Provider pattern.
+- **Live Places (POI) Layer**: Automatically fetches and displays nearby points of interest (restaurants, cafes) from **OpenStreetMap** via the Overpass API as the user pans and zooms.
+- **Custom Map Markers**:
+  - **User Posts**: Display a unique emoji icon directly on the map based on the post's satisfaction rating. Stacks of posts are represented by a colored pin with a count.
+  - **Places**: Show custom icons for different POI types (e.g., restaurant vs. cafe).
+- **Multi-App Directions**: Users can get directions to any post via an expanding "pill" UI, with the choice of opening in Google Maps or Neshan.
+- **Global Light & Dark Theme**: A persistent, themeable interface managed with **Zustand**. It automatically detects the user's system preference on their first visit.
+- **Engaging UI/UX**:
+  - **Post Carousel**: An interactive, animated carousel to browse stacked posts, with swipe gestures on mobile.
+  - **Profile Management**: A pop-up modal for logged-in users to update their profile picture and password through a tabbed interface.
+  - **Advanced Animations**: Smooth, fluid animations throughout the app powered by **Framer Motion**, including "halo" effects, layout animations, and a Lottie-powered map loader.
+- **Robust Form Validation**: Client-side validation using **Zod** and **`react-hook-form`**, featuring an interactive password strength checker during sign-up.
 
-Live Places (POI) Layer: Automatically fetches and displays nearby points of interest (like restaurants and cafes) from OpenStreetMap as the user pans and zooms the map.
+---
 
-Multi-App Directions: Users can get directions to any post from their current location, with a choice of opening in Google Maps, Waze, Neshan, or Balad.
+## 🛠️ Tech Stack
 
-Global Light & Dark Theme: A persistent, theme-aware interface managed with Zustand, which automatically detects the user's system preference on their first visit.
+- **Framework**: [Next.js](https://nextjs.org/) 14+ (App Router)
+- **Language**: [TypeScript](https://www.typescriptlang.org/)
+- **Authentication**: [NextAuth.js](https://next-auth.js.org/)
+- **State Management**: [Zustand](https://github.com/pmndrs/zustand)
+- **Styling**: [Tailwind CSS](https://tailwindcss.com/)
+- **Mapping**: [Leaflet](https://leafletjs.com/) & [React-Leaflet](https://react-leaflet.js.org/)
+- **Animation**: [Framer Motion](https://www.framer.com/motion/) & [Lottie](https://lottiefiles.com/)
+- **Validation**: [Zod](https://zod.dev/) & [React Hook Form](https://react-hook-form.com/)
+- **Icons**: [Lucide React](https://lucide.dev/)
 
-Dynamic & Themed Map Markers:
+---
 
-Single Posts: Display a unique, high-quality emoji icon directly on the map based on the post's satisfaction.
+## 🚀 Getting Started
 
-Stacked Posts: Multiple posts at one location are automatically grouped into a single, color-coded pin that displays a post count.
-
-Engaging UI/UX:
-
-Post Carousel: An interactive, animated carousel to browse stacked posts, with swipe gestures on mobile.
-
-Profile Management: A pop-up modal for logged-in users to update their profile picture and password.
-
-Creative Animations: Smooth, fluid animations throughout the app, powered by Framer Motion, including "halo" effects and morphing UI elements.
-
-Robust Form Validation: Client-side validation using Zod and react-hook-form, featuring an interactive password strength checker during sign-up.
-
-🛠️ Tech Stack
-Framework: Next.js 14+ (App Router)
-
-Language: TypeScript
-
-Authentication: NextAuth.js
-
-State Management: Zustand
-
-Styling: Tailwind CSS
-
-Mapping: Leaflet & React-Leaflet
-
-Animation: Framer Motion & Lottie
-
-Validation: Zod & React Hook Form
-
-Icons: Lucide React
-
-🚀 Getting Started
 Follow these instructions to get a local copy up and running.
 
-1. Prerequisites
-   Node.js (v18 or later)
+### 1\. Prerequisites
 
-An NPM package manager (npm, yarn, or pnpm)
+- Node.js (v18 or later)
+- An NPM package manager (npm, yarn, or pnpm)
 
-2. Initial Setup
-   Clone the repository:
+### 2\. Initial Setup
 
-Bash
+1.  **Clone the repository:**
+    ```bash
+    git clone https://github.com/MahdiPourkeshavarz/dishdash.git
+    cd dishdash
+    ```
+2.  **Install dependencies:**
+    ```bash
+    npm install
+    ```
 
-git clone https://github.com/your-username/dishdash.git
-cd dishdash
-Install dependencies:
+### 3\. Environment Variables
 
-Bash
+Authentication requires API keys. Create a file named `.env.local` in the root of your project and add the following variables.
 
-npm install 3. Environment Variables
-Authentication requires API keys. Create a file named .env.local in the root of your project and add the following variables.
-
-Code snippet
-
+```env
 # .env.local
 
 # This MUST match the URL you are using for development.
-
 # Use https for geolocation and OAuth to work correctly.
-
 NEXTAUTH_URL=https://localhost:3000
 
 # A secret key for encrypting session tokens.
-
 # Generate a strong secret by running `openssl rand -base64 32` in your terminal.
-
 NEXTAUTH_SECRET=your-super-secret-key-goes-here
 
 # Get these from the Google Cloud Console for Google Sign-In
-
 GOOGLE_CLIENT_ID=your-google-client-id-goes-here
-GOOGLE_CLIENT_SECRET=your-google-client-secret-goes-here 4. Local HTTPS & Running the App
+GOOGLE_CLIENT_SECRET=your-google-client-secret-goes-here
+```
+
+### 4\. Local HTTPS & Running the App
+
 The Geolocation API and Google OAuth require a secure (HTTPS) environment.
 
-Set up mkcert (if you haven't already) to create a trusted local certificate.
+1.  **Set up `mkcert`** (if you haven't already) to create a trusted local certificate.
+2.  **Run the development server** with the pre-configured HTTPS script:
+    ```bash
+    npm run dev
+    ```
+3.  The application will be available at **`https://localhost:3000`**.
 
-Run the development server with the pre-configured HTTPS script:
+---
 
-Bash
+## 📁 Project Structure
 
-npm run dev
-The application will be available at https://localhost:3000.
+This project uses a feature-colocated structure inside the `src` directory.
 
-5. (Optional) Testing on Mobile
-   To test on your phone, Google OAuth requires a public URL. The best way to do this is with ngrok.
-
-Install and configure ngrok.
-
-Start a tunnel to your secure local server: ngrok http https://localhost:3000
-
-Update your NEXTAUTH_URL in .env.local and your Redirect URI in the Google Cloud Console with the public ngrok URL provided.
-
-Restart your server and access the app via the ngrok URL on your phone.
-
-📁 Project Structure
-/src
+```
+src/
 ├── app/
-│ ├── (main)/ # Main page layout and content
-│ ├── api/auth/[...nextauth]/ # The NextAuth.js API route handler
-│ ├── layout.tsx # Root layout
-│ └── providers.tsx # Client-side context providers
+│   ├── (main)/
+│   │   ├── layout.tsx
+│   │   └── page.tsx
+│   ├── api/auth/[...nextauth]/
+│   │   └── route.ts
+│   ├── fonts/
+│   ├── layout.tsx
+│   └── providers.tsx
 ├── components/
-│ ├── features/
-│ │ ├── auth/ # AuthModal, Input, PasswordStrength
-│ │ ├── map/ # MapView, POI components, etc.
-│ │ ├── post/ # PostCard, PostCarousel, DirectionsPill
-│ │ └── user/ # ProfileModal
-│ └── layout/
-│ └── Navbar.tsx
+│   ├── features/
+│   │   ├── auth/
+│   │   ├── map/
+│   │   ├── post/
+│   │   └── user/
+│   └── layout/
+│       └── Navbar.tsx
 ├── hooks/
-│ ├── useClickOutside.ts
-│ └── useVirtualKeyboard.ts
+│   ├── useClickOutside.ts
+│   └── useVirtualKeyboard.ts
 ├── lib/
-│ ├── authOptions.ts # NextAuth.js configuration
-│ ├── fonts.ts # Custom font definitions
-│ └── validations/
-│ └── auth.ts # Zod validation schemas
+│   ├── authOptions.ts
+│   ├── fonts.ts
+│   └── validations/
+│       └── auth.ts
 ├── services/
-│ └── osmService.ts # Logic for fetching data from Overpass API
+│   └── osmService.ts
 └── store/
-└── useStore.ts # Global Zustand store
-└── useMapStyle.ts
+    └── useStore.ts
+    └── useMapStyle.ts
+```
 
-🌱 Future Improvements
-Implement Backend: Connect the Sign Up and Post Creation forms to a real backend API and database (e.g., PostgreSQL with Prisma).
+---
 
-Cloud Image Storage: Integrate a service like AWS S3 or Cloudinary for user profile and post image uploads.
+## 🌱 Future Improvements
 
-Notifications: Add real-time notifications for likes or other interactions.
+- **Implement Backend**: Connect the Sign Up and Post Creation forms to a real backend API and database (e.g., PostgreSQL with Prisma).
+- **Cloud Image Storage**: Integrate a service like AWS S3 or Cloudinary for user profile and post image uploads.
+- **Notifications**: Add real-time notifications for likes or other interactions.
+- **Advanced Search**: Implement a search bar to find places or posts by name or category on the map.
+- **Offline Capabilities**: Use a service worker to provide a basic offline experience.
