@@ -17,7 +17,6 @@ export const LocationDetailCard: React.FC<LocationDetailCardProps> = ({
   onAddPost,
 }) => {
   const { theme, setPostTargetLocation } = useStore();
-  const isFarsi = (text: string) => /[\u0600-\u06FF]/.test(text);
 
   return (
     <AnimatePresence>
@@ -46,12 +45,7 @@ export const LocationDetailCard: React.FC<LocationDetailCardProps> = ({
               <X size={18} />
             </button>
 
-            <h3
-              className={`font-bold text-xl mb-2 pr-6 ${
-                isFarsi(poi.tags.name ?? "") ? "text-right" : "text-left"
-              }`}
-              dir={isFarsi(poi.tags.name ?? "") ? "rtl" : "ltr"}
-            >
+            <h3 className={`font-bold text-xl mb-2 pr-6 text-center`}>
               {poi.tags.name}
             </h3>
 

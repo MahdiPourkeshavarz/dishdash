@@ -13,7 +13,7 @@ import { useStore } from "@/store/useStore";
 import { Post, User } from "@/types";
 import UserLocationMarker from "./UserLocationMarker";
 import ChangeView from "./ChangeView";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import PostMarker from "../post/PostMarker";
 import { useMapStyle } from "@/store/useMapStyle";
 import { MapStyleSwitcher } from "./MapStyleSwticher";
@@ -21,8 +21,10 @@ import { FindLocationButton } from "./FindLocationButton";
 import { Poi } from "@/services/osmService";
 import { PoiLoader } from "./PoiLoader";
 import { PlacesMarker } from "./PlacesMarker";
-import { PostCarouselOverlay } from "./PostCarouselOverlay";
 import { LocationDetailCard } from "./LocationDetailCard";
+import { useClickOutside } from "@/hooks/useClickOutside";
+import { motion, AnimatePresence } from "framer-motion";
+import { PostCarouselOverlay } from "./PostCarouselOverlay";
 
 delete (L.Icon.Default.prototype as any)._getIconUrl;
 L.Icon.Default.mergeOptions({
@@ -43,6 +45,7 @@ const MapView: React.FC<MapViewProps> = ({ center, user, onMarkerClick }) => {
   const [pois, setPois] = useState<Poi[]>([]);
   const [selectedPoi, setSelectedPoi] = useState<Poi | null>(null);
 
+  const locationCardRef = useRef<HTMLDivElement>(null);
   const zoomLevel = 15;
 
   const [isMounted, setIsMounted] = useState(false);
@@ -72,6 +75,10 @@ const MapView: React.FC<MapViewProps> = ({ center, user, onMarkerClick }) => {
   const handleCloseDetail = () => {
     setSelectedPoi(null);
   };
+
+  useClickOutside(locationCardRef, () => {
+    if (selectedPoi) handleCloseDetail();
+  });
 
   const mapCenter = center || defaultPosition;
 
@@ -112,15 +119,28 @@ const MapView: React.FC<MapViewProps> = ({ center, user, onMarkerClick }) => {
         ))}
       </MapContainer>
 
-      <PostCarouselOverlay poi={selectedPoi} posts={posts} />
-      <LocationDetailCard
-        poi={selectedPoi}
-        onClose={handleCloseDetail}
-        onAddPost={() => {
-          handleCloseDetail(); // Close the detail card first
-          onMarkerClick(); // Then open the PostModal
-        }}
-      />
+      <AnimatePresence>
+        {selectedPoi && (
+          <motion.div
+            key="location-detail"
+            ref={locationCardRef}
+            initial={{ y: 30, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            exit={{ y: 30, opacity: 0 }}
+            transition={{ duration: 0.25, ease: "easeOut" }}
+          >
+            <PostCarouselOverlay poi={selectedPoi} posts={posts} />
+            <LocationDetailCard
+              poi={selectedPoi}
+              onClose={handleCloseDetail}
+              onAddPost={() => {
+                handleCloseDetail();
+                onMarkerClick();
+              }}
+            />
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {isMounted && (
         <>

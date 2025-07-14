@@ -78,14 +78,15 @@ const PostCard: React.FC<PostCardProps> = ({ post }) => {
 
   return (
     <div className="relative w-full max-w-sm pt-7" onClick={handleCardClick}>
+      <div className="h-21" aria-hidden />
       <div
-        className={`relative z-10 rounded-xl shadow-lg pt-20 pb-2 px-4 flex flex-col ${
+        className={`relative z-10 rounded-xl shadow-lg pb-2 px-4 flex flex-col ${
           theme === "dark" ? styles.bgGradientDark : styles.bgGradientLight
         }`}
       >
-        <div className="flex flex-col mt-8 pt-5 text-right">
+        <div className="flex flex-col mt-8 pt-6 text-right">
           <p
-            className={`text-base font-bold leading-tight ${
+            className={`text-base font-bold leading-tight break-words overflow-hidden ${
               theme === "dark" ? "text-white" : "text-gray-900"
             }`}
           >
