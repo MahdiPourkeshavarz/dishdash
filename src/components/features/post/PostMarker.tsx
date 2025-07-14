@@ -54,7 +54,7 @@ const PostMarker: React.FC<PostMarkerProps> = ({ posts, theme }) => {
 
     customIcon = L.icon({
       iconUrl: iconUrl,
-      iconSize: [40, 40],
+      iconSize: [31, 31],
       className: "drop-shadow-lg",
       iconAnchor: [20, 20],
       popupAnchor: [0, -20],

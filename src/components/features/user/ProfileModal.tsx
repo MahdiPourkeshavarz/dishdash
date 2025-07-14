@@ -120,7 +120,12 @@ export function ProfileModal() {
                       onSubmit={handleProfileUpdate}
                       className="flex flex-col items-center gap-4"
                     >
-                      <label className="relative cursor-pointer group">
+                      <motion.label
+                        className="relative cursor-pointer"
+                        // ✅ The whileHover prop will manage the visibility of the child
+                        whileHover="hover"
+                        initial="initial"
+                      >
                         <Image
                           src={imagePreview || user?.image || "/user-photo.jpg"}
                           alt="Profile"
@@ -128,9 +133,17 @@ export function ProfileModal() {
                           height={80}
                           className="rounded-full object-cover"
                         />
-                        <div className="absolute inset-0 bg-black/60 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                        {/* ✅ The overlay now has variants and uses the parent's hover state */}
+                        <motion.div
+                          className="absolute inset-0 bg-black/60 rounded-full flex items-center justify-center text-white"
+                          variants={{
+                            initial: { opacity: 0 },
+                            hover: { opacity: 1 },
+                          }}
+                          transition={{ duration: 0.2 }}
+                        >
                           <Edit3 size={24} />
-                        </div>
+                        </motion.div>
                         <input
                           type="file"
                           className="hidden"
@@ -141,7 +154,7 @@ export function ProfileModal() {
                               setImagePreview(URL.createObjectURL(file));
                           }}
                         />
-                      </label>
+                      </motion.label>
                       <Input
                         label="نام کاربری"
                         type="text"
@@ -190,7 +203,7 @@ export function ProfileModal() {
               }`}
             >
               <button
-                onClick={() => signOut()}
+                onClick={() => signOut({ callbackUrl: "/" })}
                 className="w-full flex items-center justify-center gap-2 p-2 text-red-400 hover:bg-red-500/20 rounded-lg transition-colors"
               >
                 <LogOut size={16} /> خروج
