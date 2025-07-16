@@ -1,7 +1,7 @@
 "use client";
 
-import { Poi } from "@/services/osmService";
 import { useStore } from "@/store/useStore";
+import { Poi } from "@/types";
 import { motion, AnimatePresence } from "framer-motion";
 import { Phone, Clock, Globe, X, Plus, MapPin } from "lucide-react";
 

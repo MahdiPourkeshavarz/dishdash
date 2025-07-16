@@ -1,7 +1,6 @@
 "use client";
 
-import { Post } from "@/types";
-import { Poi } from "@/services/osmService";
+import { Poi, Post } from "@/types";
 import { motion, AnimatePresence } from "framer-motion";
 import PostCarousel from "../post/PostCarousel";
 

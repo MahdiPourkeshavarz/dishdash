@@ -1,8 +1,9 @@
 "use client";
 
 import { useMapEvents } from "react-leaflet";
-import { fetchPois, Poi } from "@/services/osmService";
+import { fetchPois } from "@/services/osmService";
 import { useState } from "react";
+import { Poi } from "@/types";
 
 interface PoiLoaderProps {
   setPois: (pois: Poi[]) => void;
