@@ -9,6 +9,7 @@ import { Plus } from "lucide-react";
 import { useStore } from "@/store/useStore";
 import { User } from "@/types";
 import { AuthModal } from "@/components/features/auth/AuthModal";
+import { DeleteConfirmationModal } from "@/components/features/post/DeleteConfirmationModal";
 
 const currentUser: User = {
   id: "currentUser123",
@@ -20,7 +21,15 @@ export default function HomePage() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isAuthModalOpen, setAuthModalOpen] = useState(false);
 
-  const { location, fetchUserLocation, theme } = useStore();
+  const {
+    location,
+    fetchUserLocation,
+    theme,
+    isPostModalOpen,
+    togglePostModal,
+    editingPost,
+    setEditingPost,
+  } = useStore();
 
   const handleToggleModal = () => setIsModalOpen((prev) => !prev);
 
@@ -76,9 +85,14 @@ export default function HomePage() {
       )}
 
       <PostModal
-        isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
+        isOpen={isPostModalOpen || isModalOpen}
+        onClose={() => {
+          togglePostModal(false);
+          setEditingPost(null);
+          handleToggleModal();
+        }}
         user={currentUser}
+        postToEdit={editingPost}
       />
 
       <MapView
@@ -86,6 +100,8 @@ export default function HomePage() {
         user={currentUser}
         onMarkerClick={handleToggleModal}
       />
+
+      <DeleteConfirmationModal />
 
       <AuthModal
         isOpen={isAuthModalOpen}

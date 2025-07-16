@@ -1,9 +1,16 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { useStore } from "@/store/useStore";
 import type { Post } from "@/types";
 import Image from "next/image";
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { ThumbsUp, ThumbsDown } from "lucide-react";
+import {
+  ThumbsUp,
+  ThumbsDown,
+  Trash2,
+  Pencil,
+  MoreVertical,
+} from "lucide-react";
 import ProfileCard from "../user/ProfileCard";
 import { DirectionsPill } from "./DirectionPill";
 
@@ -39,15 +46,17 @@ interface PostCardProps {
 }
 
 const PostCard: React.FC<PostCardProps> = ({ post }) => {
-  const { theme } = useStore();
+  const { theme, setEditingPost, togglePostModal, setDeletingPost } =
+    useStore();
   const styles = satisfactionStyles[post.satisfaction];
   const [isProfileCardVisible, setProfileCardVisible] = useState(false);
   const [isDirectionsPillOpen, setDirectionsPillOpen] = useState(false);
-
+  const [isMenuOpen, setMenuOpen] = useState(false);
+  const isOwnPost = true;
+  // currentUser?.id === post.user.id;
   const [vote, setVote] = useState<"like" | "dislike" | null>(null);
   const [likeCount, setLikeCount] = useState(132);
   const [dislikeCount, setDislikeCount] = useState(12);
-
   const handleLike = () => {
     if (vote === "like") {
       setVote(null);
@@ -70,10 +79,20 @@ const PostCard: React.FC<PostCardProps> = ({ post }) => {
     }
   };
 
-  const handleCardClick = () => {
-    if (isDirectionsPillOpen) {
-      setDirectionsPillOpen(false);
-    }
+  const handleEdit = () => {
+    setMenuOpen(false);
+    setEditingPost(post);
+    togglePostModal(true);
+  };
+
+  const handleDelete = () => {
+    setMenuOpen(false);
+    setDeletingPost(post);
+  };
+
+  const handleCardClick = (e: React.MouseEvent) => {
+    if (isDirectionsPillOpen) setDirectionsPillOpen(false);
+    if (isMenuOpen) setMenuOpen(false);
   };
 
   return (
@@ -97,25 +116,25 @@ const PostCard: React.FC<PostCardProps> = ({ post }) => {
         <div className="flex-grow"></div>
 
         <motion.div
-          className="flex justify-center items-center pt-1 mt-3 border-t border-white/10"
+          className="flex justify-between items-center pt-1 mt-3 border-t border-white/10"
           layout
           transition={{ duration: 0.3, ease: "easeOut" }}
         >
-          <div className="flex items-center gap-4">
+          <motion.div className="flex items-center gap-4" layout>
             <button
               onClick={handleLike}
               className="flex items-center gap-1.5 group"
             >
               <ThumbsUp
                 size={18}
-                className={`transition-colors duration-200 ${
+                className={`transition-all duration-200 motion-reduce:transition-none ${
                   vote === "like"
                     ? theme === "dark"
-                      ? "text-blue-500 fill-blue-500/30"
-                      : "text-blue-600 fill-blue-600/20"
+                      ? "text-blue-500 fill-blue-500/30 scale-110"
+                      : "text-blue-600 fill-blue-600/20 scale-110"
                     : theme === "dark"
-                    ? "text-gray-400 group-hover:text-white"
-                    : "text-gray-500 group-hover:text-black"
+                    ? "text-gray-400 group-hover:text-white group-hover:scale-105"
+                    : "text-gray-500 group-hover:text-black group-hover:scale-105"
                 }`}
               />
               <span
@@ -138,14 +157,14 @@ const PostCard: React.FC<PostCardProps> = ({ post }) => {
             >
               <ThumbsDown
                 size={18}
-                className={`transition-colors duration-200 ${
+                className={`transition-all duration-200 motion-reduce:transition-none ${
                   vote === "dislike"
                     ? theme === "dark"
-                      ? "text-red-500 fill-red-500/30"
-                      : "text-red-600 fill-red-600/20"
+                      ? "text-red-500 fill-red-500/30 scale-110"
+                      : "text-red-600 fill-red-600/20 scale-110"
                     : theme === "dark"
-                    ? "text-gray-400 group-hover:text-white"
-                    : "text-gray-500 group-hover:text-black"
+                    ? "text-gray-400 group-hover:text-white group-hover:scale-105"
+                    : "text-gray-500 group-hover:text-black group-hover:scale-105"
                 }`}
               />
               <span
@@ -162,7 +181,7 @@ const PostCard: React.FC<PostCardProps> = ({ post }) => {
                 {dislikeCount}
               </span>
             </button>
-          </div>
+          </motion.div>
           <motion.div
             className="pr-2.5"
             layout
@@ -185,7 +204,7 @@ const PostCard: React.FC<PostCardProps> = ({ post }) => {
           className="object-cover"
           priority
         />
-        <div className="absolute top-2 right-2">
+        <div className="absolute top-2 right-2 flex items-center gap-1">
           <motion.button
             onClick={() => setProfileCardVisible(true)}
             whileHover={{ scale: 1.1 }}
@@ -202,10 +221,28 @@ const PostCard: React.FC<PostCardProps> = ({ post }) => {
               }`}
             />
           </motion.button>
+          {isOwnPost && (
+            <motion.button
+              onClick={() => setMenuOpen(!isMenuOpen)}
+              whileHover={{ scale: 1.1, rotate: 90 }}
+              whileTap={{ scale: 0.9 }}
+              initial={{ opacity: 0, scale: 0.8 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ type: "spring", delay: 0.5 }}
+              className={`p-1 rounded-full absolute top-30 right ${
+                theme === "dark"
+                  ? "bg-gray-800/50 text-gray-300"
+                  : "bg-gray-100/50 text-gray-700"
+              }`}
+              aria-label="Post actions"
+            >
+              <MoreVertical size={16} />
+            </motion.button>
+          )}
         </div>
 
         <motion.div
-          className={`absolute bottom-0 left-1/2 -translate-x-1/2 ${
+          className={`absolute bottom-0 left-1/2 -translate-x-1/2 flex flex-col items-center ${
             post.satisfaction === "awesome" ? "bottom-2.5" : ""
           }`}
           initial={{ y: 20, opacity: 0 }}
@@ -229,6 +266,37 @@ const PostCard: React.FC<PostCardProps> = ({ post }) => {
           />
         </motion.div>
       </div>
+
+      <AnimatePresence>
+        {isMenuOpen && isOwnPost && (
+          <motion.div
+            className={`absolute z-30 top-12 right-4 p-2 rounded-lg shadow-xl ${
+              theme === "dark"
+                ? "bg-gray-800/90 text-white"
+                : "bg-white/90 text-gray-900"
+            }`}
+            initial={{ opacity: 0, scale: 0.5, rotate: -10 }}
+            animate={{ opacity: 1, scale: 1, rotate: 0 }}
+            exit={{ opacity: 0, scale: 0.5, rotate: 10 }}
+            transition={{ type: "spring", stiffness: 200, damping: 15 }}
+          >
+            <button
+              onClick={handleEdit}
+              className="flex items-center gap-2 px-4 py-2 hover:bg-opacity-10 hover:bg-gray-500 w-full text-left"
+            >
+              <Pencil size={16} />
+              ویرایش
+            </button>
+            <button
+              onClick={handleDelete}
+              className="flex items-center gap-2 px-4 py-2 hover:bg-opacity-10 hover:bg-red-500 w-full text-left text-red-500"
+            >
+              <Trash2 size={16} />
+              حذف
+            </button>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       <AnimatePresence>
         {isProfileCardVisible && (

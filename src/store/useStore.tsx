@@ -17,6 +17,9 @@ interface StoreState {
   posts: Post[];
   isProfileModalOpen: boolean;
   postTargetLocation: [number, number] | null;
+  editingPost: Post | null;
+  deletingPost: Post | null;
+  isPostModalOpen: boolean;
 }
 
 interface StoreActions {
@@ -29,6 +32,11 @@ interface StoreActions {
   toggleProfileModal: () => void;
   setTheme: (theme: "light" | "dark") => void;
   setPostTargetLocation: (coords: [number, number] | null) => void;
+  setEditingPost: (post: Post | null) => void;
+  setDeletingPost: (post: Post | null) => void;
+  updatePost: (updatedPost: Post) => void;
+  deletePost: (postId: string) => void;
+  togglePostModal: (isOpen: boolean) => void;
 }
 
 type Store = StoreState & StoreActions;
@@ -46,6 +54,9 @@ export const useStore = create<Store>()(
       posts: initialState,
       isProfileModalOpen: false,
       postTargetLocation: null,
+      editingPost: null,
+      deletingPost: null,
+      isPostModalOpen: false,
       location: {
         coords: null,
         areaName: null,
@@ -56,6 +67,23 @@ export const useStore = create<Store>()(
 
       toggleProfileModal: () =>
         set((state) => ({ isProfileModalOpen: !state.isProfileModalOpen })),
+
+      setEditingPost: (post) => set({ editingPost: post }),
+      setDeletingPost: (post) => set({ deletingPost: post }),
+
+      togglePostModal: (isOpen) => set({ isPostModalOpen: isOpen }),
+
+      updatePost: (updatedPost) =>
+        set((state) => ({
+          posts: state.posts.map((p) =>
+            p.id === updatedPost.id ? updatedPost : p
+          ),
+        })),
+
+      deletePost: (postId) =>
+        set((state) => ({
+          posts: state.posts.filter((p) => p.id !== postId),
+        })),
 
       fetchUserLocation: () => {
         return new Promise((resolve) => {
