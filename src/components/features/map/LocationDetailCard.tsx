@@ -3,12 +3,21 @@
 import { useStore } from "@/store/useStore";
 import { Poi } from "@/types";
 import { motion, AnimatePresence } from "framer-motion";
-import { Phone, Clock, Globe, X, Plus, MapPin } from "lucide-react";
+import {
+  Phone,
+  Clock,
+  Globe,
+  X,
+  Plus,
+  MapPin,
+  BookmarkCheck,
+  Bookmark,
+} from "lucide-react";
 
 interface LocationDetailCardProps {
   poi: Poi | null;
   onClose: () => void;
-  onAddPost: () => void; // Function to open the PostModal
+  onAddPost: () => void;
 }
 
 export const LocationDetailCard: React.FC<LocationDetailCardProps> = ({
@@ -16,7 +25,25 @@ export const LocationDetailCard: React.FC<LocationDetailCardProps> = ({
   onClose,
   onAddPost,
 }) => {
-  const { theme, setPostTargetLocation } = useStore();
+  const {
+    theme,
+    setPostTargetLocation,
+    wishlist,
+    addToWishlist,
+    removeFromWishlist,
+  } = useStore();
+
+  if (!poi) return null;
+
+  const isInWishlist = wishlist.some((p) => p.id === poi.id);
+
+  const handleWishlistClick = () => {
+    if (isInWishlist) {
+      removeFromWishlist(poi.id);
+    } else {
+      addToWishlist(poi);
+    }
+  };
 
   return (
     <AnimatePresence>
@@ -43,6 +70,17 @@ export const LocationDetailCard: React.FC<LocationDetailCardProps> = ({
               aria-label="Close popup"
             >
               <X size={18} />
+            </button>
+
+            <button
+              onClick={handleWishlistClick}
+              className={`absolute top-3 right-3 p-1 rounded-full ...`}
+            >
+              {isInWishlist ? (
+                <BookmarkCheck size={18} className="text-green-400" />
+              ) : (
+                <Bookmark size={18} />
+              )}
             </button>
 
             <h3 className={`font-bold text-xl mb-2 pr-6 text-center`}>

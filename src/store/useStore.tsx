@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
-import { Post, User } from "@/types";
+import { Poi, Post, User } from "@/types";
 import { posts as initialState } from "@/lib/posts";
 export interface LocationState {
   coords: [number, number] | null;
@@ -20,6 +20,8 @@ interface StoreState {
   editingPost: Post | null;
   deletingPost: Post | null;
   isPostModalOpen: boolean;
+  wishlist: Poi[];
+  flyToLocation: [number, number] | null;
 }
 
 interface StoreActions {
@@ -37,20 +39,25 @@ interface StoreActions {
   updatePost: (updatedPost: Post) => void;
   deletePost: (postId: string) => void;
   togglePostModal: (isOpen: boolean) => void;
+  addToWishlist: (place: Poi) => void;
+  removeFromWishlist: (placeId: number) => void;
+  setFlyToLocation: (coords: [number, number] | null) => void;
 }
 
 type Store = StoreState & StoreActions;
 
 export const useStore = create<Store>()(
   persist(
-    (set) => ({
+    (set, get) => ({
       theme:
         typeof window !== "undefined" &&
         window.matchMedia("(prefers-color-scheme: dark)").matches
           ? "dark"
           : "light",
-      user: null,
+      user: null as User | null,
       accessToken: null,
+      wishlist: [],
+      flyToLocation: null,
       posts: initialState,
       isProfileModalOpen: false,
       postTargetLocation: null,
@@ -175,6 +182,17 @@ export const useStore = create<Store>()(
 
       setUser: (user) => set({ user }),
 
+      addToWishlist: (place) => {
+        if (!get().wishlist.some((p) => p.id === place.id)) {
+          set((state) => ({ wishlist: [...state.wishlist, place] }));
+        }
+      },
+      removeFromWishlist: (placeId) =>
+        set((state) => ({
+          wishlist: state.wishlist.filter((p) => p.id !== placeId),
+        })),
+      setFlyToLocation: (coords) => set({ flyToLocation: coords }),
+
       setAccessToken: (token) => set({ accessToken: token }),
 
       logout: () => set({ user: null, accessToken: null }),
@@ -186,6 +204,7 @@ export const useStore = create<Store>()(
         user: state.user,
         accessToken: state.accessToken,
         posts: state.posts,
+        wishlist: state.wishlist,
       }),
     }
   )

@@ -57,7 +57,7 @@ export default function HomePage() {
       <Navbar onLoginClick={() => setAuthModalOpen(true)} />
 
       {isMounted && (
-        <div className="fixed bottom-4 left-4 z-[1000]">
+        <div className="fixed bottom-7 right-4 z-[1000]">
           <motion.div
             className="relative w-16 h-16 rounded-full p-[2px] bg-[conic-gradient(from_180deg_at_50%_50%,#F4B400_0deg,#9B59B6_120deg,#4285F4_240deg,#F4B400_360deg)]"
             suppressHydrationWarning={true}
