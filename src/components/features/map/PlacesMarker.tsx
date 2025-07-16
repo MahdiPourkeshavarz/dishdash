@@ -3,8 +3,8 @@
 import { useMemo } from "react";
 import { Marker } from "react-leaflet";
 import L from "leaflet";
-import { Poi } from "@/services/osmService";
 import { useStore } from "@/store/useStore";
+import { Poi } from "@/types";
 
 const restaurantIcon = L.icon({
   iconUrl: "./restaurants.png",

@@ -10,7 +10,7 @@ import markerIcon2x from "leaflet/dist/images/marker-icon-2x.png";
 import markerIcon from "leaflet/dist/images/marker-icon.png";
 import markerShadow from "leaflet/dist/images/marker-shadow.png";
 import { useStore } from "@/store/useStore";
-import { Post, User } from "@/types";
+import { Poi, Post, User } from "@/types";
 import UserLocationMarker from "./UserLocationMarker";
 import ChangeView from "./ChangeView";
 import { useEffect, useMemo, useRef, useState } from "react";
@@ -18,13 +18,15 @@ import PostMarker from "../post/PostMarker";
 import { useMapStyle } from "@/store/useMapStyle";
 import { MapStyleSwitcher } from "./MapStyleSwticher";
 import { FindLocationButton } from "./FindLocationButton";
-import { Poi } from "@/services/osmService";
 import { PoiLoader } from "./PoiLoader";
 import { PlacesMarker } from "./PlacesMarker";
 import { LocationDetailCard } from "./LocationDetailCard";
 import { useClickOutside } from "@/hooks/useClickOutside";
 import { motion, AnimatePresence } from "framer-motion";
 import { PostCarouselOverlay } from "./PostCarouselOverlay";
+import { FlyToLocation } from "./FlyToLocation";
+import { Heart } from "lucide-react";
+import { WishPlacesModal } from "../wishPlaces/WishPlaces";
 
 delete (L.Icon.Default.prototype as any)._getIconUrl;
 L.Icon.Default.mergeOptions({
@@ -44,6 +46,7 @@ const MapView: React.FC<MapViewProps> = ({ center, user, onMarkerClick }) => {
   const { theme, posts } = useStore();
   const [pois, setPois] = useState<Poi[]>([]);
   const [selectedPoi, setSelectedPoi] = useState<Poi | null>(null);
+  const [isWishlistOpen, setWishlistOpen] = useState(false);
 
   const locationCardRef = useRef<HTMLDivElement>(null);
   const zoomLevel = 15;
@@ -102,6 +105,8 @@ const MapView: React.FC<MapViewProps> = ({ center, user, onMarkerClick }) => {
         />
         <ChangeView center={mapCenter} zoom={zoomLevel} />
 
+        <FlyToLocation />
+
         <PoiLoader setPois={setPois} />
 
         <PlacesMarker pois={pois} onPoiClick={handlePoiSelect} />
@@ -145,6 +150,19 @@ const MapView: React.FC<MapViewProps> = ({ center, user, onMarkerClick }) => {
       {isMounted && (
         <>
           <MapStyleSwitcher />
+          <div className="absolute top-2/7 right-4 z-[100000]">
+            <button
+              onClick={() => setWishlistOpen(!isWishlistOpen)}
+              className={`p-3 rounded-full ${
+                theme === "dark" ? "bg-gray-800" : "bg-white/80 text-gray-950"
+              }`}
+            >
+              <Heart size={24} />
+            </button>
+            <AnimatePresence>
+              <WishPlacesModal isOpen={isWishlistOpen} />
+            </AnimatePresence>
+          </div>
           <FindLocationButton />
         </>
       )}

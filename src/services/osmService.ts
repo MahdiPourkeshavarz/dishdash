@@ -1,18 +1,4 @@
-export interface Poi {
-  id: number;
-  lat: number;
-  lon: number;
-  tags: {
-    [key: string]: string | undefined;
-    name?: string;
-    amenity?: string;
-    cuisine?: string;
-    phone?: string;
-    website?: string;
-    opening_hours?: string;
-    "addr:street"?: string;
-  };
-}
+import { Poi } from "@/types";
 
 export const fetchPois = async (bounds: L.LatLngBounds): Promise<Poi[]> => {
   const bbox = `${bounds.getSouth()},${bounds.getWest()},${bounds.getNorth()},${bounds.getEast()}`;

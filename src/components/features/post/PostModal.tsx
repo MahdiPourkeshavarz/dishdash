@@ -4,19 +4,18 @@ import { Post, User } from "@/types";
 import { motion, AnimatePresence, Variants } from "framer-motion";
 import { Image as ImageIcon, Send, MapPin, X } from "lucide-react";
 import Image from "next/image";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useVirtualKeyboard } from "@/hooks/useVirtualKeyboard";
 
-// Define custom types for satisfaction
 type Satisfaction = "awesome" | "good" | "bad" | "";
 
 interface PostModalProps {
   isOpen: boolean;
   onClose: () => void;
   user: User | null;
+  postToEdit: Post | null;
 }
 
-// Animation variants for sliding up from the bottom
 const modalVariants: Variants = {
   hidden: { y: "100%", opacity: 0 },
   visible: { y: 0, opacity: 1 },
@@ -26,6 +25,7 @@ export const PostModal: React.FC<PostModalProps> = ({
   isOpen,
   onClose,
   user,
+  postToEdit,
 }) => {
   const keyboardHeight = useVirtualKeyboard();
   const [view, setView] = useState<"initial" | "expanded">("initial");
@@ -40,6 +40,8 @@ export const PostModal: React.FC<PostModalProps> = ({
     theme,
     postTargetLocation,
     setPostTargetLocation,
+    updatePost,
+    setEditingPost,
   } = useStore();
 
   const satisfactionOptions = [
@@ -60,6 +62,15 @@ export const PostModal: React.FC<PostModalProps> = ({
     },
   ];
 
+  useEffect(() => {
+    if (postToEdit) {
+      setDescription(postToEdit.description);
+      setSatisfaction(postToEdit.satisfaction);
+      setImagePreview(postToEdit.imageUrl);
+      setView("expanded");
+    }
+  }, [postToEdit]);
+
   const resetForm = () => {
     setTimeout(() => setView("initial"), 300);
     setImageFile(null);
@@ -72,6 +83,7 @@ export const PostModal: React.FC<PostModalProps> = ({
     setPostTargetLocation(null);
     resetForm();
     onClose();
+    setEditingPost(null);
   };
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -95,15 +107,27 @@ export const PostModal: React.FC<PostModalProps> = ({
       alert("Please complete all fields.");
       return;
     }
-    const newPost: Post = {
-      id: `post_${Date.now()}`,
-      user,
-      description,
-      satisfaction,
-      imageUrl: "/food.webp",
-      position: positionToUse,
-    };
-    addPost(newPost);
+
+    if (postToEdit) {
+      const updatedPost: Post = {
+        ...postToEdit,
+        description,
+        satisfaction,
+        imageUrl: imagePreview || postToEdit.imageUrl,
+      };
+      updatePost(updatedPost);
+    } else {
+      const newPost: Post = {
+        id: `post_${Date.now()}`,
+        user,
+        description,
+        satisfaction,
+        imageUrl: imagePreview || "/food.webp",
+        position: positionToUse,
+      };
+      addPost(newPost);
+    }
+
     handleClose();
   };
 
