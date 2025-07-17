@@ -6,7 +6,7 @@ import { motion } from "framer-motion";
 import { Map, Coffee, Pizza, UtensilsCrossed } from "lucide-react";
 
 export function WishPlacesModal({ isOpen }: { isOpen: boolean }) {
-  const { theme, wishlist, setFlyToLocation } = useStore();
+  const { theme, wishlist, setFlyToTarget } = useStore();
   const [activeTab, setActiveTab] = useState("restaurant");
 
   const categories = [
@@ -87,7 +87,7 @@ export function WishPlacesModal({ isOpen }: { isOpen: boolean }) {
               >
                 <span className="truncate">{place.tags.name}</span>
                 <button
-                  onClick={() => setFlyToLocation([place.lat, place.lon])}
+                  onClick={() => setFlyToTarget(place)}
                   className={`p-1 rounded ${
                     theme === "dark" ? "hover:bg-gray-600" : "hover:bg-gray-300"
                   }`}

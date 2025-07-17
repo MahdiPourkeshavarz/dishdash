@@ -39,6 +39,14 @@ const satisfactionStyles = {
     bgGradientLight: "bg-gradient-to-t from-red-400/70 to-gray-50",
     bgGradientDark: "bg-gradient-to-t from-red-500/50 to-gray-800",
   },
+  disgusted: {
+    badge: "bg-purple-100 text-purple-800",
+    badgeDark: "bg-purple-900/50 text-purple-300",
+    text: "Disgusted",
+    emoji: "/disgusted.png",
+    bgGradientLight: "bg-gradient-to-t from-purple-400/70 to-gray-50",
+    bgGradientDark: "bg-gradient-to-t from-purple-500/50 to-gray-800",
+  },
 };
 
 interface PostCardProps {
@@ -242,7 +250,7 @@ const PostCard: React.FC<PostCardProps> = ({ post }) => {
         </div>
 
         <motion.div
-          className={`absolute bottom-0 left-1/2 -translate-x-1/2 flex flex-col items-center ${
+          className={`absolute bottom-3 left-1/2 -translate-x-1/2 flex flex-col items-center ${
             post.satisfaction === "awesome" ? "bottom-2.5" : ""
           }`}
           initial={{ y: 20, opacity: 0 }}
@@ -252,17 +260,9 @@ const PostCard: React.FC<PostCardProps> = ({ post }) => {
           <Image
             src={styles.emoji}
             alt={post.satisfaction}
-            width={post.satisfaction === "awesome" ? 47 : 70}
-            height={47}
+            width={43}
+            height={43}
             className="drop-shadow-lg"
-            style={{
-              width:
-                post.satisfaction === "good"
-                  ? 77
-                  : post.satisfaction === "awesome"
-                  ? 47
-                  : 67,
-            }}
           />
         </motion.div>
       </div>

@@ -16,12 +16,18 @@ interface StoreState {
   location: LocationState;
   posts: Post[];
   isProfileModalOpen: boolean;
-  postTargetLocation: [number, number] | null;
+  postTargetLocation: {
+    name: string;
+    coords: [number, number];
+  } | null;
   editingPost: Post | null;
   deletingPost: Post | null;
   isPostModalOpen: boolean;
   wishlist: Poi[];
   flyToLocation: [number, number] | null;
+  selectedPoi: Poi | null;
+  flyToTarget: Poi | null;
+  highlightedPoiId: number | null;
 }
 
 interface StoreActions {
@@ -33,7 +39,10 @@ interface StoreActions {
   addPost: (post: Post) => void;
   toggleProfileModal: () => void;
   setTheme: (theme: "light" | "dark") => void;
-  setPostTargetLocation: (coords: [number, number] | null) => void;
+  setPostTargetLocation: (
+    coords: [number, number] | null,
+    name: string | null
+  ) => void;
   setEditingPost: (post: Post | null) => void;
   setDeletingPost: (post: Post | null) => void;
   updatePost: (updatedPost: Post) => void;
@@ -42,6 +51,9 @@ interface StoreActions {
   addToWishlist: (place: Poi) => void;
   removeFromWishlist: (placeId: number) => void;
   setFlyToLocation: (coords: [number, number] | null) => void;
+  setSelectedPoi: (poi: Poi | null) => void;
+  setFlyToTarget: (poi: Poi | null) => void;
+  setHighlightedPoi: (id: number | null) => void;
 }
 
 type Store = StoreState & StoreActions;
@@ -58,6 +70,9 @@ export const useStore = create<Store>()(
       accessToken: null,
       wishlist: [],
       flyToLocation: null,
+      selectedPoi: null,
+      flyToTarget: null,
+      highlightedPoiId: null,
       posts: initialState,
       isProfileModalOpen: false,
       postTargetLocation: null,
@@ -69,6 +84,11 @@ export const useStore = create<Store>()(
         areaName: null,
         error: null,
       },
+
+      setHighlightedPoi: (id) => set({ highlightedPoiId: id }),
+
+      setSelectedPoi: (poi) => set({ selectedPoi: poi }),
+      setFlyToTarget: (poi) => set({ flyToTarget: poi }),
 
       setTheme: (theme) => set({ theme }),
 
@@ -168,7 +188,18 @@ export const useStore = create<Store>()(
         });
       },
 
-      setPostTargetLocation: (coords) => set({ postTargetLocation: coords }),
+      setPostTargetLocation: (coords, name) => {
+        if (coords) {
+          set({
+            postTargetLocation: {
+              coords,
+              name: name || "Selected Location",
+            },
+          });
+        } else {
+          set({ postTargetLocation: null });
+        }
+      },
 
       addPost: (newPost) =>
         set((state) => ({

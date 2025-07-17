@@ -44,6 +44,8 @@ export const PostModal: React.FC<PostModalProps> = ({
     setEditingPost,
   } = useStore();
 
+  const positionToUse = postTargetLocation?.coords || userLocation.coords;
+
   const satisfactionOptions = [
     {
       name: "awesome",
@@ -59,6 +61,11 @@ export const PostModal: React.FC<PostModalProps> = ({
       name: "bad",
       src: "/bad.png",
       glow: "drop-shadow-[0_0_8px_rgba(239,68,68,0.7)]",
+    },
+    {
+      name: "disgusted",
+      src: "/disgusted.png",
+      glow: "drop-shadow-[0_0_8px_rgba(147,51,234,0.7)]",
     },
   ];
 
@@ -80,7 +87,7 @@ export const PostModal: React.FC<PostModalProps> = ({
   };
 
   const handleClose = () => {
-    setPostTargetLocation(null);
+    setPostTargetLocation(null, null);
     resetForm();
     onClose();
     setEditingPost(null);
@@ -100,7 +107,6 @@ export const PostModal: React.FC<PostModalProps> = ({
   };
 
   const handleSubmit = (e: React.FormEvent) => {
-    const positionToUse = postTargetLocation || userLocation.coords;
     e.preventDefault();
     if (!user || !positionToUse) return;
     if (!imageFile || !description || !satisfaction) {
@@ -135,7 +141,7 @@ export const PostModal: React.FC<PostModalProps> = ({
     <AnimatePresence>
       {isOpen && (
         <motion.div
-          className="fixed inset-0 z-[100000] pb-22 flex items-end justify-center bg-black/50"
+          className="fixed inset-0 z-[1000000] pb-22 flex items-end justify-center bg-black/50"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
@@ -212,7 +218,11 @@ export const PostModal: React.FC<PostModalProps> = ({
                           }`}
                         >
                           <MapPin size={16} />
-                          <span>{userLocation.areaName || "Location"}</span>
+                          <span>
+                            {postTargetLocation?.name ||
+                              userLocation.areaName ||
+                              "Location"}
+                          </span>
                         </div>
                         <div className="flex items-center gap-3">
                           {satisfactionOptions.map((option) => {
@@ -239,8 +249,8 @@ export const PostModal: React.FC<PostModalProps> = ({
                                         : "opacity-60 hover:opacity-100 hover:scale-105"
                                     }
                                   `}
-                                  width={option.name === "good" ? 53 : 39}
-                                  height={option.name === "good" ? 53 : 39}
+                                  width={40}
+                                  height={40}
                                 />
                               </motion.button>
                             );

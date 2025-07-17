@@ -27,6 +27,7 @@ import { PostCarouselOverlay } from "./PostCarouselOverlay";
 import { FlyToLocation } from "./FlyToLocation";
 import { Heart } from "lucide-react";
 import { WishPlacesModal } from "../wishPlaces/WishPlaces";
+import { HighlightMarker } from "./HighlightMarker";
 
 delete (L.Icon.Default.prototype as any)._getIconUrl;
 L.Icon.Default.mergeOptions({
@@ -43,9 +44,15 @@ interface MapViewProps {
 
 const MapView: React.FC<MapViewProps> = ({ center, user, onMarkerClick }) => {
   const defaultPosition: [number, number] = [35.6892, 51.389];
-  const { theme, posts } = useStore();
+  const {
+    theme,
+    posts,
+    selectedPoi,
+    setSelectedPoi,
+    highlightedPoiId,
+    setHighlightedPoi,
+  } = useStore();
   const [pois, setPois] = useState<Poi[]>([]);
-  const [selectedPoi, setSelectedPoi] = useState<Poi | null>(null);
   const [isWishlistOpen, setWishlistOpen] = useState(false);
 
   const locationCardRef = useRef<HTMLDivElement>(null);
@@ -59,6 +66,10 @@ const MapView: React.FC<MapViewProps> = ({ center, user, onMarkerClick }) => {
     setIsMounted(true);
   }, []);
 
+  const poiToHighlight = useMemo(() => {
+    return pois.find((p) => p.id === highlightedPoiId);
+  }, [highlightedPoiId, pois]);
+
   const groupedPosts = useMemo(() => {
     const groups: { [key: string]: Post[] } = {};
     posts.forEach((post) => {
@@ -70,10 +81,6 @@ const MapView: React.FC<MapViewProps> = ({ center, user, onMarkerClick }) => {
     });
     return Object.values(groups);
   }, [posts]);
-
-  const handlePoiSelect = (poi: Poi) => {
-    setSelectedPoi(poi);
-  };
 
   const handleCloseDetail = () => {
     setSelectedPoi(null);
@@ -109,7 +116,14 @@ const MapView: React.FC<MapViewProps> = ({ center, user, onMarkerClick }) => {
 
         <PoiLoader setPois={setPois} />
 
-        <PlacesMarker pois={pois} onPoiClick={handlePoiSelect} />
+        <PlacesMarker pois={pois} />
+
+        {poiToHighlight && (
+          <HighlightMarker
+            position={[poiToHighlight.lat, poiToHighlight.lon]}
+            onComplete={() => setHighlightedPoi(null)}
+          />
+        )}
 
         {center && (
           <UserLocationMarker
@@ -151,14 +165,19 @@ const MapView: React.FC<MapViewProps> = ({ center, user, onMarkerClick }) => {
         <>
           <MapStyleSwitcher />
           <div className="absolute top-2/7 right-4 z-[100000]">
-            <button
+            <motion.button
               onClick={() => setWishlistOpen(!isWishlistOpen)}
-              className={`p-3 rounded-full ${
-                theme === "dark" ? "bg-gray-800" : "bg-white/80 text-gray-950"
+              className={`p-3 rounded-full shadow-lg ${
+                theme === "dark"
+                  ? "bg-gray-800 text-white"
+                  : "bg-white text-gray-900"
               }`}
+              whileHover={{ scale: 1.1 }}
+              whileTap={{ scale: 0.9 }}
+              transition={{ type: "spring", stiffness: 400, damping: 17 }}
             >
               <Heart size={24} />
-            </button>
+            </motion.button>
             <AnimatePresence>
               <WishPlacesModal isOpen={isWishlistOpen} />
             </AnimatePresence>

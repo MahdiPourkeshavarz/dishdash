@@ -9,12 +9,11 @@ interface PostCarouselOverlayProps {
   posts: Post[];
 }
 
-// A simple function to check if two coordinates are very close
 const areCoordsNear = (
   coords1: [number, number],
   coords2: [number, number]
 ) => {
-  const tolerance = 0.0001; // Adjust this for desired proximity
+  const tolerance = 0.0001;
   return (
     Math.abs(coords1[0] - coords2[0]) < tolerance &&
     Math.abs(coords1[1] - coords2[1]) < tolerance
@@ -27,12 +26,10 @@ export const PostCarouselOverlay: React.FC<PostCarouselOverlayProps> = ({
 }) => {
   if (!poi) return null;
 
-  // Filter posts to find those that match the selected POI's location
   const relatedPosts = posts.filter((post) =>
     areCoordsNear(post.position, [poi.lat, poi.lon])
   );
 
-  // If no related posts, don't show the carousel
   if (relatedPosts.length === 0) return null;
 
   return (
