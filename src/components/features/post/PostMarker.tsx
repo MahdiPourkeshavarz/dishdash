@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 "use client";
 
 import L from "leaflet";
@@ -11,15 +12,10 @@ interface PostMarkerProps {
 }
 
 const satisfactionIcons = {
-  awesome: "/awesome-marker.png",
-  good: "/good-marker.png",
-  bad: "/bad-marker.png",
-};
-
-const satisfactionPinColors = {
-  awesome: "#3B82F6", // blue-500
-  good: "#22C55E", // green-500
-  bad: "#EF4444", // red-500
+  awesome: "/awesome.png",
+  good: "/good.png",
+  bad: "/bad.png",
+  disgusted: "/disgusted.png",
 };
 
 const PostMarker: React.FC<PostMarkerProps> = ({ posts, theme }) => {
@@ -30,31 +26,30 @@ const PostMarker: React.FC<PostMarkerProps> = ({ posts, theme }) => {
   let customIcon;
 
   if (isStack) {
-    const pinColor = satisfactionPinColors[topPost.satisfaction];
-    const stackCounterClasses =
-      theme === "dark" ? "bg-white text-black" : "bg-black text-white";
+    const displayCount = posts.length > 9 ? "9+" : posts.length;
 
-    const svgIconHtml = `
-      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="${pinColor}" class="w-10 h-10 drop-shadow-lg">
-        <path stroke-linecap="round" stroke-linejoin="round" d="M15 10.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
-        <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1 1 15 0Z" />
-      </svg>
-      <div class="absolute top-1.5 left-1/2 -translate-x-1/2 w-4 h-4 text-xs font-bold flex items-center justify-center rounded-full border border-gray-500 ${stackCounterClasses}">${posts.length}</div>
+    const stackIconHtml = `
+      <div class="relative w-7 h-7">
+        <img src="/clustered-marker.png" class="w-full h-full" alt="Post stack" />
+        <div class="absolute inset-0 flex items-center justify-center pb-1 text-blue-700 font-bold text-xs">
+          ${displayCount}
+        </div>
+      </div>
     `;
 
     customIcon = L.divIcon({
-      html: `<div class="relative">${svgIconHtml}</div>`,
+      html: stackIconHtml,
       className: "bg-transparent border-none",
-      iconSize: [40, 40],
+      iconSize: [30, 30],
       iconAnchor: [20, 40],
       popupAnchor: [0, -40],
     });
   } else {
-    const iconUrl = satisfactionIcons[topPost.satisfaction];
+    const iconUrl = satisfactionIcons.awesome;
 
     customIcon = L.icon({
       iconUrl: iconUrl,
-      iconSize: [31, 31],
+      iconSize: [20, 20],
       className: "drop-shadow-lg",
       iconAnchor: [20, 20],
       popupAnchor: [0, -20],

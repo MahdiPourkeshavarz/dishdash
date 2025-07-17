@@ -39,6 +39,14 @@ const satisfactionStyles = {
     bgGradientLight: "bg-gradient-to-t from-red-400/70 to-gray-50",
     bgGradientDark: "bg-gradient-to-t from-red-500/50 to-gray-800",
   },
+  disgusted: {
+    badge: "bg-purple-100 text-purple-800",
+    badgeDark: "bg-purple-900/50 text-purple-300",
+    text: "Disgusted",
+    emoji: "/disgusted.png",
+    bgGradientLight: "bg-gradient-to-t from-purple-400/70 to-gray-50",
+    bgGradientDark: "bg-gradient-to-t from-purple-500/50 to-gray-800",
+  },
 };
 
 interface PostCardProps {

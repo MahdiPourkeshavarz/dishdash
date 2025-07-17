@@ -60,6 +60,11 @@ export const PostModal: React.FC<PostModalProps> = ({
       src: "/bad.png",
       glow: "drop-shadow-[0_0_8px_rgba(239,68,68,0.7)]",
     },
+    {
+      name: "disgusted",
+      src: "/disgusted.png",
+      glow: "drop-shadow-[0_0_8px_rgba(147,51,234,0.7)]",
+    },
   ];
 
   useEffect(() => {
@@ -239,8 +244,8 @@ export const PostModal: React.FC<PostModalProps> = ({
                                         : "opacity-60 hover:opacity-100 hover:scale-105"
                                     }
                                   `}
-                                  width={option.name === "good" ? 53 : 39}
-                                  height={option.name === "good" ? 53 : 39}
+                                  width={40}
+                                  height={40}
                                 />
                               </motion.button>
                             );
