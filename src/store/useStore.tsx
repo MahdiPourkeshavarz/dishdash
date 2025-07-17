@@ -16,7 +16,10 @@ interface StoreState {
   location: LocationState;
   posts: Post[];
   isProfileModalOpen: boolean;
-  postTargetLocation: [number, number] | null;
+  postTargetLocation: {
+    name: string;
+    coords: [number, number]
+  } | null;
   editingPost: Post | null;
   deletingPost: Post | null;
   isPostModalOpen: boolean;
@@ -33,7 +36,7 @@ interface StoreActions {
   addPost: (post: Post) => void;
   toggleProfileModal: () => void;
   setTheme: (theme: "light" | "dark") => void;
-  setPostTargetLocation: (coords: [number, number] | null) => void;
+  setPostTargetLocation: (coords: [number, number] | null, name: string | null) => void;
   setEditingPost: (post: Post | null) => void;
   setDeletingPost: (post: Post | null) => void;
   updatePost: (updatedPost: Post) => void;
@@ -168,7 +171,18 @@ export const useStore = create<Store>()(
         });
       },
 
-      setPostTargetLocation: (coords) => set({ postTargetLocation: coords }),
+      setPostTargetLocation: (coords, name) => {
+        if (coords) {
+          set({
+            postTargetLocation: {
+              coords,
+              name: name || "Selected Location",
+            },
+          });
+        } else {
+          set({ postTargetLocation: null });
+        }
+      },
 
       addPost: (newPost) =>
         set((state) => ({
