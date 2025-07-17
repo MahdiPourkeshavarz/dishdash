@@ -250,7 +250,7 @@ const PostCard: React.FC<PostCardProps> = ({ post }) => {
         </div>
 
         <motion.div
-          className={`absolute bottom-0 left-1/2 -translate-x-1/2 flex flex-col items-center ${
+          className={`absolute bottom-3 left-1/2 -translate-x-1/2 flex flex-col items-center ${
             post.satisfaction === "awesome" ? "bottom-2.5" : ""
           }`}
           initial={{ y: 20, opacity: 0 }}
@@ -260,17 +260,9 @@ const PostCard: React.FC<PostCardProps> = ({ post }) => {
           <Image
             src={styles.emoji}
             alt={post.satisfaction}
-            width={post.satisfaction === "awesome" ? 47 : 70}
-            height={47}
+            width={43}
+            height={43}
             className="drop-shadow-lg"
-            style={{
-              width:
-                post.satisfaction === "good"
-                  ? 77
-                  : post.satisfaction === "awesome"
-                  ? 47
-                  : 67,
-            }}
           />
         </motion.div>
       </div>

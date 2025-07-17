@@ -29,14 +29,10 @@ const fastfoodIcon = L.icon({
 
 interface PoiMarkersLayerProps {
   pois: Poi[];
-  onPoiClick: (poi: Poi) => void;
 }
 
-export const PlacesMarker: React.FC<PoiMarkersLayerProps> = ({
-  pois,
-  onPoiClick,
-}) => {
-  const { theme } = useStore();
+export const PlacesMarker: React.FC<PoiMarkersLayerProps> = ({ pois }) => {
+  const { theme, setSelectedPoi, setHighlightedPoi } = useStore();
 
   const poiMarkers = useMemo(() => {
     return pois
@@ -64,7 +60,10 @@ export const PlacesMarker: React.FC<PoiMarkersLayerProps> = ({
             position={[poi.lat, poi.lon]}
             icon={iconToUse}
             eventHandlers={{
-              click: () => onPoiClick(poi),
+              click: () => {
+                setSelectedPoi(poi);
+                setHighlightedPoi(poi.id);
+              },
             }}
           />
         );

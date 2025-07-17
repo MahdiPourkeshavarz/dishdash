@@ -6,14 +6,24 @@ import { useStore } from "@/store/useStore";
 
 export function FlyToLocation() {
   const map = useMap();
-  const { flyToLocation, setFlyToLocation } = useStore();
+  const { flyToTarget, setFlyToTarget, setSelectedPoi, setHighlightedPoi } =
+    useStore();
 
   useEffect(() => {
-    if (flyToLocation) {
-      map.flyTo(flyToLocation, 16);
-      setFlyToLocation(null);
+    if (flyToTarget) {
+      const targetCoords: [number, number] = [flyToTarget.lat, flyToTarget.lon];
+
+      map.flyTo(targetCoords, 16, {
+        duration: 2.2,
+      });
+
+      map.once("moveend", () => {
+        setSelectedPoi(flyToTarget);
+        setHighlightedPoi(flyToTarget.id);
+        setFlyToTarget(null);
+      });
     }
-  }, [flyToLocation, setFlyToLocation, map]);
+  }, [flyToTarget, setFlyToTarget, setSelectedPoi, map, setHighlightedPoi]);
 
   return null;
 }
