@@ -8,7 +8,7 @@ import { Layers } from "lucide-react";
 import { useMapStyle } from "@/store/useMapStyle";
 
 export function MapStyleSwitcher() {
-  const { theme, setTheme } = useStore();
+  const { theme, setTheme, setMapUrl } = useStore();
   const mapStyles = useMapStyle();
   const [isOpen, setIsOpen] = useState(false);
   const switcherRef = useRef<HTMLDivElement>(null);
@@ -16,8 +16,9 @@ export function MapStyleSwitcher() {
   useClickOutside(switcherRef, () => setIsOpen(false));
 
   const styles = [
-    { name: "light", style: mapStyles.light },
-    { name: "dark", style: mapStyles.dark },
+    { name: "light", style: mapStyles.lightV1, uiTheme: "light", idx: 0 },
+    { name: "lightV2", style: mapStyles.lightV2, uiTheme: "light", idx: 1 },
+    { name: "dark", style: mapStyles.dark, uiTheme: "dark", idx: 2 },
   ];
 
   const previewVariants: Variants = {
@@ -68,14 +69,11 @@ export function MapStyleSwitcher() {
               >
                 <button
                   onClick={() => {
-                    setTheme(style.name as "light" | "dark");
+                    setTheme(style.uiTheme as "light" | "dark");
                     setIsOpen(false);
+                    setMapUrl(style.style.url);
                   }}
-                  className={`relative w-14 h-14 rounded-lg border-2 overflow-hidden transition-all shadow-lg ${
-                    theme === style.name
-                      ? "border-blue-500"
-                      : "border-transparent hover:border-gray-500"
-                  }`}
+                  className={`relative w-14 h-14 rounded-lg border-2 overflow-hidden transition-all shadow-lg`}
                 >
                   <div
                     className="w-full h-full bg-cover bg-center"

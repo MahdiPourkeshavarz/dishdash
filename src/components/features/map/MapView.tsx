@@ -15,7 +15,6 @@ import UserLocationMarker from "./UserLocationMarker";
 import ChangeView from "./ChangeView";
 import { useEffect, useMemo, useRef, useState } from "react";
 import PostMarker from "../post/PostMarker";
-import { useMapStyle } from "@/store/useMapStyle";
 import { MapStyleSwitcher } from "./MapStyleSwticher";
 import { FindLocationButton } from "./FindLocationButton";
 import { PoiLoader } from "./PoiLoader";
@@ -51,6 +50,7 @@ const MapView: React.FC<MapViewProps> = ({ center, user, onMarkerClick }) => {
     setSelectedPoi,
     highlightedPoiId,
     setHighlightedPoi,
+    mapUrl,
   } = useStore();
   const [pois, setPois] = useState<Poi[]>([]);
   const [isWishlistOpen, setWishlistOpen] = useState(false);
@@ -59,8 +59,6 @@ const MapView: React.FC<MapViewProps> = ({ center, user, onMarkerClick }) => {
   const zoomLevel = 15;
 
   const [isMounted, setIsMounted] = useState(false);
-
-  const mapStyles = useMapStyle();
 
   useEffect(() => {
     setIsMounted(true);
@@ -102,14 +100,7 @@ const MapView: React.FC<MapViewProps> = ({ center, user, onMarkerClick }) => {
         className="w-full h-full !z-0"
         zoomControl={false}
       >
-        <TileLayer
-          url={theme === "dark" ? mapStyles.dark.url : mapStyles.light.url}
-          attribution={
-            theme === "dark"
-              ? mapStyles.dark.attribution
-              : mapStyles.light.attribution
-          }
-        />
+        <TileLayer url={mapUrl} />
         <ChangeView center={mapCenter} zoom={zoomLevel} />
 
         <FlyToLocation />
