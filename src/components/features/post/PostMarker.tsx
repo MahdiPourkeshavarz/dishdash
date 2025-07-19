@@ -25,7 +25,7 @@ const PostMarker: React.FC<PostMarkerProps> = ({ posts, theme }) => {
   const isStack = posts.length > 1;
   let customIcon;
 
-  if (isStack) {
+  if (isStack && topPost.source === "poi") {
     const displayCount = posts.length > 9 ? "9+" : posts.length;
 
     const stackIconHtml = `
@@ -45,7 +45,10 @@ const PostMarker: React.FC<PostMarkerProps> = ({ posts, theme }) => {
       popupAnchor: [0, -40],
     });
   } else {
-    const iconUrl = satisfactionIcons.awesome;
+    const iconUrl =
+      satisfactionIcons[
+        topPost.satisfaction as keyof typeof satisfactionIcons
+      ] || satisfactionIcons.good;
 
     customIcon = L.icon({
       iconUrl: iconUrl,

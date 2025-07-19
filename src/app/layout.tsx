@@ -6,7 +6,6 @@ import { inter, nabla, nahid } from "@/lib/fonts";
 export const metadata: Metadata = {
   title: "DishDash",
   description: "Discover and share the best local eats.",
-  manifest: "/manifest.json",
 };
 
 export default function RootLayout({

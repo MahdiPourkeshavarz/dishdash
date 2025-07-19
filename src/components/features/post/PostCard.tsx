@@ -10,6 +10,7 @@ import {
   Trash2,
   Pencil,
   MoreVertical,
+  MapPin,
 } from "lucide-react";
 import ProfileCard from "../user/ProfileCard";
 import { DirectionsPill } from "./DirectionPill";
@@ -111,7 +112,7 @@ const PostCard: React.FC<PostCardProps> = ({ post }) => {
           theme === "dark" ? styles.bgGradientDark : styles.bgGradientLight
         }`}
       >
-        <div className="flex flex-col mt-8 pt-6 text-right">
+        <div className="flex mt-8 pt-6 text-right">
           <p
             className={`text-base font-bold leading-tight break-words overflow-hidden ${
               theme === "dark" ? "text-white" : "text-gray-900"
@@ -119,6 +120,31 @@ const PostCard: React.FC<PostCardProps> = ({ post }) => {
           >
             {post.description}
           </p>
+          {post.areaName && (
+            <motion.div
+              className={`
+                absolute top-13 left-4 flex items-center gap-1
+                p-1.5 pr-2 rounded-full text-xs font-semibold shadow-md
+                backdrop-blur-sm border
+                ${
+                  theme === "dark"
+                    ? "bg-black/20 border-white/10 text-gray-200"
+                    : "bg-white/40 border-black/10 text-gray-700"
+                }
+              `}
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{
+                type: "spring",
+                stiffness: 300,
+                damping: 20,
+                delay: 0.3,
+              }}
+            >
+              <MapPin size={14} />
+              <span>{post.areaName}</span>
+            </motion.div>
+          )}
         </div>
 
         <div className="flex-grow"></div>

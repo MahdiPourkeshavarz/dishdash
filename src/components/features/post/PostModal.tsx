@@ -130,6 +130,8 @@ export const PostModal: React.FC<PostModalProps> = ({
         satisfaction,
         imageUrl: imagePreview || "/food.webp",
         position: positionToUse,
+        areaName:
+          postTargetLocation?.name || userLocation.areaName || "location",
       };
       addPost(newPost);
     }
