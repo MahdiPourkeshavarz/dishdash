@@ -17,6 +17,7 @@ import {
 } from "@/lib/authValidation";
 import { PasswordStrength } from "./PasswordStrength";
 import { X } from "lucide-react";
+import { useSignUp } from "@/hooks/useSignUp";
 
 const GoogleIcon = () => (
   <svg className="w-5 h-5" viewBox="0 0 48 48">
@@ -51,6 +52,8 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
   const [serverError, setServerError] = useState<string | null>(null);
   const { theme } = useStore();
   const [isLoading, setIsLoading] = useState(false);
+
+  const { mutate: signUp } = useSignUp();
 
   const {
     register: registerSignIn,
@@ -88,18 +91,19 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
 
   const onSignUp = async (data: SignUpData) => {
     setIsLoading(true);
-    setServerError(null);
-    console.log("New user signing up:", data);
-
-    await new Promise((resolve) => setTimeout(resolve, 1500));
-
-    if (Math.random() > 0.5) {
-      setAuthType("success");
-      setTimeout(() => setAuthType("signin"), 3000);
-    } else {
-      setAuthType("error");
-    }
-    setIsLoading(false);
+    signUp(data, {
+      onSuccess: () => {
+        setAuthType("success");
+        setIsLoading(false);
+        setTimeout(() => setAuthType("signin"), 3000);
+      },
+      onError: (err) => {
+        setAuthType("error");
+        setIsLoading(false);
+        setServerError("ثبت نام موفقیت آمیز نبود");
+        console.error("Sign up failed:", err);
+      },
+    });
   };
 
   const modalBgClass = theme === "dark" ? "bg-gray-900/80" : "bg-white/80";
