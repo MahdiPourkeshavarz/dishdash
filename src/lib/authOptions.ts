@@ -56,6 +56,7 @@ export const authOptions: NextAuthOptions = {
         token.id = (user as any).user._id;
         token.username = (user as any).user.username;
         token.accessToken = (user as any).access_token;
+        token.picture = (user as any).user.image;
       }
       return token;
     },
@@ -64,6 +65,7 @@ export const authOptions: NextAuthOptions = {
         session.user.id = token.id as string;
         session.user.username = token.username as string;
         session.accessToken = token.accessToken as string;
+        session.user.image = token.picture as string;
       }
       return session;
     },

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/no-unused-vars */
 "use client";
 
@@ -10,6 +11,7 @@ import Image from "next/image";
 import { ChangeEvent, FormEvent, useEffect, useRef, useState } from "react";
 import { Input } from "../auth/Input";
 import imageCompression from "browser-image-compression";
+import { useUpdateProfile } from "@/hooks/useUpdateProfile";
 
 const profileCardVariants: Variants = {
   hidden: { opacity: 0, scale: 0.95, y: -10, originY: 0, originX: 1 },
@@ -34,9 +36,13 @@ export function ProfileModal() {
 
   const [activeTab, setActiveTab] = useState<"profile" | "security">("profile");
   const [username, setUsername] = useState(user?.username || "");
-  const [imagePreview, setImagePreview] = useState<string | null>(null);
+  const [imagePreview, setImagePreview] = useState<string | null>(
+    user?.image || null
+  );
   const [imageFile, setImageFile] = useState<File | null>(null);
   const profileCardRef = useRef<HTMLDivElement>(null);
+
+  const { mutate: updateProfile } = useUpdateProfile();
 
   useClickOutside(profileCardRef, () => {
     if (isProfileModalOpen) {
@@ -48,15 +54,21 @@ export function ProfileModal() {
     if (user?.name) setUsername(user.name);
   }, [user?.name]);
 
-  const handleProfileUpdate = async (e: FormEvent) => {
+  const handleProfileUpdate = (e: FormEvent) => {
     e.preventDefault();
-    await update({
-      name: username,
-      image: imagePreview || user?.image,
-    });
-    alert("Profile updated!");
-    toggleProfileModal();
-    setImagePreview(null);
+    updateProfile(
+      { username, imageFile },
+      {
+        onSuccess: () => {
+          toggleProfileModal();
+          setImagePreview(null);
+          setImageFile(null);
+        },
+        onError: (error) => {
+          alert(`Error: ${(error as any).message}`);
+        },
+      }
+    );
   };
 
   const handleImageSelect = async (e: ChangeEvent<HTMLInputElement>) => {
@@ -72,8 +84,16 @@ export function ProfileModal() {
 
     try {
       const compressedFile = await imageCompression(file, options);
-      setImageFile(compressedFile);
-      setImagePreview(URL.createObjectURL(compressedFile));
+      const extension = file.name.split(".").pop() || "jpg";
+      const fileWithName = new File(
+        [compressedFile],
+        `${file.name.split(".")[0]}.${extension}`,
+        {
+          type: compressedFile.type,
+        }
+      );
+      setImageFile(fileWithName);
+      setImagePreview(URL.createObjectURL(fileWithName));
     } catch (error) {
       console.error("Error compressing profile image:", error);
     }
