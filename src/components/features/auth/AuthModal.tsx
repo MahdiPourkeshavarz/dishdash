@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/no-unused-vars */
 "use client";
 
@@ -77,11 +78,14 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
   const onSignIn = async (data: SignInData) => {
     setIsLoading(true);
     setServerError(null);
+
     const result = await signIn("credentials", {
       ...data,
       redirect: false,
     });
+
     setIsLoading(false);
+
     if (result?.error) {
       setServerError("ایمیل یا رمز عبور اشتباه است.");
     } else if (result?.ok) {
@@ -89,19 +93,18 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
     }
   };
 
-  const onSignUp = async (data: SignUpData) => {
+  const onSignUp = (data: SignUpData) => {
     setIsLoading(true);
     signUp(data, {
       onSuccess: () => {
         setAuthType("success");
         setIsLoading(false);
-        setTimeout(() => setAuthType("signin"), 3000);
+        setTimeout(() => onClose(), 2000);
       },
       onError: (err) => {
-        setAuthType("error");
         setIsLoading(false);
-        setServerError("ثبت نام موفقیت آمیز نبود");
-        console.error("Sign up failed:", err);
+        setServerError("ثبت نام موفق نبود");
+        setAuthType("error");
       },
     });
   };

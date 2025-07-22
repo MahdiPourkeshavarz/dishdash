@@ -191,7 +191,7 @@ const MapView: React.FC<MapViewProps> = ({ center, user, onMarkerClick }) => {
       {isMounted && (
         <>
           <MapStyleSwitcher />
-          <div className="absolute top-2/7 right-4 z-[100000]">
+          <div className="absolute top-2/7 right-4 z-[10000]">
             <motion.button
               onClick={() => setWishlistOpen(!isWishlistOpen)}
               className={`p-3 rounded-full shadow-lg ${

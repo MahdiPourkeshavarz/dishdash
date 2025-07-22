@@ -33,7 +33,7 @@ export function ProfileModal() {
   const user = session?.user;
 
   const [activeTab, setActiveTab] = useState<"profile" | "security">("profile");
-  const [username, setUsername] = useState(user?.name || "");
+  const [username, setUsername] = useState(user?.username || "");
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [imageFile, setImageFile] = useState<File | null>(null);
   const profileCardRef = useRef<HTMLDivElement>(null);
@@ -82,13 +82,16 @@ export function ProfileModal() {
   return (
     <AnimatePresence>
       {isProfileModalOpen && (
-        <div ref={profileCardRef} className="absolute top-14 right-2 z-[2000]">
+        <div
+          ref={profileCardRef}
+          className="absolute top-14 right-6 z-[100010]"
+        >
           <motion.div
             variants={profileCardVariants}
             initial="hidden"
             animate="visible"
             exit="exit"
-            className={`w-[90vw] max-w-sm rounded-2xl shadow-2xl border ${
+            className={`w-[85vw] max-w-sm rounded-2xl shadow-2xl border ${
               theme === "dark"
                 ? "bg-gray-800/80 border-gray-700"
                 : "bg-white/80 border-gray-200"

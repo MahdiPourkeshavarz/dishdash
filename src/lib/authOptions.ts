@@ -26,7 +26,7 @@ export const authOptions: NextAuthOptions = {
       },
       async authorize(credentials, req) {
         const res = await fetch(
-          `${process.env.NEXT_PUBLIC_API_BASE_URL}/auth/login`,
+          `${process.env.NEXT_PUBLIC_API_BASE_URL}auth/login`,
           {
             method: "POST",
             headers: {
@@ -39,10 +39,10 @@ export const authOptions: NextAuthOptions = {
           }
         );
 
-        const user = await res.json();
+        const data = await res.json();
 
-        if (res.ok && user && user.access_token) {
-          return { ...user, id: user._id };
+        if (res.ok && data && data.access_token) {
+          return data;
         }
 
         return null;
@@ -53,9 +53,8 @@ export const authOptions: NextAuthOptions = {
   callbacks: {
     jwt: async ({ token, user }) => {
       if (user) {
-        token.id = user.id;
-        token.username = user.username;
-        token.username = user.email!.split("@")[0];
+        token.id = (user as any).user._id;
+        token.username = (user as any).user.username;
         token.accessToken = (user as any).access_token;
       }
       return token;
