@@ -25,18 +25,26 @@ export const authOptions: NextAuthOptions = {
         password: { label: "Password", type: "password" },
       },
       async authorize(credentials, req) {
-        if (
-          credentials?.email === "test@example.com" &&
-          credentials?.password === "password"
-        ) {
-          return {
-            id: "varagh",
-            name: "محمد محمدی",
-            email: "test@example.com",
-            image: "/user-photo.jpg",
-            username: "mohammadi",
-          };
+        const res = await fetch(
+          `${process.env.NEXT_PUBLIC_API_BASE_URL}/auth/login`,
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              email: credentials?.email,
+              password: credentials?.password,
+            }),
+          }
+        );
+
+        const user = await res.json();
+
+        if (res.ok && user && user.access_token) {
+          return { ...user, id: user._id };
         }
+
         return null;
       },
     }),
@@ -48,6 +56,7 @@ export const authOptions: NextAuthOptions = {
         token.id = user.id;
         token.username = user.username;
         token.username = user.email!.split("@")[0];
+        token.accessToken = (user as any).access_token;
       }
       return token;
     },
@@ -55,6 +64,7 @@ export const authOptions: NextAuthOptions = {
       if (session?.user) {
         session.user.id = token.id as string;
         session.user.username = token.username as string;
+        session.accessToken = token.accessToken as string;
       }
       return session;
     },

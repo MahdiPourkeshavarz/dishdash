@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 import { Providers } from "./providers";
 import { inter, nabla, nahid } from "@/lib/fonts";
+import { QueryProvider } from "./QueryProvider";
 
 export const metadata: Metadata = {
   title: "DishDash",
@@ -16,7 +17,9 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`${inter.variable} ${nahid.variable} ${nabla.variable}`}>
-        <Providers>{children}</Providers>
+        <Providers>
+          <QueryProvider>{children}</QueryProvider>
+        </Providers>
       </body>
     </html>
   );
