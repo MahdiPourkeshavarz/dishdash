@@ -17,6 +17,8 @@ export interface Post {
   };
   description: string;
   imageUrl: string;
+  source?: "user" | "poi";
+  areaName?: string;
 }
 
 export interface Poi {

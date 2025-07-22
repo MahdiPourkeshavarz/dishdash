@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable @typescript-eslint/no-unused-vars */
 "use client";
 
 import { useClickOutside } from "@/hooks/useClickOutside";
@@ -8,6 +10,8 @@ import { signOut, useSession } from "next-auth/react";
 import Image from "next/image";
 import { ChangeEvent, FormEvent, useEffect, useRef, useState } from "react";
 import { Input } from "../auth/Input";
+import imageCompression from "browser-image-compression";
+import { useUpdateProfile } from "@/hooks/useUpdateProfile";
 
 const profileCardVariants: Variants = {
   hidden: { opacity: 0, scale: 0.95, y: -10, originY: 0, originX: 1 },
@@ -31,9 +35,14 @@ export function ProfileModal() {
   const user = session?.user;
 
   const [activeTab, setActiveTab] = useState<"profile" | "security">("profile");
-  const [username, setUsername] = useState(user?.name || "");
-  const [imagePreview, setImagePreview] = useState<string | null>(null);
+  const [username, setUsername] = useState(user?.username || "");
+  const [imagePreview, setImagePreview] = useState<string | null>(
+    user?.image || null
+  );
+  const [imageFile, setImageFile] = useState<File | null>(null);
   const profileCardRef = useRef<HTMLDivElement>(null);
+
+  const { mutate: updateProfile } = useUpdateProfile();
 
   useClickOutside(profileCardRef, () => {
     if (isProfileModalOpen) {
@@ -45,33 +54,69 @@ export function ProfileModal() {
     if (user?.name) setUsername(user.name);
   }, [user?.name]);
 
-  const handleProfileUpdate = async (e: FormEvent) => {
+  const handleProfileUpdate = (e: FormEvent) => {
     e.preventDefault();
-    await update({
-      name: username,
-      image: imagePreview || user?.image,
-    });
-    alert("Profile updated!");
-    toggleProfileModal();
-    setImagePreview(null);
+    updateProfile(
+      { username, imageFile },
+      {
+        onSuccess: () => {
+          toggleProfileModal();
+          setImagePreview(null);
+          setImageFile(null);
+        },
+        onError: (error) => {
+          alert(`Error: ${(error as any).message}`);
+        },
+      }
+    );
+  };
+
+  const handleImageSelect = async (e: ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    const options = {
+      maxSizeMB: 0.5,
+      maxWidthOrHeight: 800,
+      useWebWorker: true,
+      fileType: "image/jpeg",
+    };
+
+    try {
+      const compressedFile = await imageCompression(file, options);
+      const extension = file.name.split(".").pop() || "jpg";
+      const fileWithName = new File(
+        [compressedFile],
+        `${file.name.split(".")[0]}.${extension}`,
+        {
+          type: compressedFile.type,
+        }
+      );
+      setImageFile(fileWithName);
+      setImagePreview(URL.createObjectURL(fileWithName));
+    } catch (error) {
+      console.error("Error compressing profile image:", error);
+    }
   };
 
   return (
     <AnimatePresence>
       {isProfileModalOpen && (
-        <div ref={profileCardRef} className="absolute top-14 right-2 z-[2000]">
+        <div
+          ref={profileCardRef}
+          className="absolute top-14 right-6 z-[100010]"
+        >
           <motion.div
             variants={profileCardVariants}
             initial="hidden"
             animate="visible"
             exit="exit"
-            className={`w-[90vw] max-w-sm rounded-2xl shadow-2xl border ${
+            className={`w-[85vw] max-w-sm rounded-2xl shadow-2xl border ${
               theme === "dark"
                 ? "bg-gray-800/80 border-gray-700"
                 : "bg-white/80 border-gray-200"
             } backdrop-blur-md text-white`}
           >
-            {/* Tabs */}
             <nav
               className={`flex border-b ${
                 theme === "dark" ? "border-gray-700" : "border-gray-200"
@@ -106,7 +151,6 @@ export function ProfileModal() {
                 <Shield size={16} /> امنیت
               </button>
             </nav>
-            {/* Tab Content */}
             <div className="p-4">
               <AnimatePresence mode="wait">
                 {activeTab === "profile" ? (
@@ -122,7 +166,6 @@ export function ProfileModal() {
                     >
                       <motion.label
                         className="relative cursor-pointer"
-                        // ✅ The whileHover prop will manage the visibility of the child
                         whileHover="hover"
                         initial="initial"
                       >
@@ -133,7 +176,6 @@ export function ProfileModal() {
                           height={80}
                           className="rounded-full object-cover"
                         />
-                        {/* ✅ The overlay now has variants and uses the parent's hover state */}
                         <motion.div
                           className="absolute inset-0 bg-black/60 rounded-full flex items-center justify-center text-white"
                           variants={{
@@ -148,11 +190,7 @@ export function ProfileModal() {
                           type="file"
                           className="hidden"
                           accept="image/*"
-                          onChange={(e: ChangeEvent<HTMLInputElement>) => {
-                            const file = e.target.files?.[0];
-                            if (file)
-                              setImagePreview(URL.createObjectURL(file));
-                          }}
+                          onChange={handleImageSelect}
                         />
                       </motion.label>
                       <Input

@@ -4,9 +4,9 @@ import { Post, User } from "@/types";
 import { motion, AnimatePresence, Variants } from "framer-motion";
 import { Image as ImageIcon, Send, MapPin, X } from "lucide-react";
 import Image from "next/image";
-import { useEffect, useRef, useState } from "react";
+import { ChangeEvent, useEffect, useRef, useState } from "react";
 import { useVirtualKeyboard } from "@/hooks/useVirtualKeyboard";
-
+import imageCompression from "browser-image-compression";
 type Satisfaction = "awesome" | "good" | "bad" | "";
 
 interface PostModalProps {
@@ -93,16 +93,40 @@ export const PostModal: React.FC<PostModalProps> = ({
     setEditingPost(null);
   };
 
-  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleImageChange = async (e: ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
-    if (file) {
-      setImageFile(file);
+    if (!file) return;
+
+    const options = {
+      maxSizeMB: 1,
+      maxWidthOrHeight: 1920,
+      useWebWorker: true,
+      fileType: "image/jpeg",
+    };
+
+    try {
+      console.log(
+        `Original image size: ${(file.size / 1024 / 1024).toFixed(2)} MB`
+      );
+
+      const compressedFile = await imageCompression(file, options);
+
+      console.log(
+        `Compressed image size: ${(compressedFile.size / 1024 / 1024).toFixed(
+          2
+        )} MB`
+      );
+
+      setImageFile(compressedFile);
+
       const reader = new FileReader();
       reader.onloadend = () => {
         setImagePreview(reader.result as string);
         setView("expanded");
       };
-      reader.readAsDataURL(file);
+      reader.readAsDataURL(compressedFile);
+    } catch (error) {
+      console.error("Error compressing image:", error);
     }
   };
 
@@ -130,6 +154,7 @@ export const PostModal: React.FC<PostModalProps> = ({
         satisfaction,
         imageUrl: imagePreview || "/food.webp",
         position: positionToUse,
+        areaName: postTargetLocation?.name,
       };
       addPost(newPost);
     }

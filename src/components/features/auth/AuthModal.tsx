@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/no-unused-vars */
 "use client";
 
@@ -17,6 +18,7 @@ import {
 } from "@/lib/authValidation";
 import { PasswordStrength } from "./PasswordStrength";
 import { X } from "lucide-react";
+import { useSignUp } from "@/hooks/useSignUp";
 
 const GoogleIcon = () => (
   <svg className="w-5 h-5" viewBox="0 0 48 48">
@@ -52,6 +54,8 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
   const { theme } = useStore();
   const [isLoading, setIsLoading] = useState(false);
 
+  const { mutate: signUp } = useSignUp();
+
   const {
     register: registerSignIn,
     handleSubmit: handleSignInSubmit,
@@ -74,11 +78,14 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
   const onSignIn = async (data: SignInData) => {
     setIsLoading(true);
     setServerError(null);
+
     const result = await signIn("credentials", {
       ...data,
       redirect: false,
     });
+
     setIsLoading(false);
+
     if (result?.error) {
       setServerError("ایمیل یا رمز عبور اشتباه است.");
     } else if (result?.ok) {
@@ -86,20 +93,20 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
     }
   };
 
-  const onSignUp = async (data: SignUpData) => {
+  const onSignUp = (data: SignUpData) => {
     setIsLoading(true);
-    setServerError(null);
-    console.log("New user signing up:", data);
-
-    await new Promise((resolve) => setTimeout(resolve, 1500));
-
-    if (Math.random() > 0.5) {
-      setAuthType("success");
-      setTimeout(() => setAuthType("signin"), 3000);
-    } else {
-      setAuthType("error");
-    }
-    setIsLoading(false);
+    signUp(data, {
+      onSuccess: () => {
+        setAuthType("success");
+        setIsLoading(false);
+        setTimeout(() => onClose(), 2000);
+      },
+      onError: (err) => {
+        setIsLoading(false);
+        setServerError("ثبت نام موفق نبود");
+        setAuthType("error");
+      },
+    });
   };
 
   const modalBgClass = theme === "dark" ? "bg-gray-900/80" : "bg-white/80";
@@ -116,7 +123,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
     <AnimatePresence>
       {isOpen && (
         <motion.div
-          className="fixed inset-0 z-[2000] flex items-end justify-center bg-black/60 backdrop-blur-sm"
+          className="fixed inset-0 z-[200000] flex items-end justify-center bg-black/60 backdrop-blur-sm"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}

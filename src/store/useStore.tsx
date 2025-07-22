@@ -3,6 +3,7 @@ import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import { Poi, Post, User } from "@/types";
 import { posts as initialState } from "@/lib/posts";
+import { cartoMapStyles } from "./useMapStyle";
 export interface LocationState {
   coords: [number, number] | null;
   areaName: string | null;
@@ -28,6 +29,7 @@ interface StoreState {
   selectedPoi: Poi | null;
   flyToTarget: Poi | null;
   highlightedPoiId: number | null;
+  mapUrl: string;
 }
 
 interface StoreActions {
@@ -54,6 +56,7 @@ interface StoreActions {
   setSelectedPoi: (poi: Poi | null) => void;
   setFlyToTarget: (poi: Poi | null) => void;
   setHighlightedPoi: (id: number | null) => void;
+  setMapUrl: (url: string) => void;
 }
 
 type Store = StoreState & StoreActions;
@@ -74,6 +77,7 @@ export const useStore = create<Store>()(
       flyToTarget: null,
       highlightedPoiId: null,
       posts: initialState,
+      mapUrl: cartoMapStyles.lightV1.url,
       isProfileModalOpen: false,
       postTargetLocation: null,
       editingPost: null,
@@ -91,6 +95,8 @@ export const useStore = create<Store>()(
       setFlyToTarget: (poi) => set({ flyToTarget: poi }),
 
       setTheme: (theme) => set({ theme }),
+
+      setMapUrl: (mapUrl) => set({ mapUrl }),
 
       toggleProfileModal: () =>
         set((state) => ({ isProfileModalOpen: !state.isProfileModalOpen })),

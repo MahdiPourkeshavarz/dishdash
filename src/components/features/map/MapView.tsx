@@ -15,7 +15,6 @@ import UserLocationMarker from "./UserLocationMarker";
 import ChangeView from "./ChangeView";
 import { useEffect, useMemo, useRef, useState } from "react";
 import PostMarker from "../post/PostMarker";
-import { useMapStyle } from "@/store/useMapStyle";
 import { MapStyleSwitcher } from "./MapStyleSwticher";
 import { FindLocationButton } from "./FindLocationButton";
 import { PoiLoader } from "./PoiLoader";
@@ -28,6 +27,7 @@ import { FlyToLocation } from "./FlyToLocation";
 import { Heart } from "lucide-react";
 import { WishPlacesModal } from "../wishPlaces/WishPlaces";
 import { HighlightMarker } from "./HighlightMarker";
+import { getDistanceInMeters } from "@/lib/getDistance";
 
 delete (L.Icon.Default.prototype as any)._getIconUrl;
 L.Icon.Default.mergeOptions({
@@ -51,6 +51,7 @@ const MapView: React.FC<MapViewProps> = ({ center, user, onMarkerClick }) => {
     setSelectedPoi,
     highlightedPoiId,
     setHighlightedPoi,
+    mapUrl,
   } = useStore();
   const [pois, setPois] = useState<Poi[]>([]);
   const [isWishlistOpen, setWishlistOpen] = useState(false);
@@ -59,8 +60,6 @@ const MapView: React.FC<MapViewProps> = ({ center, user, onMarkerClick }) => {
   const zoomLevel = 15;
 
   const [isMounted, setIsMounted] = useState(false);
-
-  const mapStyles = useMapStyle();
 
   useEffect(() => {
     setIsMounted(true);
@@ -71,15 +70,50 @@ const MapView: React.FC<MapViewProps> = ({ center, user, onMarkerClick }) => {
   }, [highlightedPoiId, pois]);
 
   const groupedPosts = useMemo(() => {
-    const groups: { [key: string]: Post[] } = {};
-    posts.forEach((post) => {
+    const DISTANCE_THRESHOLD = 10; // 10 meters
+
+    // 1. Separate posts by source
+    const poiPosts = posts.filter((p) => p.source === "poi");
+    const userPosts = posts.filter((p) => p.source !== "poi");
+
+    // 2. Group POI posts by exact location (original logic)
+    const poiGroups: Post[][] = [];
+    const poiGroupMap: { [key: string]: Post[] } = {};
+    poiPosts.forEach((post) => {
       const key = post.position.join(",");
-      if (!groups[key]) {
-        groups[key] = [];
+      if (!poiGroupMap[key]) {
+        poiGroupMap[key] = [];
       }
-      groups[key].push(post);
+      poiGroupMap[key].push(post);
     });
-    return Object.values(groups);
+    poiGroups.push(...Object.values(poiGroupMap));
+
+    // 3. Group user posts by proximity
+    const userGroups: Post[][] = [];
+    const processedUserPostIds = new Set<string>();
+
+    for (const post of userPosts) {
+      if (processedUserPostIds.has(post.id)) continue;
+
+      const nearbyGroup: Post[] = [post];
+      processedUserPostIds.add(post.id);
+
+      for (const otherPost of userPosts) {
+        if (processedUserPostIds.has(otherPost.id)) continue;
+
+        if (
+          getDistanceInMeters(post.position, otherPost.position) <
+          DISTANCE_THRESHOLD
+        ) {
+          nearbyGroup.push(otherPost);
+          processedUserPostIds.add(otherPost.id);
+        }
+      }
+      userGroups.push(nearbyGroup);
+    }
+
+    // 4. Combine all groups
+    return [...poiGroups, ...userGroups];
   }, [posts]);
 
   const handleCloseDetail = () => {
@@ -102,14 +136,7 @@ const MapView: React.FC<MapViewProps> = ({ center, user, onMarkerClick }) => {
         className="w-full h-full !z-0"
         zoomControl={false}
       >
-        <TileLayer
-          url={theme === "dark" ? mapStyles.dark.url : mapStyles.light.url}
-          attribution={
-            theme === "dark"
-              ? mapStyles.dark.attribution
-              : mapStyles.light.attribution
-          }
-        />
+        <TileLayer url={mapUrl} />
         <ChangeView center={mapCenter} zoom={zoomLevel} />
 
         <FlyToLocation />
@@ -164,7 +191,7 @@ const MapView: React.FC<MapViewProps> = ({ center, user, onMarkerClick }) => {
       {isMounted && (
         <>
           <MapStyleSwitcher />
-          <div className="absolute top-2/7 right-4 z-[100000]">
+          <div className="absolute top-2/7 right-4 z-[10000]">
             <motion.button
               onClick={() => setWishlistOpen(!isWishlistOpen)}
               className={`p-3 rounded-full shadow-lg ${
