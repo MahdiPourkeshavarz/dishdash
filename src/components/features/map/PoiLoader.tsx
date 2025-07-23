@@ -1,39 +1,40 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
-import { useMapEvents } from "react-leaflet";
-import { fetchPois } from "@/services/osmService";
-import { useState } from "react";
+import { useMap, useMapEvents } from "react-leaflet";
 import { Poi } from "@/types";
+import { useQuery } from "@tanstack/react-query";
+import { fetchPoisInBounds } from "@/services/osmService";
+import { useEffect, useState } from "react";
 
 interface PoiLoaderProps {
   setPois: (pois: Poi[]) => void;
 }
 
 export const PoiLoader: React.FC<PoiLoaderProps> = ({ setPois }) => {
-  const [isLoading, setIsLoading] = useState(false);
+  const map = useMap();
 
-  const map = useMapEvents({
-    // This event fires when the user stops moving the map
-    moveend: async () => {
-      if (isLoading) return;
+  const [bounds, setBounds] = useState<L.LatLngBounds>(() => map.getBounds());
 
-      // We only fetch POIs if the zoom level is close enough
+  const { data, isSuccess } = useQuery({
+    queryKey: ["pois", bounds.toBBoxString()],
+    queryFn: () => {
       if (map.getZoom() < 16) {
-        setPois([]); // Clear POIs if zoomed out too far
-        return;
+        return [];
       }
-
-      setIsLoading(true);
-      try {
-        const bounds = map.getBounds();
-        const fetchedPois = await fetchPois(bounds);
-        setPois(fetchedPois);
-      } catch (error) {
-        console.error("Error fetching POIs:", error);
-      } finally {
-        setIsLoading(false);
-      }
+      return fetchPoisInBounds(bounds);
     },
+    staleTime: 1000 * 60 * 5,
+  });
+
+  useEffect(() => {
+    if (isSuccess) {
+      setPois(data || []);
+    }
+  }, [isSuccess, data, setPois]);
+
+  useMapEvents({
+    moveend: () => setBounds(map.getBounds()),
   });
 
   return null;

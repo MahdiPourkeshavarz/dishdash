@@ -22,9 +22,11 @@ export interface Post {
 }
 
 export interface Poi {
+  _id?: number;
   id: number;
   lat: number;
   lon: number;
+  position?: [number, number];
   tags: {
     [key: string]: string | undefined;
     name?: string;
