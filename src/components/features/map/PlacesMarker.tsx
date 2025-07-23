@@ -39,6 +39,13 @@ export const PlacesMarker: React.FC<PoiMarkersLayerProps> = ({ pois }) => {
       .map((poi) => {
         if (!poi.tags?.name) return null;
 
+        const lat = poi.lat ?? poi.position?.[1];
+        const lon = poi.lon ?? poi.position?.[0];
+
+        const keyId = poi._id || poi.id;
+
+        if (lat === undefined || lon === undefined) return null;
+
         let iconToUse;
         switch (poi.tags.amenity) {
           case "restaurant":
@@ -56,8 +63,8 @@ export const PlacesMarker: React.FC<PoiMarkersLayerProps> = ({ pois }) => {
 
         return (
           <Marker
-            key={poi.id}
-            position={[poi.lat, poi.lon]}
+            key={keyId + poi.tags.name}
+            position={[lat, lon]}
             icon={iconToUse}
             eventHandlers={{
               click: () => {

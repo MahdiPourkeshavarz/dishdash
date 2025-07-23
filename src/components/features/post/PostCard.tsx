@@ -14,6 +14,7 @@ import {
 } from "lucide-react";
 import ProfileCard from "../user/ProfileCard";
 import { DirectionsPill } from "./DirectionPill";
+import { useDislikePost, useLikePost } from "@/hooks/useInteractions";
 
 const satisfactionStyles = {
   awesome: {
@@ -64,28 +65,28 @@ const PostCard: React.FC<PostCardProps> = ({ post }) => {
   const isOwnPost = true;
   // currentUser?.id === post.user.id;
   const [vote, setVote] = useState<"like" | "dislike" | null>(null);
-  const [likeCount, setLikeCount] = useState(132);
-  const [dislikeCount, setDislikeCount] = useState(12);
+  const [likeCount, setLikeCount] = useState(post.like as number);
+  const [dislikeCount, setDislikeCount] = useState(post.dislike as number);
+
+  const likeMutation = useLikePost();
+  const dislikeMutation = useDislikePost();
+
   const handleLike = () => {
-    if (vote === "like") {
-      setVote(null);
-      setLikeCount(likeCount - 1);
-    } else {
-      if (vote === "dislike") setDislikeCount(dislikeCount - 1);
-      setVote("like");
-      setLikeCount(likeCount + 1);
-    }
+    const newVote = vote === "like" ? null : "like";
+    setVote(newVote);
+    setLikeCount(newVote === "like" ? likeCount + 1 : likeCount - 1);
+    if (vote === "dislike") setDislikeCount(dislikeCount - 1);
+    likeMutation.mutate(post._id as string);
   };
 
   const handleDislike = () => {
-    if (vote === "dislike") {
-      setVote(null);
-      setDislikeCount(dislikeCount - 1);
-    } else {
-      if (vote === "like") setLikeCount(likeCount - 1);
-      setVote("dislike");
-      setDislikeCount(dislikeCount + 1);
-    }
+    const newVote = vote === "dislike" ? null : "dislike";
+    setVote(newVote);
+    setDislikeCount(
+      newVote === "dislike" ? dislikeCount + 1 : dislikeCount - 1
+    );
+    if (vote === "dislike") setDislikeCount(dislikeCount - 1);
+    dislikeMutation.mutate(post._id as string);
   };
 
   const handleEdit = () => {

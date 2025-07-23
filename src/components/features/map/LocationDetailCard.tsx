@@ -1,5 +1,11 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
+import {
+  useAddToWishlist,
+  useRemoveFromWishlist,
+} from "@/hooks/useInteractions";
+import { usePopulatedWishlist } from "@/hooks/usePopulatedWishlist";
 import { useStore } from "@/store/useStore";
 import { Poi } from "@/types";
 import { motion, AnimatePresence } from "framer-motion";
@@ -25,23 +31,31 @@ export const LocationDetailCard: React.FC<LocationDetailCardProps> = ({
   onClose,
   onAddPost,
 }) => {
-  const {
-    theme,
-    setPostTargetLocation,
-    wishlist,
-    addToWishlist,
-    removeFromWishlist,
-  } = useStore();
+  const { theme, setPostTargetLocation } = useStore();
+
+  const { data: wishlist = [] } = usePopulatedWishlist();
+
+  const addToWishlistMutation = useAddToWishlist();
+  const removeFromWishlistMutation = useRemoveFromWishlist();
 
   if (!poi) return null;
 
-  const isInWishlist = wishlist.some((p) => p.id === poi.id);
+  const currentPlaceOsmId = poi.osmId || poi.id;
+
+  const isInWishlist = wishlist.some(
+    (place: any) => place && place.osmId === currentPlaceOsmId
+  );
 
   const handleWishlistClick = () => {
     if (isInWishlist) {
-      removeFromWishlist(poi.id);
+      const placeInWishlist = wishlist.find(
+        (p: any) => p.osmId === currentPlaceOsmId
+      );
+      if (placeInWishlist) {
+        removeFromWishlistMutation.mutate(placeInWishlist._id);
+      }
     } else {
-      addToWishlist(poi);
+      addToWishlistMutation.mutate(poi);
     }
   };
 

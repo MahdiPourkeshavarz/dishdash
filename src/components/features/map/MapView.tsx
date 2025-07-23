@@ -26,7 +26,6 @@ import { PostCarouselOverlay } from "./PostCarouselOverlay";
 import { FlyToLocation } from "./FlyToLocation";
 import { Heart } from "lucide-react";
 import { WishPlacesModal } from "../wishPlaces/WishPlaces";
-import { HighlightMarker } from "./HighlightMarker";
 import { getDistanceInMeters } from "@/lib/getDistance";
 
 delete (L.Icon.Default.prototype as any)._getIconUrl;
@@ -44,15 +43,7 @@ interface MapViewProps {
 
 const MapView: React.FC<MapViewProps> = ({ center, user, onMarkerClick }) => {
   const defaultPosition: [number, number] = [35.6892, 51.389];
-  const {
-    theme,
-    posts,
-    selectedPoi,
-    setSelectedPoi,
-    highlightedPoiId,
-    setHighlightedPoi,
-    mapUrl,
-  } = useStore();
+  const { theme, posts, selectedPoi, setSelectedPoi, mapUrl } = useStore();
   const [pois, setPois] = useState<Poi[]>([]);
   const [isWishlistOpen, setWishlistOpen] = useState(false);
 
@@ -65,9 +56,20 @@ const MapView: React.FC<MapViewProps> = ({ center, user, onMarkerClick }) => {
     setIsMounted(true);
   }, []);
 
-  const poiToHighlight = useMemo(() => {
-    return pois.find((p) => p.id === highlightedPoiId);
-  }, [highlightedPoiId, pois]);
+  // const poiToHighlight = useMemo(() => {
+  //   return pois.find((p) => p.id === highlightedPoiId);
+  // }, [highlightedPoiId, pois]);
+
+  // const highlightPosition = useMemo(() => {
+  //   if (!poiToHighlight) return null;
+
+  //   const lat = poiToHighlight.lat ?? poiToHighlight.position?.[1];
+  //   const lon = poiToHighlight.lon ?? poiToHighlight.position?.[0];
+
+  //   if (lat === undefined || lon === undefined) return null;
+
+  //   return [lat, lon] as [number, number];
+  // }, [poiToHighlight]);
 
   const groupedPosts = useMemo(() => {
     const DISTANCE_THRESHOLD = 10; // 10 meters
@@ -145,12 +147,12 @@ const MapView: React.FC<MapViewProps> = ({ center, user, onMarkerClick }) => {
 
         <PlacesMarker pois={pois} />
 
-        {poiToHighlight && (
+        {/* {highlightPosition && (
           <HighlightMarker
-            position={[poiToHighlight.lat, poiToHighlight.lon]}
+            position={highlightPosition}
             onComplete={() => setHighlightedPoi(null)}
           />
-        )}
+        )} */}
 
         {center && (
           <UserLocationMarker

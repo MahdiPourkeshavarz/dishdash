@@ -1,29 +1,18 @@
+import apiClient from "@/lib/axiosClient";
 import { Poi } from "@/types";
+import L from "leaflet";
 
-export const fetchPois = async (bounds: L.LatLngBounds): Promise<Poi[]> => {
-  const bbox = `${bounds.getSouth()},${bounds.getWest()},${bounds.getNorth()},${bounds.getEast()}`;
-
-  // This is a query written in the Overpass QL language.
-  // It looks for nodes tagged as restaurant, cafe, or fast_food within the map's bounding box (bbox).
-  const query = `
-    [out:json][timeout:25];
-    (
-      node["amenity"~"restaurant|cafe|fast_food"](${bbox});
-    );
-    out body;
-    >;
-    out skel qt;
-  `;
-
-  const response = await fetch("https://overpass-api.de/api/interpreter", {
-    method: "POST",
-    body: `data=${encodeURIComponent(query)}`,
+export const fetchPoisInBounds = async (
+  bounds: L.LatLngBounds
+): Promise<Poi[]> => {
+  const { data } = await apiClient.get("places", {
+    params: {
+      sw_lat: bounds.getSouth(),
+      sw_lng: bounds.getWest(),
+      ne_lat: bounds.getNorth(),
+      ne_lng: bounds.getEast(),
+    },
   });
 
-  if (!response.ok) {
-    throw new Error("Failed to fetch POI data from Overpass API");
-  }
-
-  const data = await response.json();
-  return data.elements;
+  return data;
 };
