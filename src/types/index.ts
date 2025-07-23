@@ -7,6 +7,7 @@ export interface User {
 }
 
 export interface Post {
+  _id?: string;
   id: string;
   position: [number, number];
   satisfaction: SatisfactionStatus;
@@ -19,6 +20,8 @@ export interface Post {
   imageUrl: string;
   source?: "user" | "poi";
   areaName?: string;
+  like?: number;
+  dislike?: number;
 }
 
 export interface Poi {
@@ -27,6 +30,7 @@ export interface Poi {
   lat: number;
   lon: number;
   position?: [number, number];
+  osmId?: number;
   tags: {
     [key: string]: string | undefined;
     name?: string;
