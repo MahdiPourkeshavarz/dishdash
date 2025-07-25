@@ -12,6 +12,7 @@ import { ChangeEvent, FormEvent, useEffect, useRef, useState } from "react";
 import { Input } from "../auth/Input";
 import imageCompression from "browser-image-compression";
 import { useUpdateProfile } from "@/hooks/useUpdateProfile";
+import { ChangePasswordForm } from "./ChangePasswordForm";
 
 const profileCardVariants: Variants = {
   hidden: { opacity: 0, scale: 0.95, y: -10, originY: 0, originX: 1 },
@@ -39,6 +40,7 @@ export function ProfileModal() {
   const [imagePreview, setImagePreview] = useState<string | null>(
     user?.image || null
   );
+
   const [imageFile, setImageFile] = useState<File | null>(null);
   const profileCardRef = useRef<HTMLDivElement>(null);
 
@@ -198,6 +200,7 @@ export function ProfileModal() {
                         type="text"
                         value={username}
                         onChange={(e) => setUsername(e.target.value)}
+                        dir="ltr"
                       />
                       <button
                         type="submit"
@@ -214,27 +217,13 @@ export function ProfileModal() {
                     animate={{ opacity: 1 }}
                     exit={{ opacity: 0 }}
                   >
-                    <form
-                      className="flex flex-col items-center gap-4"
-                      onSubmit={(e) => {
-                        e.preventDefault();
-                        alert("Password changed (simulated)!");
-                      }}
-                    >
-                      <Input label="رمز عبور فعلی" type="password" dir="ltr" />
-                      <Input label="رمز عبور جدید" type="password" dir="ltr" />
-                      <button
-                        type="submit"
-                        className="w-full mt-2 p-2 bg-blue-600 rounded-lg font-semibold hover:bg-blue-500 transition-colors text-white"
-                      >
-                        تغییر رمز عبور
-                      </button>
-                    </form>
+                    <ChangePasswordForm
+                      onSuccess={() => setActiveTab("profile")}
+                    />
                   </motion.div>
                 )}
               </AnimatePresence>
             </div>
-            {/* Logout Button */}
             <div
               className={`border-t p-2 ${
                 theme === "dark" ? "border-gray-700" : "border-gray-200"

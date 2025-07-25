@@ -14,11 +14,11 @@ import {
   Clock,
   Globe,
   X,
-  Plus,
   MapPin,
   BookmarkCheck,
   Bookmark,
 } from "lucide-react";
+import { AddPostButton } from "../post/AddPostButton";
 
 interface LocationDetailCardProps {
   poi: Poi | null;
@@ -31,7 +31,7 @@ export const LocationDetailCard: React.FC<LocationDetailCardProps> = ({
   onClose,
   onAddPost,
 }) => {
-  const { theme, setPostTargetLocation } = useStore();
+  const { theme } = useStore();
 
   const { data: wishlist = [] } = usePopulatedWishlist();
 
@@ -160,22 +160,7 @@ export const LocationDetailCard: React.FC<LocationDetailCardProps> = ({
               )}
             </div>
 
-            <button
-              onClick={() => {
-                onAddPost();
-                const coordsToSet = poi.position || [poi.lon, poi.lat];
-                setPostTargetLocation({
-                  name: poi?.tags?.name as string,
-                  coords: coordsToSet,
-                  osmId: currentPlaceOsmId,
-                });
-              }}
-              className="w-full mt-4 p-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-lg font-semibold flex items-center justify-center gap-2"
-              aria-label="Add post for this location"
-            >
-              <Plus size={20} />
-              افزودن پست برای این مکان
-            </button>
+            <AddPostButton poi={poi} onAddPost={onAddPost} />
           </div>
         </motion.div>
       )}

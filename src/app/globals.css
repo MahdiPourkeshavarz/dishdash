@@ -114,3 +114,10 @@ body {
 .animate-pulse-glow {
   animation: pulse-glow 2s ease-out infinite;
 }
+
+input[type="password"]::-ms-reveal,
+input[type="password"]::-ms-clear {
+  display: none;
+  width: 0;
+  height: 0;
+}

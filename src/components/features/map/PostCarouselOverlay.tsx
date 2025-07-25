@@ -9,28 +9,19 @@ interface PostCarouselOverlayProps {
   posts: Post[];
 }
 
-const areCoordsNear = (
-  coords1: [number, number],
-  coords2: [number, number]
-) => {
-  const tolerance = 0.0001;
-  return (
-    Math.abs(coords1[0] - coords2[0]) < tolerance &&
-    Math.abs(coords1[1] - coords2[1]) < tolerance
-  );
-};
-
 export const PostCarouselOverlay: React.FC<PostCarouselOverlayProps> = ({
   poi,
   posts,
 }) => {
   if (!poi) return null;
 
-  const relatedPosts = posts.filter((post) =>
-    areCoordsNear(post.position, [poi.lat, poi.lon])
+  const relatedPosts = posts.filter(
+    (post) => post.areaName && post.areaName === poi.tags.name
   );
 
-  if (relatedPosts.length === 0) return null;
+  if (relatedPosts.length === 0) {
+    return null;
+  }
 
   return (
     <AnimatePresence>

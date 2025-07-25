@@ -20,8 +20,8 @@ export interface Post {
   imageUrl: string;
   source?: "user" | "poi";
   areaName?: string;
-  like?: number;
-  dislike?: number;
+  likes?: number;
+  dislikes?: number;
   userId?: string;
 }
 

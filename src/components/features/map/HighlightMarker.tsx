@@ -1,47 +1,34 @@
-"use client";
-
-import { useEffect } from "react";
-import { Marker } from "react-leaflet";
 import L from "leaflet";
+import { Marker } from "react-leaflet";
+import { renderToString } from "react-dom/server";
+import { useEffect } from "react";
+import { useStore } from "@/store/useStore";
+import { HighlightLabel } from "./HighlightLabel";
 
 interface HighlightMarkerProps {
   position: [number, number];
-  onComplete: () => void;
+  name: string;
 }
-
-const pulseIcon = L.divIcon({
-  className: "bg-transparent border-none",
-  html: `
-    <div class="relative w-10 h-10 mr-1 mb-[2px]">
-      <div
-        class="absolute inset-0 rounded-full border-2 border-blue-400/80 animate-pulse-glow"
-        style="animation-delay: 0s;"
-      ></div>
-      <div
-        class="absolute inset-0 rounded-full border-2 border-blue-400/80 animate-pulse-glow"
-        style="animation-delay: 0.5s;"
-      ></div>
-      <div
-        class="absolute inset-0 rounded-full border-2 border-blue-400/80 animate-pulse-glow"
-        style="animation-delay: 0.5s;"
-      ></div>
-    </div>
-  `,
-  iconSize: [40, 40],
-  iconAnchor: [20, 20],
-});
 
 export const HighlightMarker: React.FC<HighlightMarkerProps> = ({
   position,
-  onComplete,
+  name,
 }) => {
+  const { setHighlightedPoi } = useStore();
+
   useEffect(() => {
     const timer = setTimeout(() => {
-      onComplete();
-    }, 1500);
+      setHighlightedPoi(null);
+    }, 3500);
 
     return () => clearTimeout(timer);
-  }, [onComplete]);
+  }, [setHighlightedPoi]);
 
-  return <Marker position={position} icon={pulseIcon} interactive={false} />;
+  const customIcon = L.divIcon({
+    html: renderToString(<HighlightLabel name={name} />),
+    className: "bg-transparent border-none",
+    iconAnchor: [0, 0],
+  });
+
+  return <Marker position={position} icon={customIcon} interactive={false} />;
 };

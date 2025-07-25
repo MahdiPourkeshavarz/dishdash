@@ -9,11 +9,23 @@ const dislikePost = (postId: string) =>
   apiClient.post(`posts/${postId}/dislike`);
 
 export const useLikePost = () => {
-  return useMutation({ mutationFn: likePost });
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: likePost,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["posts"] });
+    },
+  });
 };
 
 export const useDislikePost = () => {
-  return useMutation({ mutationFn: dislikePost });
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: dislikePost,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["posts"] });
+    },
+  });
 };
 
 const addToWishlist = (poi: Poi) => {

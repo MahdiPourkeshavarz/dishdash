@@ -16,6 +16,7 @@ import ProfileCard from "../user/ProfileCard";
 import { DirectionsPill } from "./DirectionPill";
 import { useDislikePost, useLikePost } from "@/hooks/useInteractions";
 import { useUser } from "@/hooks/useUser";
+import { useSession } from "next-auth/react";
 
 const satisfactionStyles = {
   awesome: {
@@ -63,32 +64,46 @@ const PostCard: React.FC<PostCardProps> = ({ post }) => {
   const [isProfileCardVisible, setProfileCardVisible] = useState(false);
   const [isDirectionsPillOpen, setDirectionsPillOpen] = useState(false);
   const [isMenuOpen, setMenuOpen] = useState(false);
-  const isOwnPost = true;
-  // currentUser?.id === post.user.id;
   const [vote, setVote] = useState<"like" | "dislike" | null>(null);
-  const [likeCount, setLikeCount] = useState(post.like as number);
-  const [dislikeCount, setDislikeCount] = useState(post.dislike as number);
+  const [likeCount, setLikeCount] = useState(post.likes as number);
+  const [dislikeCount, setDislikeCount] = useState(post.dislikes as number);
 
-  const { data: user, isLoading } = useUser(post.userId);
+  const { data: session } = useSession();
+
+  const isOwnPost = session?.user?.id === post.userId;
+
+  const canVote = !!session && !isOwnPost;
+
+  const { data: user } = useUser(post.userId);
 
   const likeMutation = useLikePost();
   const dislikeMutation = useDislikePost();
 
   const handleLike = () => {
-    const newVote = vote === "like" ? null : "like";
-    setVote(newVote);
-    setLikeCount(newVote === "like" ? likeCount + 1 : likeCount - 1);
-    if (vote === "dislike") setDislikeCount(dislikeCount - 1);
+    if (vote === "dislike") {
+      setDislikeCount(dislikeCount - 1);
+    }
+    if (vote === "like") {
+      setVote(null);
+      setLikeCount(likeCount - 1);
+    } else {
+      setVote("like");
+      setLikeCount(likeCount + 1);
+    }
     likeMutation.mutate(post._id as string);
   };
 
   const handleDislike = () => {
-    const newVote = vote === "dislike" ? null : "dislike";
-    setVote(newVote);
-    setDislikeCount(
-      newVote === "dislike" ? dislikeCount + 1 : dislikeCount - 1
-    );
-    if (vote === "dislike") setDislikeCount(dislikeCount - 1);
+    if (vote === "like") {
+      setLikeCount(likeCount - 1);
+    }
+    if (vote === "dislike") {
+      setVote(null);
+      setDislikeCount(dislikeCount - 1);
+    } else {
+      setVote("dislike");
+      setDislikeCount(dislikeCount + 1);
+    }
     dislikeMutation.mutate(post._id as string);
   };
 
@@ -161,6 +176,7 @@ const PostCard: React.FC<PostCardProps> = ({ post }) => {
           <motion.div className="flex items-center gap-4" layout>
             <button
               onClick={handleLike}
+              disabled={!canVote}
               className="flex items-center gap-1.5 group"
             >
               <ThumbsUp
@@ -191,6 +207,7 @@ const PostCard: React.FC<PostCardProps> = ({ post }) => {
             </button>
             <button
               onClick={handleDislike}
+              disabled={!canVote}
               className="flex items-center gap-1.5 group"
             >
               <ThumbsDown

@@ -10,16 +10,16 @@ import { useStore } from "@/store/useStore";
 import { User } from "@/types";
 import { AuthModal } from "@/components/features/auth/AuthModal";
 import { DeleteConfirmationModal } from "@/components/features/post/DeleteConfirmationModal";
+import { useSession } from "next-auth/react";
 
 const currentUser: User = {
   id: "currentUser123",
   username: "Nahid",
-  imgUrl: "/user-photo.jpg",
+  image: "/user-photo.jpg",
 };
 
 export default function HomePage() {
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [isAuthModalOpen, setAuthModalOpen] = useState(false);
 
   const {
     location,
@@ -29,9 +29,13 @@ export default function HomePage() {
     togglePostModal,
     editingPost,
     setEditingPost,
+    isAuthModalOpen,
+    toggleAuthModal,
   } = useStore();
 
   const handleToggleModal = () => setIsModalOpen((prev) => !prev);
+
+  const { data: session } = useSession();
 
   const [isMounted, setIsMounted] = useState(false);
 
@@ -54,9 +58,9 @@ export default function HomePage() {
 
   return (
     <main className="w-screen h-[100dvh] relative overflow-hidden">
-      <Navbar onLoginClick={() => setAuthModalOpen(true)} />
+      <Navbar onLoginClick={() => toggleAuthModal(true)} />
 
-      {isMounted && (
+      {isMounted && session?.user && (
         <div className="absolute bottom-7 right-4 z-[1000]">
           <motion.div
             className="relative w-16 h-16 rounded-full p-[2px] bg-[conic-gradient(from_180deg_at_50%_50%,#F4B400_0deg,#9B59B6_120deg,#4285F4_240deg,#F4B400_360deg)]"
@@ -105,7 +109,7 @@ export default function HomePage() {
 
       <AuthModal
         isOpen={isAuthModalOpen}
-        onClose={() => setAuthModalOpen(false)}
+        onClose={() => toggleAuthModal(false)}
       />
     </main>
   );
