@@ -33,15 +33,15 @@ const ProfileCard: React.FC<ProfileCardProps> = ({ user, onClose }) => {
         transition={{ type: "spring", stiffness: 300, damping: 25 }}
       >
         <Image
-          src={user.imgUrl}
-          alt={user.username}
+          src={user?.image || "/user-photo.jpg"}
+          alt={user?.username || "user"}
           width={80}
           height={80}
           className={`rounded-full object-cover border-4 ${
             theme === "dark" ? "border-gray-300" : "border-gray-500"
           }`}
         />
-        <p className="text-lg font-bold text-white">{user.username}</p>
+        <p className="text-lg font-bold text-white">{user?.username}</p>
       </motion.div>
     </motion.div>
   );

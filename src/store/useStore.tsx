@@ -1,13 +1,20 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { create } from "zustand";
-import { persist } from "zustand/middleware";
+import { createJSONStorage, persist } from "zustand/middleware";
 import { Poi, Post, User } from "@/types";
 import { posts as initialState } from "@/lib/posts";
 import { cartoMapStyles } from "./useMapStyle";
+
 export interface LocationState {
   coords: [number, number] | null;
   areaName: string | null;
   error: string | null;
+}
+
+interface TargetLocation {
+  name: string | null;
+  coords: [number, number];
+  osmId: number;
 }
 
 interface StoreState {
@@ -17,10 +24,7 @@ interface StoreState {
   location: LocationState;
   posts: Post[];
   isProfileModalOpen: boolean;
-  postTargetLocation: {
-    name: string;
-    coords: [number, number];
-  } | null;
+  postTargetLocation: TargetLocation | null;
   editingPost: Post | null;
   deletingPost: Post | null;
   isPostModalOpen: boolean;
@@ -41,10 +45,7 @@ interface StoreActions {
   addPost: (post: Post) => void;
   toggleProfileModal: () => void;
   setTheme: (theme: "light" | "dark") => void;
-  setPostTargetLocation: (
-    coords: [number, number] | null,
-    name: string | null
-  ) => void;
+  setPostTargetLocation: (target: TargetLocation | null) => void;
   setEditingPost: (post: Post | null) => void;
   setDeletingPost: (post: Post | null) => void;
   updatePost: (updatedPost: Post) => void;
@@ -57,6 +58,7 @@ interface StoreActions {
   setFlyToTarget: (poi: Poi | null) => void;
   setHighlightedPoi: (id: number | null) => void;
   setMapUrl: (url: string) => void;
+  setPosts: (posts: Post[]) => void;
 }
 
 type Store = StoreState & StoreActions;
@@ -88,6 +90,8 @@ export const useStore = create<Store>()(
         areaName: null,
         error: null,
       },
+
+      setPosts: (posts) => set({ posts }),
 
       setHighlightedPoi: (id) => set({ highlightedPoiId: id }),
 
@@ -194,18 +198,7 @@ export const useStore = create<Store>()(
         });
       },
 
-      setPostTargetLocation: (coords, name) => {
-        if (coords) {
-          set({
-            postTargetLocation: {
-              coords,
-              name: name || "Selected Location",
-            },
-          });
-        } else {
-          set({ postTargetLocation: null });
-        }
-      },
+      setPostTargetLocation: (target) => set({ postTargetLocation: target }),
 
       addPost: (newPost) =>
         set((state) => ({
@@ -236,10 +229,9 @@ export const useStore = create<Store>()(
     }),
     {
       name: "dishdash",
+      storage: createJSONStorage(() => sessionStorage),
       partialize: (state) => ({
         theme: state.theme,
-        user: state.user,
-        accessToken: state.accessToken,
         posts: state.posts,
         wishlist: state.wishlist,
       }),

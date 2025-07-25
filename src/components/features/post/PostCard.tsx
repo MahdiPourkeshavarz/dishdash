@@ -15,6 +15,7 @@ import {
 import ProfileCard from "../user/ProfileCard";
 import { DirectionsPill } from "./DirectionPill";
 import { useDislikePost, useLikePost } from "@/hooks/useInteractions";
+import { useUser } from "@/hooks/useUser";
 
 const satisfactionStyles = {
   awesome: {
@@ -67,6 +68,8 @@ const PostCard: React.FC<PostCardProps> = ({ post }) => {
   const [vote, setVote] = useState<"like" | "dislike" | null>(null);
   const [likeCount, setLikeCount] = useState(post.like as number);
   const [dislikeCount, setDislikeCount] = useState(post.dislike as number);
+
+  const { data: user, isLoading } = useUser(post.userId);
 
   const likeMutation = useLikePost();
   const dislikeMutation = useDislikePost();
@@ -234,7 +237,7 @@ const PostCard: React.FC<PostCardProps> = ({ post }) => {
       <div className="absolute z-20 top-0 left-1/2 -translate-x-1/2 w-11/12 h-40 rounded-xl shadow-lg overflow-hidden">
         <Image
           src={post.imageUrl}
-          alt={post.id}
+          alt={post?._id || "post"}
           fill
           className="object-cover"
           priority
@@ -244,11 +247,11 @@ const PostCard: React.FC<PostCardProps> = ({ post }) => {
             onClick={() => setProfileCardVisible(true)}
             whileHover={{ scale: 1.1 }}
             whileTap={{ scale: 0.9 }}
-            aria-label={`View profile of ${post.user.username}`}
+            aria-label={`View profile of ${user?.username}`}
           >
             <Image
-              src={post.user.imgUrl}
-              alt={post.user.username}
+              src={user?.image || "/user-photo.jpg"}
+              alt={user?.username || "user"}
               width={32}
               height={32}
               className={`rounded-full object-cover border-2 shadow-md ${
@@ -326,10 +329,10 @@ const PostCard: React.FC<PostCardProps> = ({ post }) => {
       </AnimatePresence>
 
       <AnimatePresence>
-        {isProfileCardVisible && (
+        {isProfileCardVisible && user && (
           <div className="absolute inset-0 z-30">
             <ProfileCard
-              user={post.user}
+              user={user}
               onClose={() => setProfileCardVisible(false)}
             />
           </div>

@@ -7,6 +7,7 @@ import Image from "next/image";
 import { ChangeEvent, useEffect, useRef, useState } from "react";
 import { useVirtualKeyboard } from "@/hooks/useVirtualKeyboard";
 import imageCompression from "browser-image-compression";
+import { useCreatePost } from "@/hooks/useCreatePost";
 type Satisfaction = "awesome" | "good" | "bad" | "";
 
 interface PostModalProps {
@@ -36,15 +37,23 @@ export const PostModal: React.FC<PostModalProps> = ({
   const fileInputRef = useRef<HTMLInputElement>(null);
   const {
     location: userLocation,
-    addPost,
     theme,
     postTargetLocation,
     setPostTargetLocation,
-    updatePost,
     setEditingPost,
   } = useStore();
 
-  const positionToUse = postTargetLocation?.coords || userLocation.coords;
+  const createPostMutation = useCreatePost();
+
+  const targetCoords = postTargetLocation?.coords;
+
+  const positionToUse = targetCoords
+    ? [targetCoords[1], targetCoords[0]]
+    : userLocation.coords;
+
+  const convertedUserLocationToSend = userLocation.coords
+    ? [userLocation.coords[1], userLocation.coords[0]]
+    : null;
 
   const satisfactionOptions = [
     {
@@ -87,7 +96,7 @@ export const PostModal: React.FC<PostModalProps> = ({
   };
 
   const handleClose = () => {
-    setPostTargetLocation(null, null);
+    setPostTargetLocation(null);
     resetForm();
     onClose();
     setEditingPost(null);
@@ -132,31 +141,32 @@ export const PostModal: React.FC<PostModalProps> = ({
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!user || !positionToUse) return;
-    if (!imageFile || !description || !satisfaction) {
+
+    if (
+      !user ||
+      !positionToUse ||
+      !imageFile ||
+      !description ||
+      !satisfaction
+    ) {
       alert("Please complete all fields.");
       return;
     }
 
     if (postToEdit) {
-      const updatedPost: Post = {
-        ...postToEdit,
-        description,
-        satisfaction,
-        imageUrl: imagePreview || postToEdit.imageUrl,
-      };
-      updatePost(updatedPost);
+      // TODO: Implement update logic with a new mutation
+      console.log("Updating post...");
     } else {
-      const newPost: Post = {
-        id: `post_${Date.now()}`,
-        user,
+      createPostMutation.mutate({
+        imageFile,
         description,
         satisfaction,
-        imageUrl: imagePreview || "/food.webp",
-        position: positionToUse,
-        areaName: postTargetLocation?.name,
-      };
-      addPost(newPost);
+        position:
+          (postTargetLocation?.coords as [number, number]) ||
+          convertedUserLocationToSend,
+        areaName: postTargetLocation?.name || "",
+        osmId: postTargetLocation?.osmId,
+      });
     }
 
     handleClose();

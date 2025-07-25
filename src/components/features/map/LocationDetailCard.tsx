@@ -163,10 +163,12 @@ export const LocationDetailCard: React.FC<LocationDetailCardProps> = ({
             <button
               onClick={() => {
                 onAddPost();
-                setPostTargetLocation(
-                  [poi.lat, poi.lon],
-                  poi.tags.name as string
-                );
+                const coordsToSet = poi.position || [poi.lon, poi.lat];
+                setPostTargetLocation({
+                  name: poi?.tags?.name as string,
+                  coords: coordsToSet,
+                  osmId: currentPlaceOsmId,
+                });
               }}
               className="w-full mt-4 p-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-lg font-semibold flex items-center justify-center gap-2"
               aria-label="Add post for this location"
