@@ -1,9 +1,9 @@
 export type SatisfactionStatus = "awesome" | "good" | "bad";
 
 export interface User {
-  id: string;
-  username: string;
-  imgUrl: string;
+  id: string | null;
+  username: string | null;
+  image?: string | null;
 }
 
 export interface Post {
@@ -22,6 +22,7 @@ export interface Post {
   areaName?: string;
   like?: number;
   dislike?: number;
+  userId?: string;
 }
 
 export interface Poi {

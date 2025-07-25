@@ -22,6 +22,10 @@ const PostMarker: React.FC<PostMarkerProps> = ({ posts, theme }) => {
   if (!posts || posts.length === 0) return null;
 
   const topPost = posts[0];
+  const markerPosition: [number, number] = [
+    topPost.position[1],
+    topPost.position[0],
+  ];
   const isStack = posts.length > 1;
   let customIcon;
 
@@ -60,7 +64,7 @@ const PostMarker: React.FC<PostMarkerProps> = ({ posts, theme }) => {
   }
 
   return (
-    <Marker position={topPost.position} icon={customIcon}>
+    <Marker position={markerPosition} icon={customIcon}>
       <Popup className="custom-popup">
         <PostCarousel posts={posts} />
       </Popup>

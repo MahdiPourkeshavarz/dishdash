@@ -10,10 +10,10 @@ import markerIcon2x from "leaflet/dist/images/marker-icon-2x.png";
 import markerIcon from "leaflet/dist/images/marker-icon.png";
 import markerShadow from "leaflet/dist/images/marker-shadow.png";
 import { useStore } from "@/store/useStore";
-import { Poi, Post, User } from "@/types";
+import { Poi, User } from "@/types";
 import UserLocationMarker from "./UserLocationMarker";
 import ChangeView from "./ChangeView";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import PostMarker from "../post/PostMarker";
 import { MapStyleSwitcher } from "./MapStyleSwticher";
 import { FindLocationButton } from "./FindLocationButton";
@@ -26,7 +26,9 @@ import { PostCarouselOverlay } from "./PostCarouselOverlay";
 import { FlyToLocation } from "./FlyToLocation";
 import { Heart } from "lucide-react";
 import { WishPlacesModal } from "../wishPlaces/WishPlaces";
-import { getDistanceInMeters } from "@/lib/getDistance";
+import { MapEvents } from "./MapEvents";
+import { usePosts } from "@/hooks/usePost";
+import { useGroupedPosts } from "@/hooks/useGroupPosts";
 
 delete (L.Icon.Default.prototype as any)._getIconUrl;
 L.Icon.Default.mergeOptions({
@@ -43,14 +45,25 @@ interface MapViewProps {
 
 const MapView: React.FC<MapViewProps> = ({ center, user, onMarkerClick }) => {
   const defaultPosition: [number, number] = [35.6892, 51.389];
-  const { theme, posts, selectedPoi, setSelectedPoi, mapUrl } = useStore();
+  const { theme, posts, selectedPoi, setSelectedPoi, mapUrl, setPosts } =
+    useStore();
   const [pois, setPois] = useState<Poi[]>([]);
   const [isWishlistOpen, setWishlistOpen] = useState(false);
+  const [bbox, setBbox] = useState(null);
 
   const locationCardRef = useRef<HTMLDivElement>(null);
   const zoomLevel = 15;
 
   const [isMounted, setIsMounted] = useState(false);
+
+  const { data: fetchedPosts } = usePosts(bbox);
+
+  useEffect(() => {
+    if (fetchedPosts) {
+      setPosts(fetchedPosts);
+      console.log(fetchedPosts);
+    }
+  }, [fetchedPosts]);
 
   useEffect(() => {
     setIsMounted(true);
@@ -71,52 +84,7 @@ const MapView: React.FC<MapViewProps> = ({ center, user, onMarkerClick }) => {
   //   return [lat, lon] as [number, number];
   // }, [poiToHighlight]);
 
-  const groupedPosts = useMemo(() => {
-    const DISTANCE_THRESHOLD = 10; // 10 meters
-
-    // 1. Separate posts by source
-    const poiPosts = posts.filter((p) => p.source === "poi");
-    const userPosts = posts.filter((p) => p.source !== "poi");
-
-    // 2. Group POI posts by exact location (original logic)
-    const poiGroups: Post[][] = [];
-    const poiGroupMap: { [key: string]: Post[] } = {};
-    poiPosts.forEach((post) => {
-      const key = post.position.join(",");
-      if (!poiGroupMap[key]) {
-        poiGroupMap[key] = [];
-      }
-      poiGroupMap[key].push(post);
-    });
-    poiGroups.push(...Object.values(poiGroupMap));
-
-    // 3. Group user posts by proximity
-    const userGroups: Post[][] = [];
-    const processedUserPostIds = new Set<string>();
-
-    for (const post of userPosts) {
-      if (processedUserPostIds.has(post.id)) continue;
-
-      const nearbyGroup: Post[] = [post];
-      processedUserPostIds.add(post.id);
-
-      for (const otherPost of userPosts) {
-        if (processedUserPostIds.has(otherPost.id)) continue;
-
-        if (
-          getDistanceInMeters(post.position, otherPost.position) <
-          DISTANCE_THRESHOLD
-        ) {
-          nearbyGroup.push(otherPost);
-          processedUserPostIds.add(otherPost.id);
-        }
-      }
-      userGroups.push(nearbyGroup);
-    }
-
-    // 4. Combine all groups
-    return [...poiGroups, ...userGroups];
-  }, [posts]);
+  const groupedPosts = useGroupedPosts(posts);
 
   const handleCloseDetail = () => {
     setSelectedPoi(null);
@@ -141,6 +109,8 @@ const MapView: React.FC<MapViewProps> = ({ center, user, onMarkerClick }) => {
         <TileLayer url={mapUrl} />
         <ChangeView center={mapCenter} zoom={zoomLevel} />
 
+        <MapEvents onBoundsChange={setBbox} />
+
         <FlyToLocation />
 
         <PoiLoader setPois={setPois} />
@@ -163,7 +133,7 @@ const MapView: React.FC<MapViewProps> = ({ center, user, onMarkerClick }) => {
         )}
 
         {groupedPosts.map((postGroup) => (
-          <PostMarker key={postGroup[0].id} posts={postGroup} theme={theme} />
+          <PostMarker key={postGroup[0]._id} posts={postGroup} theme={theme} />
         ))}
       </MapContainer>
 
