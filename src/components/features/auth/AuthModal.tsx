@@ -210,6 +210,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
                       dir="ltr"
                       {...registerSignIn("password")}
                       error={signInErrors.password?.message}
+                      autoComplete="off"
                     />
                     {serverError && (
                       <p className="text-red-400 text-sm">{serverError}</p>
@@ -260,6 +261,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
                       dir="ltr"
                       {...registerSignUp("password")}
                       error={signUpErrors.password?.message}
+                      autoComplete="off"
                     />
                     <PasswordStrength password={passwordValue} />
                     <motion.button

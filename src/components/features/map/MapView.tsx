@@ -15,7 +15,7 @@ import UserLocationMarker from "./UserLocationMarker";
 import ChangeView from "./ChangeView";
 import { useEffect, useRef, useState } from "react";
 import PostMarker from "../post/PostMarker";
-import { MapStyleSwitcher } from "./MapStyleSwticher";
+import { MapStyleSwitcher } from "./MapStyleSwitcher";
 import { FindLocationButton } from "./FindLocationButton";
 import { PoiLoader } from "./PoiLoader";
 import { PlacesMarker } from "./PlacesMarker";
@@ -48,6 +48,7 @@ const MapView: React.FC<MapViewProps> = ({ center, user, onMarkerClick }) => {
   const { theme, posts, selectedPoi, setSelectedPoi, mapUrl, setPosts } =
     useStore();
   const [pois, setPois] = useState<Poi[]>([]);
+
   const [isWishlistOpen, setWishlistOpen] = useState(false);
   const [bbox, setBbox] = useState(null);
 
@@ -68,21 +69,6 @@ const MapView: React.FC<MapViewProps> = ({ center, user, onMarkerClick }) => {
   useEffect(() => {
     setIsMounted(true);
   }, []);
-
-  // const poiToHighlight = useMemo(() => {
-  //   return pois.find((p) => p.id === highlightedPoiId);
-  // }, [highlightedPoiId, pois]);
-
-  // const highlightPosition = useMemo(() => {
-  //   if (!poiToHighlight) return null;
-
-  //   const lat = poiToHighlight.lat ?? poiToHighlight.position?.[1];
-  //   const lon = poiToHighlight.lon ?? poiToHighlight.position?.[0];
-
-  //   if (lat === undefined || lon === undefined) return null;
-
-  //   return [lat, lon] as [number, number];
-  // }, [poiToHighlight]);
 
   const groupedPosts = useGroupedPosts(posts);
 
@@ -116,13 +102,6 @@ const MapView: React.FC<MapViewProps> = ({ center, user, onMarkerClick }) => {
         <PoiLoader setPois={setPois} />
 
         <PlacesMarker pois={pois} />
-
-        {/* {highlightPosition && (
-          <HighlightMarker
-            position={highlightPosition}
-            onComplete={() => setHighlightedPoi(null)}
-          />
-        )} */}
 
         {center && (
           <UserLocationMarker
@@ -178,7 +157,10 @@ const MapView: React.FC<MapViewProps> = ({ center, user, onMarkerClick }) => {
               <Heart size={24} />
             </motion.button>
             <AnimatePresence>
-              <WishPlacesModal isOpen={isWishlistOpen} />
+              <WishPlacesModal
+                isOpen={isWishlistOpen}
+                onClose={() => setWishlistOpen(false)}
+              />
             </AnimatePresence>
           </div>
           <FindLocationButton />

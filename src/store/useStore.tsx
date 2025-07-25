@@ -34,10 +34,12 @@ interface StoreState {
   flyToTarget: Poi | null;
   highlightedPoiId: number | null;
   mapUrl: string;
+  isAuthModalOpen: boolean;
 }
 
 interface StoreActions {
   toggleTheme: () => void;
+  toggleAuthModal: (isOpen: boolean) => void;
   setUser: (user: User | null) => void;
   setAccessToken: (token: string | null) => void;
   logout: () => void;
@@ -74,6 +76,7 @@ export const useStore = create<Store>()(
       user: null as User | null,
       accessToken: null,
       wishlist: [],
+      isAuthModalOpen: false,
       flyToLocation: null,
       selectedPoi: null,
       flyToTarget: null,
@@ -101,6 +104,8 @@ export const useStore = create<Store>()(
       setTheme: (theme) => set({ theme }),
 
       setMapUrl: (mapUrl) => set({ mapUrl }),
+
+      toggleAuthModal: (isOpen) => set({ isAuthModalOpen: isOpen }),
 
       toggleProfileModal: () =>
         set((state) => ({ isProfileModalOpen: !state.isProfileModalOpen })),

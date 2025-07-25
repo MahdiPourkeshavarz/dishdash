@@ -7,7 +7,13 @@ import { motion } from "framer-motion";
 import { Map, Coffee, Pizza, UtensilsCrossed, Loader } from "lucide-react";
 import { usePopulatedWishlist } from "@/hooks/usePopulatedWishlist";
 
-export function WishPlacesModal({ isOpen }: { isOpen: boolean }) {
+export function WishPlacesModal({
+  isOpen,
+  onClose,
+}: {
+  isOpen: boolean;
+  onClose: () => void;
+}) {
   const { theme, setFlyToTarget } = useStore();
   const [activeTab, setActiveTab] = useState("restaurant");
 
@@ -47,6 +53,8 @@ export function WishPlacesModal({ isOpen }: { isOpen: boolean }) {
   );
 
   if (!isOpen) return null;
+
+  console.log(wishlist);
 
   return (
     <motion.div
@@ -102,7 +110,10 @@ export function WishPlacesModal({ isOpen }: { isOpen: boolean }) {
                 >
                   <span className="truncate">{place.tags.name}</span>
                   <button
-                    onClick={() => setFlyToTarget(place)}
+                    onClick={() => {
+                      setFlyToTarget(place);
+                      onClose();
+                    }}
                     className={`p-1 rounded ${
                       theme === "dark"
                         ? "hover:bg-gray-600"
