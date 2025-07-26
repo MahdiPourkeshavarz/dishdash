@@ -6,33 +6,36 @@ import L from "leaflet";
 import { useStore } from "@/store/useStore";
 import { Poi } from "@/types";
 
-const restaurantIcon = L.icon({
-  iconUrl: "./restaurants.png",
-  iconSize: [24, 24],
-  iconAnchor: [16, 16],
-  popupAnchor: [0, -16],
-});
-
-const cafeIcon = L.icon({
-  iconUrl: "./cafe.png",
-  iconSize: [24, 24],
-  iconAnchor: [16, 16],
-  popupAnchor: [0, -16],
-});
-
-const fastfoodIcon = L.icon({
-  iconUrl: "./fastfood.png",
-  iconSize: [24, 24],
-  iconAnchor: [16, 16],
-  popupAnchor: [0, -16],
-});
-
 interface PoiMarkersLayerProps {
   pois: Poi[];
 }
 
 export const PlacesMarker: React.FC<PoiMarkersLayerProps> = ({ pois }) => {
   const { theme, setSelectedPoi, setHighlightedPoi } = useStore();
+
+  const restaurantIcon = L.icon({
+    iconUrl: theme === "light" ? "./restaurants.png" : "./restaurants-dark.png",
+    iconSize: theme === "light" ? [30, 32] : [27, 36],
+    iconAnchor: [16, 16],
+    popupAnchor: [0, -16],
+    className: "map-poi-icon",
+  });
+
+  const cafeIcon = L.icon({
+    iconUrl: theme === "light" ? "./cafe.png" : "./cafe-dark.png",
+    iconSize: theme === "light" ? [30, 32] : [27, 36],
+    iconAnchor: [16, 16],
+    popupAnchor: [0, -16],
+    className: "map-poi-icon",
+  });
+
+  const fastfoodIcon = L.icon({
+    iconUrl: theme === "light" ? "./fastfood.png" : "./fastfood-dark.png",
+    iconSize: theme === "light" ? [30, 33] : [27, 36],
+    iconAnchor: [16, 16],
+    popupAnchor: [0, -16],
+    className: "map-poi-icon",
+  });
 
   const poiMarkers = useMemo(() => {
     return pois

@@ -121,3 +121,18 @@ input[type="password"]::-ms-clear {
   width: 0;
   height: 0;
 }
+
+.map-poi-icon {
+  filter: drop-shadow(2px 6px 4px rgba(34, 34, 34, 0.5));
+  transition: transform 0.15s ease-out, filter 0.2s ease-out;
+}
+
+.map-poi-icon:hover {
+  transform: scale(1.2);
+  filter: drop-shadow(2px 8px 6px rgba(0, 0, 0, 0.4));
+}
+
+.map-poi-icon:active {
+  transform: scale(1.3);
+  transition-duration: 0.05s;
+}
