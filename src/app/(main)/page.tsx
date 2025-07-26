@@ -93,9 +93,7 @@ export default function HomePage() {
         onClose={() => {
           togglePostModal(false);
           setEditingPost(null);
-          handleToggleModal();
         }}
-        user={currentUser}
         postToEdit={editingPost}
       />
 

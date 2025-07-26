@@ -27,6 +27,10 @@ const createPost = async (postData: CreatePostData) => {
     formData.append("osmId", String(postData.osmId));
   }
 
+  if (postData.tags && postData.tags.length > 0) {
+    formData.append("tags", JSON.stringify(postData.tags));
+  }
+
   const { data } = await apiClient.post("/posts", formData);
   return data;
 };

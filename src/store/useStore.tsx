@@ -118,7 +118,7 @@ export const useStore = create<Store>()(
       updatePost: (updatedPost) =>
         set((state) => ({
           posts: state.posts.map((p) =>
-            p.id === updatedPost.id ? updatedPost : p
+            p._id === updatedPost._id ? updatedPost : p
           ),
         })),
 

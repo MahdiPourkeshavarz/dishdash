@@ -62,7 +62,6 @@ const MapView: React.FC<MapViewProps> = ({ center, user, onMarkerClick }) => {
   useEffect(() => {
     if (fetchedPosts) {
       setPosts(fetchedPosts);
-      console.log(fetchedPosts);
     }
   }, [fetchedPosts]);
 
@@ -112,7 +111,11 @@ const MapView: React.FC<MapViewProps> = ({ center, user, onMarkerClick }) => {
         )}
 
         {groupedPosts.map((postGroup) => (
-          <PostMarker key={postGroup[0]._id} posts={postGroup} theme={theme} />
+          <PostMarker
+            key={postGroup[0]._id || postGroup[0]?.id}
+            posts={postGroup}
+            theme={theme}
+          />
         ))}
       </MapContainer>
 
