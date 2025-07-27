@@ -6,6 +6,7 @@ import { useStore } from "@/store/useStore";
 import { motion } from "framer-motion";
 import { Map, Coffee, Pizza, UtensilsCrossed, Loader } from "lucide-react";
 import { usePopulatedWishlist } from "@/hooks/usePopulatedWishlist";
+import { useSession } from "next-auth/react";
 
 export function WishPlacesModal({
   isOpen,
@@ -20,6 +21,9 @@ export function WishPlacesModal({
   const { data: wishlist = [], isLoading } = usePopulatedWishlist({
     enabled: isOpen,
   });
+
+  const { status } = useSession();
+  const isLoggedIn = status === "authenticated";
 
   const categories = [
     {
@@ -62,7 +66,7 @@ export function WishPlacesModal({
       animate={{ y: 0, opacity: 1 }}
       exit={{ y: 20, opacity: 0 }}
       transition={{ type: "spring", stiffness: 300, damping: 25 }}
-      className={`absolute bottom-20 right-8 z-[1001] w-[275px] rounded-xl shadow-lg border backdrop-blur-md ${
+      className={`absolute bottom-20 right-12 z-[1001] w-[275px] rounded-xl shadow-lg border backdrop-blur-md ${
         theme === "dark"
           ? "bg-gray-800/80 border-gray-700 text-white"
           : "bg-white/80 border-gray-200 text-black"
@@ -90,7 +94,13 @@ export function WishPlacesModal({
         ))}
       </div>
       <div className="p-2 max-h-48 overflow-y-auto">
-        {isLoading ? (
+        {!isLoggedIn ? (
+          <div className="flex justify-center items-center p-4">
+            <p className="text-xs text-center text-gray-500">
+              لطفا وارد حساب کاربری خود شوید
+            </p>
+          </div>
+        ) : isLoading ? (
           <div className="flex justify-center items-center p-4">
             <Loader className="animate-spin text-gray-500" />
           </div>

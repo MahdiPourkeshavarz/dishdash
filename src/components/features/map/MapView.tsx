@@ -29,6 +29,7 @@ import { WishPlacesModal } from "../wishPlaces/WishPlaces";
 import { MapEvents } from "./MapEvents";
 import { usePosts } from "@/hooks/usePost";
 import { useGroupedPosts } from "@/hooks/useGroupPosts";
+import { useIsMounted } from "@/hooks/useIsmounted";
 
 delete (L.Icon.Default.prototype as any)._getIconUrl;
 L.Icon.Default.mergeOptions({
@@ -55,7 +56,7 @@ const MapView: React.FC<MapViewProps> = ({ center, user, onMarkerClick }) => {
   const locationCardRef = useRef<HTMLDivElement>(null);
   const zoomLevel = 15;
 
-  const [isMounted, setIsMounted] = useState(false);
+  const isMounted = useIsMounted();
 
   const { data: fetchedPosts } = usePosts(bbox);
 
@@ -64,10 +65,6 @@ const MapView: React.FC<MapViewProps> = ({ center, user, onMarkerClick }) => {
       setPosts(fetchedPosts);
     }
   }, [fetchedPosts]);
-
-  useEffect(() => {
-    setIsMounted(true);
-  }, []);
 
   const groupedPosts = useGroupedPosts(posts);
 
@@ -145,7 +142,7 @@ const MapView: React.FC<MapViewProps> = ({ center, user, onMarkerClick }) => {
       {isMounted && (
         <>
           <MapStyleSwitcher />
-          <div className="absolute top-2/7 right-4 z-[10000]">
+          <div className="absolute top-3/7 right-4 z-[10000]">
             <motion.button
               onClick={() => setWishlistOpen(!isWishlistOpen)}
               className={`p-3 rounded-full shadow-lg ${

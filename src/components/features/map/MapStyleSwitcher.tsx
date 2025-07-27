@@ -1,24 +1,23 @@
 "use client";
 
 import { useState, useRef } from "react";
-import { useStore } from "@/store/useStore";
+import { useStore, MapStyleKey } from "@/store/useStore";
 import { useClickOutside } from "@/hooks/useClickOutside";
 import { motion, AnimatePresence, Variants } from "framer-motion";
 import { Layers } from "lucide-react";
-import { useMapStyle } from "@/store/useMapStyle";
+import { cartoMapStyles } from "@/lib/mapStyles";
 
 export function MapStyleSwitcher() {
-  const { theme, setTheme, setMapUrl } = useStore();
-  const mapStyles = useMapStyle();
+  const { theme, setMapStyle } = useStore();
   const [isOpen, setIsOpen] = useState(false);
   const switcherRef = useRef<HTMLDivElement>(null);
 
   useClickOutside(switcherRef, () => setIsOpen(false));
 
-  const styles = [
-    { name: "light", style: mapStyles.lightV1, uiTheme: "light", idx: 0 },
-    { name: "lightV2", style: mapStyles.lightV2, uiTheme: "light", idx: 1 },
-    { name: "dark", style: mapStyles.dark, uiTheme: "dark", idx: 2 },
+  const styles: { key: MapStyleKey; style: { url: string } }[] = [
+    { key: "lightV1", style: cartoMapStyles.lightV1 },
+    { key: "lightV2", style: cartoMapStyles.lightV2 },
+    { key: "dark", style: cartoMapStyles.dark },
   ];
 
   const previewVariants: Variants = {
@@ -52,14 +51,14 @@ export function MapStyleSwitcher() {
   return (
     <div
       ref={switcherRef}
-      className="absolute top-3/7 -translate-y-1/2 right-4 z-[1001]"
+      className="absolute top-2/7 -translate-y-1/2 right-4 z-[1001]"
     >
       <div className="relative flex items-center">
         <AnimatePresence>
           {isOpen &&
             styles.map((style, index) => (
               <motion.div
-                key={style.name}
+                key={style.key}
                 variants={previewVariants}
                 initial="hidden"
                 animate="visible"
@@ -69,9 +68,8 @@ export function MapStyleSwitcher() {
               >
                 <button
                   onClick={() => {
-                    setTheme(style.uiTheme as "light" | "dark");
+                    setMapStyle(style.key);
                     setIsOpen(false);
-                    setMapUrl(style.style.url);
                   }}
                   className={`relative w-14 h-14 rounded-lg border-2 overflow-hidden transition-all shadow-lg`}
                 >

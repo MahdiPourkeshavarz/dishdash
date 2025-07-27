@@ -11,6 +11,7 @@ import { User } from "@/types";
 import { AuthModal } from "@/components/features/auth/AuthModal";
 import { DeleteConfirmationModal } from "@/components/features/post/DeleteConfirmationModal";
 import { useSession } from "next-auth/react";
+import { useIsMounted } from "@/hooks/useIsmounted";
 
 const currentUser: User = {
   id: "currentUser123",
@@ -37,11 +38,7 @@ export default function HomePage() {
 
   const { data: session } = useSession();
 
-  const [isMounted, setIsMounted] = useState(false);
-
-  useEffect(() => {
-    setIsMounted(true);
-  }, []);
+  const isMounted = useIsMounted();
 
   useEffect(() => {
     fetchUserLocation();
