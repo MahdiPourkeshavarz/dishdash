@@ -6,6 +6,7 @@ import { Image as ImageIcon, Send, MapPin, X } from "lucide-react";
 import Image from "next/image";
 import { useVirtualKeyboard } from "@/hooks/useVirtualKeyboard";
 import { usePostForm } from "@/hooks/usePostForm";
+import { useNearbyPoiCheck } from "@/hooks/useNearbyPoiCheck";
 type Satisfaction = "awesome" | "good" | "bad" | "";
 
 interface PostModalProps {
@@ -32,6 +33,18 @@ export const PostModal: React.FC<PostModalProps> = ({
     setPostTargetLocation,
     setEditingPost,
   } = useStore();
+
+  const {
+    poiToConfirm,
+    confirmPoi,
+    rejectPoi,
+    reset: resetPoiCheck,
+  } = useNearbyPoiCheck({
+    location: userLocation.coords
+      ? { lat: userLocation.coords[0], lng: userLocation.coords[1] }
+      : null,
+    enabled: isOpen && !postToEdit && !postTargetLocation,
+  });
 
   const satisfactionOptions = [
     {
@@ -65,6 +78,7 @@ export const PostModal: React.FC<PostModalProps> = ({
   const handleManualClose = () => {
     resetForm();
     handleClose();
+    resetPoiCheck();
   };
 
   const {
@@ -164,12 +178,37 @@ export const PostModal: React.FC<PostModalProps> = ({
                           }`}
                         >
                           <MapPin size={16} />
-                          <span>
-                            {postTargetLocation?.name ||
-                              postToEdit?.areaName ||
-                              userLocation.areaName ||
-                              "Location"}
-                          </span>
+                          {poiToConfirm ? (
+                            <div className="flex flex-col items-center animate-pulse pt-4">
+                              <span>
+                                Are you at{" "}
+                                <strong>{poiToConfirm.tags?.name}</strong>?
+                              </span>
+                              <div className="flex items-center gap-2">
+                                <button
+                                  type="button"
+                                  onClick={confirmPoi}
+                                  className="px-3 py-1 text-xs font-semibold text-white bg-green-600 rounded-full hover:bg-green-700"
+                                >
+                                  Yes
+                                </button>
+                                <button
+                                  type="button"
+                                  onClick={rejectPoi}
+                                  className="px-3 py-1 text-xs font-semibold text-gray-800 bg-gray-300 rounded-full hover:bg-gray-400"
+                                >
+                                  No
+                                </button>
+                              </div>
+                            </div>
+                          ) : (
+                            <span>
+                              {postTargetLocation?.name ||
+                                postToEdit?.areaName ||
+                                userLocation.areaName ||
+                                "Location"}
+                            </span>
+                          )}
                         </div>
                         <div className="flex items-center gap-3">
                           {satisfactionOptions.map((option) => {

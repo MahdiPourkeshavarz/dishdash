@@ -100,12 +100,13 @@ export const usePostForm = ({ postToEdit, onSuccess }: UsePostFormProps) => {
         alert("Failed to update post. Please try again.");
       }
     } else {
-      const convertedUserLocationToSend = userLocation.coords
+      const userGpsLocation = userLocation.coords
         ? [userLocation.coords[1], userLocation.coords[0]]
         : null;
 
-      const positionToUse =
-        postTargetLocation?.coords || convertedUserLocationToSend;
+      const positionToUse = postTargetLocation?.coords
+        ? [postTargetLocation.coords[1], postTargetLocation.coords[0]]
+        : userGpsLocation;
 
       if (
         !user ||
@@ -114,7 +115,11 @@ export const usePostForm = ({ postToEdit, onSuccess }: UsePostFormProps) => {
         !description ||
         !satisfaction
       ) {
-        alert("Please complete all fields to create a post.");
+        if (!positionToUse) {
+          alert("Location not found. Please enable location services.");
+        } else {
+          alert("Please complete all fields to create a post.");
+        }
         return;
       }
 
@@ -123,10 +128,8 @@ export const usePostForm = ({ postToEdit, onSuccess }: UsePostFormProps) => {
           imageFile,
           description,
           satisfaction,
-          position:
-            (postTargetLocation?.coords as [number, number]) ||
-            convertedUserLocationToSend,
-          areaName: postTargetLocation?.name || "",
+          position: positionToUse as [number, number],
+          areaName: postTargetLocation?.name || userLocation.areaName || "",
           osmId: postTargetLocation?.osmId,
           tags,
         });

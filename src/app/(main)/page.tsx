@@ -1,9 +1,8 @@
 "use client";
 import { MapLoader } from "@/components/features/map/MapLoader";
-import PostModal from "@/components/features/post/PostModal";
 import { Navbar } from "@/components/layout/Navbar";
 import dynamic from "next/dynamic";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo } from "react";
 import { motion } from "framer-motion";
 import { Plus } from "lucide-react";
 import { useStore } from "@/store/useStore";
@@ -19,9 +18,13 @@ const currentUser: User = {
   image: "/user-photo.jpg",
 };
 
-export default function HomePage() {
-  const [isModalOpen, setIsModalOpen] = useState(false);
+const PostModal = dynamic(
+  () =>
+    import("@/components/features/post/PostModal").then((mod) => mod.PostModal),
+  { ssr: false }
+);
 
+export default function HomePage() {
   const {
     location,
     fetchUserLocation,
@@ -33,8 +36,6 @@ export default function HomePage() {
     isAuthModalOpen,
     toggleAuthModal,
   } = useStore();
-
-  const handleToggleModal = () => setIsModalOpen((prev) => !prev);
 
   const { data: session } = useSession();
 
@@ -64,7 +65,7 @@ export default function HomePage() {
             suppressHydrationWarning={true}
           >
             <motion.button
-              onClick={handleToggleModal}
+              onClick={() => togglePostModal(true)}
               className={`
                       relative flex items-center justify-center w-full h-full rounded-full shadow-lg
                       transition-colors duration-200
@@ -86,7 +87,7 @@ export default function HomePage() {
       )}
 
       <PostModal
-        isOpen={isPostModalOpen || isModalOpen}
+        isOpen={isPostModalOpen}
         onClose={() => {
           togglePostModal(false);
           setEditingPost(null);
@@ -97,7 +98,7 @@ export default function HomePage() {
       <MapView
         center={location.coords}
         user={currentUser}
-        onMarkerClick={handleToggleModal}
+        onMarkerClick={() => togglePostModal(true)}
       />
 
       <DeleteConfirmationModal />
