@@ -2,15 +2,17 @@
 import { MapLoader } from "@/components/features/map/MapLoader";
 import { Navbar } from "@/components/layout/Navbar";
 import dynamic from "next/dynamic";
-import { useEffect, useMemo } from "react";
-import { motion } from "framer-motion";
-import { Plus } from "lucide-react";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { AnimatePresence, motion } from "framer-motion";
+import { Plus, SearchIcon } from "lucide-react";
 import { useStore } from "@/store/useStore";
 import { User } from "@/types";
 import { AuthModal } from "@/components/features/auth/AuthModal";
 import { DeleteConfirmationModal } from "@/components/features/post/DeleteConfirmationModal";
 import { useSession } from "next-auth/react";
 import { useIsMounted } from "@/hooks/useIsmounted";
+import { SearchBar } from "@/components/features/search/SearchBar";
+import { useClickOutside } from "@/hooks/useClickOutside";
 
 const currentUser: User = {
   id: "currentUser123",
@@ -35,15 +37,27 @@ export default function HomePage() {
     setEditingPost,
     isAuthModalOpen,
     toggleAuthModal,
+    setIsSearching,
+    isSearching,
   } = useStore();
 
   const { data: session } = useSession();
 
   const isMounted = useIsMounted();
+  const [isSearchOpen, setIsSearchOpen] = useState(false);
 
   useEffect(() => {
     fetchUserLocation();
   }, [fetchUserLocation]);
+
+  const searchRef = useRef<HTMLDivElement>(null);
+
+  useClickOutside(searchRef, () => {
+    if (isSearchOpen && !isSearching) {
+      setIsSearchOpen(false);
+      setIsSearching(false);
+    }
+  });
 
   const MapView = useMemo(
     () =>
@@ -57,6 +71,31 @@ export default function HomePage() {
   return (
     <main className="w-screen h-[100dvh] relative overflow-hidden">
       <Navbar onLoginClick={() => toggleAuthModal(true)} />
+
+      {isMounted && (
+        <div
+          ref={searchRef}
+          className="absolute top-16 left-1/2 -translate-x-1/2 z-[200000] flex flex-col items-center"
+        >
+          {!isSearchOpen && (
+            <motion.button
+              onClick={() => setIsSearchOpen(true)}
+              className={`flex items-center gap-2 px-4 py-2 rounded-full shadow-lg transition-colors backdrop-blur-md ${
+                theme === "dark"
+                  ? "bg-gray-800/50 text-white"
+                  : "bg-white/50 text-gray-900"
+              }`}
+              aria-label="Toggle search bar"
+              whileTap={{ scale: 0.95 }}
+            >
+              <span>جستجو</span>
+              <SearchIcon size={20} />
+            </motion.button>
+          )}
+
+          <AnimatePresence>{isSearchOpen && <SearchBar />}</AnimatePresence>
+        </div>
+      )}
 
       {isMounted && session?.user && (
         <div className="absolute bottom-7 right-4 z-[1000]">

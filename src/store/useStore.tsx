@@ -38,6 +38,8 @@ interface StoreState {
   flyToTarget: Poi | null;
   highlightedPoiId: number | null;
   isAuthModalOpen: boolean;
+  searchResults: Poi[] | null;
+  isSearching: boolean;
 }
 
 interface StoreActions {
@@ -63,6 +65,9 @@ interface StoreActions {
   setFlyToTarget: (poi: Poi | null) => void;
   setHighlightedPoi: (id: number | null) => void;
   setPosts: (posts: Post[]) => void;
+  setSearchResults: (results: Poi[] | null) => void;
+  setIsSearching: (isSearching: boolean) => void;
+  clearSearch: () => void
 }
 
 type Store = StoreState & StoreActions;
@@ -92,6 +97,8 @@ export const useStore = create<Store>()(
         areaName: null,
         error: null,
       },
+      searchResults: null,
+      isSearching: false,
 
       setMapStyle: (key: MapStyleKey) =>
         set({
@@ -99,6 +106,7 @@ export const useStore = create<Store>()(
           theme: key === "dark" ? "dark" : "light",
           mapUrl: cartoMapStyles[key].url,
         }),
+      clearSearch: () => set({ searchResults: null, isSearching: false }),
 
       setPosts: (posts) => set({ posts }),
 
@@ -234,7 +242,11 @@ export const useStore = create<Store>()(
       setAccessToken: (token) => set({ accessToken: token }),
 
       logout: () => set({ user: null, accessToken: null }),
+
+      setSearchResults: (results) => set({ searchResults: results }),
+      setIsSearching: (isSearching) => set({ isSearching }),
     }),
+
     {
       name: "dishdash",
       partialize: (state) => ({

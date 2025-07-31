@@ -43,3 +43,10 @@ export interface Poi {
     "addr:street"?: string;
   };
 }
+
+export interface SearchParams {
+  searchTerm: string;
+  atmosphere: string;
+  amenity: string;
+  distance: "walking" | "near" | "driving";
+}

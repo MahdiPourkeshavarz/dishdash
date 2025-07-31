@@ -13,28 +13,32 @@ interface PoiLoaderProps {
 
 export const PoiLoader: React.FC<PoiLoaderProps> = ({ setPois }) => {
   const map = useMap();
+  const [bounds, setBounds] = useState<L.LatLngBounds | null>(() =>
+    map.getBounds()
+  );
+  const [currentZoom, setCurrentZoom] = useState(() => map.getZoom());
 
-  const [bounds, setBounds] = useState<L.LatLngBounds>(() => map.getBounds());
-
-  const { data, isSuccess } = useQuery({
-    queryKey: ["pois", bounds.toBBoxString()],
-    queryFn: () => {
-      if (map.getZoom() < 16) {
-        return [];
-      }
-      return fetchPoisInBounds(bounds);
-    },
+  const { data: fetchedPois } = useQuery({
+    queryKey: ["pois", bounds?.toBBoxString()],
+    queryFn: () => fetchPoisInBounds(bounds!),
+    enabled: !!bounds && currentZoom >= 15,
     staleTime: 1000 * 60 * 5,
+    refetchOnWindowFocus: false,
   });
 
   useEffect(() => {
-    if (isSuccess) {
-      setPois(data || []);
+    if (currentZoom >= 16) {
+      setPois(fetchedPois || []);
+    } else {
+      setPois([]);
     }
-  }, [isSuccess, data, setPois]);
+  }, [fetchedPois, setPois, currentZoom]);
 
   useMapEvents({
-    moveend: () => setBounds(map.getBounds()),
+    moveend: () => {
+      setBounds(map.getBounds());
+      setCurrentZoom(map.getZoom());
+    },
   });
 
   return null;
