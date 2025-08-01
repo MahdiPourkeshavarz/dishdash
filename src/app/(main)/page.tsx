@@ -1,16 +1,18 @@
 "use client";
 import { MapLoader } from "@/components/features/map/MapLoader";
-import PostModal from "@/components/features/post/PostModal";
 import { Navbar } from "@/components/layout/Navbar";
 import dynamic from "next/dynamic";
-import { useEffect, useMemo, useState } from "react";
-import { motion } from "framer-motion";
-import { Plus } from "lucide-react";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { AnimatePresence, motion } from "framer-motion";
+import { Plus, SearchIcon } from "lucide-react";
 import { useStore } from "@/store/useStore";
 import { User } from "@/types";
 import { AuthModal } from "@/components/features/auth/AuthModal";
 import { DeleteConfirmationModal } from "@/components/features/post/DeleteConfirmationModal";
 import { useSession } from "next-auth/react";
+import { useIsMounted } from "@/hooks/useIsmounted";
+import { SearchBar } from "@/components/features/search/SearchBar";
+import { useClickOutside } from "@/hooks/useClickOutside";
 
 const currentUser: User = {
   id: "currentUser123",
@@ -18,9 +20,13 @@ const currentUser: User = {
   image: "/user-photo.jpg",
 };
 
-export default function HomePage() {
-  const [isModalOpen, setIsModalOpen] = useState(false);
+const PostModal = dynamic(
+  () =>
+    import("@/components/features/post/PostModal").then((mod) => mod.PostModal),
+  { ssr: false }
+);
 
+export default function HomePage() {
   const {
     location,
     fetchUserLocation,
@@ -31,21 +37,27 @@ export default function HomePage() {
     setEditingPost,
     isAuthModalOpen,
     toggleAuthModal,
+    setIsSearching,
+    isSearching,
   } = useStore();
-
-  const handleToggleModal = () => setIsModalOpen((prev) => !prev);
 
   const { data: session } = useSession();
 
-  const [isMounted, setIsMounted] = useState(false);
-
-  useEffect(() => {
-    setIsMounted(true);
-  }, []);
+  const isMounted = useIsMounted();
+  const [isSearchOpen, setIsSearchOpen] = useState(false);
 
   useEffect(() => {
     fetchUserLocation();
   }, [fetchUserLocation]);
+
+  const searchRef = useRef<HTMLDivElement>(null);
+
+  useClickOutside(searchRef, () => {
+    if (isSearchOpen && !isSearching) {
+      setIsSearchOpen(false);
+      setIsSearching(false);
+    }
+  });
 
   const MapView = useMemo(
     () =>
@@ -60,6 +72,31 @@ export default function HomePage() {
     <main className="w-screen h-[100dvh] relative overflow-hidden">
       <Navbar onLoginClick={() => toggleAuthModal(true)} />
 
+      {isMounted && (
+        <div
+          ref={searchRef}
+          className="absolute top-16 left-1/2 -translate-x-1/2 z-[200000] flex flex-col items-center"
+        >
+          {!isSearchOpen && (
+            <motion.button
+              onClick={() => setIsSearchOpen(true)}
+              className={`flex items-center gap-2 px-4 py-2 rounded-full shadow-lg transition-colors backdrop-blur-md ${
+                theme === "dark"
+                  ? "bg-gray-800/50 text-white"
+                  : "bg-white/50 text-gray-900"
+              }`}
+              aria-label="Toggle search bar"
+              whileTap={{ scale: 0.95 }}
+            >
+              <span>جستجو</span>
+              <SearchIcon size={20} />
+            </motion.button>
+          )}
+
+          <AnimatePresence>{isSearchOpen && <SearchBar />}</AnimatePresence>
+        </div>
+      )}
+
       {isMounted && session?.user && (
         <div className="absolute bottom-7 right-4 z-[1000]">
           <motion.div
@@ -67,7 +104,7 @@ export default function HomePage() {
             suppressHydrationWarning={true}
           >
             <motion.button
-              onClick={handleToggleModal}
+              onClick={() => togglePostModal(true)}
               className={`
                       relative flex items-center justify-center w-full h-full rounded-full shadow-lg
                       transition-colors duration-200
@@ -89,20 +126,18 @@ export default function HomePage() {
       )}
 
       <PostModal
-        isOpen={isPostModalOpen || isModalOpen}
+        isOpen={isPostModalOpen}
         onClose={() => {
           togglePostModal(false);
           setEditingPost(null);
-          handleToggleModal();
         }}
-        user={currentUser}
         postToEdit={editingPost}
       />
 
       <MapView
         center={location.coords}
         user={currentUser}
-        onMarkerClick={handleToggleModal}
+        onMarkerClick={() => togglePostModal(true)}
       />
 
       <DeleteConfirmationModal />

@@ -8,7 +8,7 @@ const fetchPopulatedWishlist = async () => {
   if (!items || items.length === 0) return [];
 
   const placePromises = items.map((item) =>
-    apiClient.get(`/places/${item.placeId}`).then((res) => res.data)
+    apiClient.get(`places/${item.placeId}`).then((res) => res.data)
   );
 
   const populatedPlaces = await Promise.all(placePromises);

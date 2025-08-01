@@ -3,6 +3,7 @@
 import { NextAuthOptions } from "next-auth";
 import GoogleProvider from "next-auth/providers/google";
 import CredentialsProvider from "next-auth/providers/credentials";
+import { refreshAccessToken } from "./refreshAccessToken";
 
 export const authOptions: NextAuthOptions = {
   session: {
@@ -55,17 +56,29 @@ export const authOptions: NextAuthOptions = {
       if (user) {
         token.id = (user as any).user._id;
         token.username = (user as any).user.username;
-        token.accessToken = (user as any).access_token;
         token.picture = (user as any).user.image;
+        token.accessToken = (user as any).access_token;
+        token.refreshToken = (user as any).refresh_token;
+
+        token.accessTokenExpires = Date.now() + 59 * 60 * 1000;
+
+        return token;
       }
-      return token;
+
+      if (Date.now() < (token.accessTokenExpires as number)) {
+        return token;
+      }
+
+      console.log("Access token has expired, attempting to refresh...");
+      return await refreshAccessToken(token);
     },
+
     session: async ({ session, token }) => {
       if (session?.user) {
         session.user.id = token.id as string;
         session.user.username = token.username as string;
-        session.accessToken = token.accessToken as string;
         session.user.image = token.picture as string;
+        session.accessToken = token.accessToken as string;
       }
       return session;
     },

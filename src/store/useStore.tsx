@@ -3,7 +3,9 @@ import { create } from "zustand";
 import { createJSONStorage, persist } from "zustand/middleware";
 import { Poi, Post, User } from "@/types";
 import { posts as initialState } from "@/lib/posts";
-import { cartoMapStyles } from "./useMapStyle";
+import { cartoMapStyles } from "@/lib/mapStyles";
+
+export type MapStyleKey = "lightV1" | "lightV2" | "dark";
 
 export interface LocationState {
   coords: [number, number] | null;
@@ -19,6 +21,8 @@ interface TargetLocation {
 
 interface StoreState {
   theme: "light" | "dark";
+  mapStyleKey: MapStyleKey;
+  mapUrl: string;
   user: User | null;
   accessToken: string | null;
   location: LocationState;
@@ -33,12 +37,14 @@ interface StoreState {
   selectedPoi: Poi | null;
   flyToTarget: Poi | null;
   highlightedPoiId: number | null;
-  mapUrl: string;
   isAuthModalOpen: boolean;
+  searchResults: Poi[] | null;
+  isSearching: boolean;
 }
 
 interface StoreActions {
   toggleTheme: () => void;
+  setMapStyle: (key: MapStyleKey) => void;
   toggleAuthModal: (isOpen: boolean) => void;
   setUser: (user: User | null) => void;
   setAccessToken: (token: string | null) => void;
@@ -46,7 +52,6 @@ interface StoreActions {
   fetchUserLocation: () => Promise<boolean>;
   addPost: (post: Post) => void;
   toggleProfileModal: () => void;
-  setTheme: (theme: "light" | "dark") => void;
   setPostTargetLocation: (target: TargetLocation | null) => void;
   setEditingPost: (post: Post | null) => void;
   setDeletingPost: (post: Post | null) => void;
@@ -59,8 +64,10 @@ interface StoreActions {
   setSelectedPoi: (poi: Poi | null) => void;
   setFlyToTarget: (poi: Poi | null) => void;
   setHighlightedPoi: (id: number | null) => void;
-  setMapUrl: (url: string) => void;
   setPosts: (posts: Post[]) => void;
+  setSearchResults: (results: Poi[] | null) => void;
+  setIsSearching: (isSearching: boolean) => void;
+  clearSearch: () => void
 }
 
 type Store = StoreState & StoreActions;
@@ -68,11 +75,8 @@ type Store = StoreState & StoreActions;
 export const useStore = create<Store>()(
   persist(
     (set, get) => ({
-      theme:
-        typeof window !== "undefined" &&
-        window.matchMedia("(prefers-color-scheme: dark)").matches
-          ? "dark"
-          : "light",
+      theme: "dark",
+      mapStyleKey: "dark",
       user: null as User | null,
       accessToken: null,
       wishlist: [],
@@ -82,7 +86,7 @@ export const useStore = create<Store>()(
       flyToTarget: null,
       highlightedPoiId: null,
       posts: initialState,
-      mapUrl: cartoMapStyles.lightV1.url,
+      mapUrl: cartoMapStyles.dark.url,
       isProfileModalOpen: false,
       postTargetLocation: null,
       editingPost: null,
@@ -93,6 +97,16 @@ export const useStore = create<Store>()(
         areaName: null,
         error: null,
       },
+      searchResults: null,
+      isSearching: false,
+
+      setMapStyle: (key: MapStyleKey) =>
+        set({
+          mapStyleKey: key,
+          theme: key === "dark" ? "dark" : "light",
+          mapUrl: cartoMapStyles[key].url,
+        }),
+      clearSearch: () => set({ searchResults: null, isSearching: false }),
 
       setPosts: (posts) => set({ posts }),
 
@@ -101,9 +115,11 @@ export const useStore = create<Store>()(
       setSelectedPoi: (poi) => set({ selectedPoi: poi }),
       setFlyToTarget: (poi) => set({ flyToTarget: poi }),
 
-      setTheme: (theme) => set({ theme }),
-
-      setMapUrl: (mapUrl) => set({ mapUrl }),
+      toggleTheme: () => {
+        const currentStyle = get().mapStyleKey;
+        const newStyle = currentStyle === "dark" ? "lightV1" : "dark";
+        get().setMapStyle(newStyle);
+      },
 
       toggleAuthModal: (isOpen) => set({ isAuthModalOpen: isOpen }),
 
@@ -118,7 +134,7 @@ export const useStore = create<Store>()(
       updatePost: (updatedPost) =>
         set((state) => ({
           posts: state.posts.map((p) =>
-            p.id === updatedPost.id ? updatedPost : p
+            p._id === updatedPost._id ? updatedPost : p
           ),
         })),
 
@@ -210,11 +226,6 @@ export const useStore = create<Store>()(
           posts: [newPost, ...state.posts],
         })),
 
-      toggleTheme: () =>
-        set((state) => ({
-          theme: state.theme === "dark" ? "light" : "dark",
-        })),
-
       setUser: (user) => set({ user }),
 
       addToWishlist: (place) => {
@@ -231,11 +242,15 @@ export const useStore = create<Store>()(
       setAccessToken: (token) => set({ accessToken: token }),
 
       logout: () => set({ user: null, accessToken: null }),
+
+      setSearchResults: (results) => set({ searchResults: results }),
+      setIsSearching: (isSearching) => set({ isSearching }),
     }),
+
     {
       name: "dishdash",
-      storage: createJSONStorage(() => sessionStorage),
       partialize: (state) => ({
+        mapStyleKey: state.mapStyleKey,
         theme: state.theme,
         posts: state.posts,
         wishlist: state.wishlist,

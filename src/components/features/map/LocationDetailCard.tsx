@@ -19,6 +19,8 @@ import {
   Bookmark,
 } from "lucide-react";
 import { AddPostButton } from "../post/AddPostButton";
+import { DirectionsPill } from "../post/DirectionPill";
+import { useState } from "react";
 
 interface LocationDetailCardProps {
   poi: Poi | null;
@@ -37,6 +39,7 @@ export const LocationDetailCard: React.FC<LocationDetailCardProps> = ({
 
   const addToWishlistMutation = useAddToWishlist();
   const removeFromWishlistMutation = useRemoveFromWishlist();
+  const [isDirectionsPillOpen, setDirectionsPillOpen] = useState(false);
 
   if (!poi) return null;
 
@@ -59,6 +62,14 @@ export const LocationDetailCard: React.FC<LocationDetailCardProps> = ({
     }
   };
 
+  const positionToUse: [number, number] = poi.position
+    ? [poi.position[0], poi.position[1]]
+    : [poi.lat, poi.lon];
+
+  function handleCardClick() {
+    if (isDirectionsPillOpen) setDirectionsPillOpen(false);
+  }
+
   return (
     <AnimatePresence>
       {poi && (
@@ -75,6 +86,7 @@ export const LocationDetailCard: React.FC<LocationDetailCardProps> = ({
                 ? "bg-gray-800/80 border-gray-700 text-white"
                 : "bg-white/80 border-gray-200 text-black"
             }`}
+            onClick={handleCardClick}
           >
             <button
               onClick={onClose}
@@ -102,9 +114,9 @@ export const LocationDetailCard: React.FC<LocationDetailCardProps> = ({
             </h3>
 
             <div
-              className={`space-y-2 text-xs border-t pt-2 mt-2 ${
+              className={`space-y-2 text-xs pt-2 my-2 ${
                 theme === "dark" ? "border-white/10" : "border-black/10"
-              }`}
+              } `}
             >
               {poi.tags["addr:street"] &&
                 (() => {
@@ -160,7 +172,20 @@ export const LocationDetailCard: React.FC<LocationDetailCardProps> = ({
               )}
             </div>
 
-            <AddPostButton poi={poi} onAddPost={onAddPost} />
+            <div
+              className={`flex items-center justify-between mt-4 pt-1 border-t ${
+                theme === "dark" ? "border-white/10" : "border-black/10"
+              }`}
+            >
+              <AddPostButton poi={poi} onAddPost={onAddPost} />
+              <div className="pt-3 pr-2">
+                <DirectionsPill
+                  destination={positionToUse}
+                  isOpen={isDirectionsPillOpen}
+                  setIsOpen={setDirectionsPillOpen}
+                />
+              </div>
+            </div>
           </div>
         </motion.div>
       )}

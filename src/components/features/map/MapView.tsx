@@ -29,6 +29,8 @@ import { WishPlacesModal } from "../wishPlaces/WishPlaces";
 import { MapEvents } from "./MapEvents";
 import { usePosts } from "@/hooks/usePost";
 import { useGroupedPosts } from "@/hooks/useGroupPosts";
+import { useIsMounted } from "@/hooks/useIsmounted";
+import { FitBounds } from "./FitBounds";
 
 delete (L.Icon.Default.prototype as any)._getIconUrl;
 L.Icon.Default.mergeOptions({
@@ -45,8 +47,15 @@ interface MapViewProps {
 
 const MapView: React.FC<MapViewProps> = ({ center, user, onMarkerClick }) => {
   const defaultPosition: [number, number] = [35.6892, 51.389];
-  const { theme, posts, selectedPoi, setSelectedPoi, mapUrl, setPosts } =
-    useStore();
+  const {
+    theme,
+    posts,
+    selectedPoi,
+    setSelectedPoi,
+    mapUrl,
+    setPosts,
+    searchResults,
+  } = useStore();
   const [pois, setPois] = useState<Poi[]>([]);
 
   const [isWishlistOpen, setWishlistOpen] = useState(false);
@@ -55,20 +64,15 @@ const MapView: React.FC<MapViewProps> = ({ center, user, onMarkerClick }) => {
   const locationCardRef = useRef<HTMLDivElement>(null);
   const zoomLevel = 15;
 
-  const [isMounted, setIsMounted] = useState(false);
+  const isMounted = useIsMounted();
 
   const { data: fetchedPosts } = usePosts(bbox);
 
   useEffect(() => {
     if (fetchedPosts) {
       setPosts(fetchedPosts);
-      console.log(fetchedPosts);
     }
   }, [fetchedPosts]);
-
-  useEffect(() => {
-    setIsMounted(true);
-  }, []);
 
   const groupedPosts = useGroupedPosts(posts);
 
@@ -99,10 +103,6 @@ const MapView: React.FC<MapViewProps> = ({ center, user, onMarkerClick }) => {
 
         <FlyToLocation />
 
-        <PoiLoader setPois={setPois} />
-
-        <PlacesMarker pois={pois} />
-
         {center && (
           <UserLocationMarker
             position={center}
@@ -110,10 +110,24 @@ const MapView: React.FC<MapViewProps> = ({ center, user, onMarkerClick }) => {
             onClick={onMarkerClick}
           />
         )}
+        <MapEvents onBoundsChange={setBbox} />
 
-        {groupedPosts.map((postGroup) => (
-          <PostMarker key={postGroup[0]._id} posts={postGroup} theme={theme} />
+        {groupedPosts.map((postGroup, index) => (
+          <PostMarker key={index} posts={postGroup} theme={theme} />
         ))}
+
+        {searchResults ? (
+          <>
+            <FitBounds pois={searchResults} />
+
+            {searchResults && <PlacesMarker pois={searchResults} />}
+          </>
+        ) : (
+          <>
+            <PoiLoader setPois={setPois} />
+            <PlacesMarker pois={pois} />
+          </>
+        )}
       </MapContainer>
 
       <AnimatePresence>
@@ -142,7 +156,7 @@ const MapView: React.FC<MapViewProps> = ({ center, user, onMarkerClick }) => {
       {isMounted && (
         <>
           <MapStyleSwitcher />
-          <div className="absolute top-2/7 right-4 z-[10000]">
+          <div className="absolute top-3/7 right-4 z-[10000]">
             <motion.button
               onClick={() => setWishlistOpen(!isWishlistOpen)}
               className={`p-3 rounded-full shadow-lg ${

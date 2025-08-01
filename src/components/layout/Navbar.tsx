@@ -7,6 +7,7 @@ import { motion } from "framer-motion";
 import { useSession } from "next-auth/react";
 import { useStore } from "@/store/useStore";
 import { UserButton } from "./UserButton";
+import { useIsMounted } from "@/hooks/useIsmounted";
 
 interface NavbarProps {
   onLoginClick: () => void;
@@ -15,6 +16,7 @@ interface NavbarProps {
 export function Navbar({ onLoginClick }: NavbarProps) {
   const { status } = useSession();
   const isLoggedIn = status === "authenticated";
+  const isMounted = useIsMounted();
 
   const { theme } = useStore();
 
@@ -26,10 +28,11 @@ export function Navbar({ onLoginClick }: NavbarProps) {
             <UserButton />
           ) : (
             <div className="relative group">
-              <motion.div className="rounded-full p-[1px] shadow-lg">
-                <motion.button
-                  onClick={onLoginClick}
-                  className={`
+              {isMounted && (
+                <motion.div className="rounded-full p-[1px] shadow-lg">
+                  <motion.button
+                    onClick={onLoginClick}
+                    className={`
                     flex items-center gap-2.5 w-full justify-center
                     px-5 py-2.5 text-sm font-bold rounded-full
                     transition-colors duration-300
@@ -39,14 +42,15 @@ export function Navbar({ onLoginClick }: NavbarProps) {
                         : "bg-white/70 text-gray-700 hover:bg-gray-100"
                     }
                   `}
-                  whileHover={{ scale: 1.03 }}
-                  whileTap={{ scale: 0.95 }}
-                  suppressHydrationWarning={true}
-                >
-                  <LogIn size={18} />
-                  <span>ورود</span>
-                </motion.button>
-              </motion.div>
+                    whileHover={{ scale: 1.03 }}
+                    whileTap={{ scale: 0.95 }}
+                    suppressHydrationWarning={true}
+                  >
+                    <LogIn size={18} />
+                    <span>ورود</span>
+                  </motion.button>
+                </motion.div>
+              )}
             </div>
           )}
         </div>

@@ -1,19 +1,17 @@
 /* eslint-disable react/jsx-no-undef */
 import { useStore } from "@/store/useStore";
-import { Post, User } from "@/types";
+import { Post } from "@/types";
 import { motion, AnimatePresence, Variants } from "framer-motion";
 import { Image as ImageIcon, Send, MapPin, X } from "lucide-react";
 import Image from "next/image";
-import { ChangeEvent, useEffect, useRef, useState } from "react";
 import { useVirtualKeyboard } from "@/hooks/useVirtualKeyboard";
-import imageCompression from "browser-image-compression";
-import { useCreatePost } from "@/hooks/useCreatePost";
+import { usePostForm } from "@/hooks/usePostForm";
+import { useNearbyPoiCheck } from "@/hooks/useNearbyPoiCheck";
 type Satisfaction = "awesome" | "good" | "bad" | "";
 
 interface PostModalProps {
   isOpen: boolean;
   onClose: () => void;
-  user: User | null;
   postToEdit: Post | null;
 }
 
@@ -25,16 +23,9 @@ const modalVariants: Variants = {
 export const PostModal: React.FC<PostModalProps> = ({
   isOpen,
   onClose,
-  user,
   postToEdit,
 }) => {
   const keyboardHeight = useVirtualKeyboard();
-  const [view, setView] = useState<"initial" | "expanded">("initial");
-  const [imageFile, setImageFile] = useState<File | null>(null);
-  const [imagePreview, setImagePreview] = useState<string | null>(null);
-  const [description, setDescription] = useState("");
-  const [satisfaction, setSatisfaction] = useState<Satisfaction>("");
-  const fileInputRef = useRef<HTMLInputElement>(null);
   const {
     location: userLocation,
     theme,
@@ -43,17 +34,17 @@ export const PostModal: React.FC<PostModalProps> = ({
     setEditingPost,
   } = useStore();
 
-  const createPostMutation = useCreatePost();
-
-  const targetCoords = postTargetLocation?.coords;
-
-  const positionToUse = targetCoords
-    ? [targetCoords[1], targetCoords[0]]
-    : userLocation.coords;
-
-  const convertedUserLocationToSend = userLocation.coords
-    ? [userLocation.coords[1], userLocation.coords[0]]
-    : null;
+  const {
+    poiToConfirm,
+    confirmPoi,
+    rejectPoi,
+    reset: resetPoiCheck,
+  } = useNearbyPoiCheck({
+    location: userLocation.coords
+      ? { lat: userLocation.coords[0], lng: userLocation.coords[1] }
+      : null,
+    enabled: isOpen && !postToEdit && !postTargetLocation,
+  });
 
   const satisfactionOptions = [
     {
@@ -78,99 +69,33 @@ export const PostModal: React.FC<PostModalProps> = ({
     },
   ];
 
-  useEffect(() => {
-    if (postToEdit) {
-      setDescription(postToEdit.description);
-      setSatisfaction(postToEdit.satisfaction);
-      setImagePreview(postToEdit.imageUrl);
-      setView("expanded");
-    }
-  }, [postToEdit]);
-
-  const resetForm = () => {
-    setTimeout(() => setView("initial"), 300);
-    setImageFile(null);
-    setImagePreview(null);
-    setDescription("");
-    setSatisfaction("");
-  };
-
   const handleClose = () => {
     setPostTargetLocation(null);
-    resetForm();
-    onClose();
     setEditingPost(null);
+    onClose();
   };
 
-  const handleImageChange = async (e: ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-
-    const options = {
-      maxSizeMB: 1,
-      maxWidthOrHeight: 1920,
-      useWebWorker: true,
-      fileType: "image/jpeg",
-    };
-
-    try {
-      console.log(
-        `Original image size: ${(file.size / 1024 / 1024).toFixed(2)} MB`
-      );
-
-      const compressedFile = await imageCompression(file, options);
-
-      console.log(
-        `Compressed image size: ${(compressedFile.size / 1024 / 1024).toFixed(
-          2
-        )} MB`
-      );
-
-      setImageFile(compressedFile);
-
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setImagePreview(reader.result as string);
-        setView("expanded");
-      };
-      reader.readAsDataURL(compressedFile);
-    } catch (error) {
-      console.error("Error compressing image:", error);
-    }
-  };
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-
-    if (
-      !user ||
-      !positionToUse ||
-      !imageFile ||
-      !description ||
-      !satisfaction
-    ) {
-      alert("Please complete all fields.");
-      return;
-    }
-
-    if (postToEdit) {
-      // TODO: Implement update logic with a new mutation
-      console.log("Updating post...");
-    } else {
-      createPostMutation.mutate({
-        imageFile,
-        description,
-        satisfaction,
-        position:
-          (postTargetLocation?.coords as [number, number]) ||
-          convertedUserLocationToSend,
-        areaName: postTargetLocation?.name || "",
-        osmId: postTargetLocation?.osmId,
-      });
-    }
-
+  const handleManualClose = () => {
+    resetForm();
     handleClose();
+    resetPoiCheck();
   };
+
+  const {
+    view,
+    imagePreview,
+    description,
+    satisfaction,
+    isClassifying,
+    isSubmitting,
+    fileInputRef,
+    setView,
+    setDescription,
+    setSatisfaction,
+    handleImageChange,
+    handleSubmit,
+    resetForm,
+  } = usePostForm({ postToEdit, onSuccess: handleManualClose });
 
   return (
     <AnimatePresence>
@@ -180,7 +105,7 @@ export const PostModal: React.FC<PostModalProps> = ({
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
-          onClick={handleClose}
+          onClick={handleManualClose}
         >
           <motion.div
             variants={modalVariants}
@@ -196,7 +121,7 @@ export const PostModal: React.FC<PostModalProps> = ({
             }}
           >
             <motion.button
-              onClick={handleClose}
+              onClick={handleManualClose}
               className={`absolute -top-10 right-0 z-20 transition-colors ${
                 theme === "dark"
                   ? "text-white/80 hover:text-white"
@@ -253,11 +178,37 @@ export const PostModal: React.FC<PostModalProps> = ({
                           }`}
                         >
                           <MapPin size={16} />
-                          <span>
-                            {postTargetLocation?.name ||
-                              userLocation.areaName ||
-                              "Location"}
-                          </span>
+                          {poiToConfirm ? (
+                            <div className="flex flex-col items-center animate-pulse pt-4">
+                              <span>
+                                Are you at{" "}
+                                <strong>{poiToConfirm.tags?.name}</strong>?
+                              </span>
+                              <div className="flex items-center gap-2">
+                                <button
+                                  type="button"
+                                  onClick={confirmPoi}
+                                  className="px-3 py-1 text-xs font-semibold text-white bg-green-600 rounded-full hover:bg-green-700"
+                                >
+                                  Yes
+                                </button>
+                                <button
+                                  type="button"
+                                  onClick={rejectPoi}
+                                  className="px-3 py-1 text-xs font-semibold text-gray-800 bg-gray-300 rounded-full hover:bg-gray-400"
+                                >
+                                  No
+                                </button>
+                              </div>
+                            </div>
+                          ) : (
+                            <span>
+                              {postTargetLocation?.name ||
+                                postToEdit?.areaName ||
+                                userLocation.areaName ||
+                                "Location"}
+                            </span>
+                          )}
                         </div>
                         <div className="flex items-center gap-3">
                           {satisfactionOptions.map((option) => {
@@ -304,6 +255,7 @@ export const PostModal: React.FC<PostModalProps> = ({
                       className="hidden"
                       onChange={handleImageChange}
                       ref={fileInputRef}
+                      disabled={postToEdit ? true : false}
                     />
                     <ImageIcon
                       className={`cursor-pointer ${
@@ -333,7 +285,12 @@ export const PostModal: React.FC<PostModalProps> = ({
                     form="post-form"
                     className="flex items-center gap-2 bg-blue-600 px-4 py-2 rounded-full text-sm font-semibold text-white hover:bg-blue-500"
                   >
-                    Post <Send size={16} />
+                    {isSubmitting
+                      ? "Posting..."
+                      : isClassifying
+                      ? "Analyzing..."
+                      : "Post"}
+                    <Send size={16} />
                   </button>
                 </div>
               </div>

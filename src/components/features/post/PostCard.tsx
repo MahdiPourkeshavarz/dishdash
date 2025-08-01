@@ -22,34 +22,34 @@ const satisfactionStyles = {
   awesome: {
     badge: "bg-yellow-100 text-yellow-800",
     badgeDark: "bg-yellow-900/50 text-yellow-300",
-    text: "!Awesome",
+    text: "Awesome!",
     emoji: "/awesome.png",
-    bgGradientLight: "bg-gradient-to-t from-amber-400/60 to-gray-50",
-    bgGradientDark: "bg-gradient-to-t from-amber-500/40 to-gray-800",
+    shadowColorLight: "rgba(251, 191, 36, 0.15)",
+    shadowColorDark: "rgba(251, 191, 36, 0.15)",
   },
   good: {
     badge: "bg-green-100 text-green-800",
     badgeDark: "bg-green-900/50 text-green-300",
     text: "Good",
     emoji: "/good.png",
-    bgGradientLight: "bg-gradient-to-t from-green-400/70 to-gray-50",
-    bgGradientDark: "bg-gradient-to-t from-green-500/50 to-gray-800",
+    shadowColorLight: "rgba(134, 239, 172, 0.15)",
+    shadowColorDark: "rgba(134, 239, 172, 0.15)",
   },
   bad: {
     badge: "bg-red-100 text-red-800",
     badgeDark: "bg-red-900/50 text-red-300",
     text: "Bad",
     emoji: "/bad.png",
-    bgGradientLight: "bg-gradient-to-t from-red-400/70 to-gray-50",
-    bgGradientDark: "bg-gradient-to-t from-red-500/50 to-gray-800",
+    shadowColorLight: "rgba(248, 113, 113, 0.15)",
+    shadowColorDark: "rgba(248, 113, 113, 0.15)",
   },
   disgusted: {
     badge: "bg-purple-100 text-purple-800",
     badgeDark: "bg-purple-900/50 text-purple-300",
     text: "Disgusted",
     emoji: "/disgusted.png",
-    bgGradientLight: "bg-gradient-to-t from-purple-400/70 to-gray-50",
-    bgGradientDark: "bg-gradient-to-t from-purple-500/50 to-gray-800",
+    shadowColorLight: "rgba(192, 132, 252, 0.15)",
+    shadowColorDark: "rgba(192, 132, 252, 0.15)",
   },
 };
 
@@ -123,13 +123,19 @@ const PostCard: React.FC<PostCardProps> = ({ post }) => {
     if (isMenuOpen) setMenuOpen(false);
   };
 
+  const shadowColor =
+    theme === "dark" ? styles.shadowColorDark : styles.shadowColorLight;
+
+  const shadowValue = `4px 0 12px -2px ${shadowColor}, -4px 0 12px -2px ${shadowColor}, 0 4px 12px -2px ${shadowColor}`;
+
   return (
     <div className="relative w-full max-w-sm pt-7" onClick={handleCardClick}>
       <div className="h-21" aria-hidden />
       <div
         className={`relative z-10 rounded-xl shadow-lg pb-2 px-4 flex flex-col ${
-          theme === "dark" ? styles.bgGradientDark : styles.bgGradientLight
+          theme === "dark" ? "bg-gray-800" : "bg-gray-50"
         }`}
+        style={{ boxShadow: shadowValue }}
       >
         <div className="flex mt-8 pt-6 text-right">
           <p
@@ -243,7 +249,7 @@ const PostCard: React.FC<PostCardProps> = ({ post }) => {
             transition={{ duration: 0.3, ease: "easeOut" }}
           >
             <DirectionsPill
-              post={post}
+              destination={[post.position[0], post.position[1]]}
               isOpen={isDirectionsPillOpen}
               setIsOpen={setDirectionsPillOpen}
             />
@@ -296,22 +302,36 @@ const PostCard: React.FC<PostCardProps> = ({ post }) => {
           )}
         </div>
 
-        <motion.div
-          className={`absolute bottom-3 left-1/2 -translate-x-1/2 flex flex-col items-center ${
-            post.satisfaction === "awesome" ? "bottom-2.5" : ""
-          }`}
-          initial={{ y: 20, opacity: 0 }}
-          animate={{ y: 0, opacity: 1 }}
-          transition={{ type: "spring", delay: 0.2 }}
+        <motion.button
+          className={`absolute bottom-2 left-2 flex items-center gap-1 p-1.5 rounded-full text-xs font-semibold shadow-md backdrop-blur-sm border
+            ${
+              theme === "dark"
+                ? "bg-black/20 border-white/10 text-gray-200"
+                : "bg-white/40 border-black/10 text-gray-700"
+            }`}
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{
+            type: "spring",
+            stiffness: 300,
+            damping: 20,
+            delay: 0.3,
+          }}
+          onClick={() => {
+            // Placeholder: Engage users by opening a modal with details or related posts
+            console.log(`Tapped satisfaction: ${post.satisfaction}`);
+            // e.g., toggleSatisfactionModal(post);
+          }}
+          aria-label={`Satisfaction: ${styles.text}`}
         >
           <Image
             src={styles.emoji}
             alt={post.satisfaction}
-            width={43}
-            height={43}
-            className="drop-shadow-lg"
+            width={16}
+            height={16}
           />
-        </motion.div>
+          <span>{styles.text}</span>
+        </motion.button>
       </div>
 
       <AnimatePresence>

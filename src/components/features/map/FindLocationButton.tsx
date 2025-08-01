@@ -62,7 +62,7 @@ export function FindLocationButton() {
       : "text-black";
 
   return (
-    <div className="absolute top-7/10 right-6 z-[1001] flex items-center gap-2">
+    <div className="absolute top-8/11 right-6 z-[1001] flex items-center gap-2">
       <AnimatePresence>
         {status === "error" && (
           <motion.div

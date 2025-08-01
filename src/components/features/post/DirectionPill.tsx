@@ -1,15 +1,14 @@
 "use client";
 
-import { Post } from "@/types";
 import { useStore } from "@/store/useStore";
 import { motion, AnimatePresence, Variants } from "framer-motion";
 import Image from "next/image";
 import { Navigation } from "lucide-react";
 
 interface DirectionsPillProps {
-  post: Post;
   isOpen: boolean;
   setIsOpen: (isOpen: boolean) => void;
+  destination: [number, number];
 }
 
 const pillVariants: Variants = {
@@ -44,9 +43,9 @@ const iconVariants: Variants = {
 };
 
 export const DirectionsPill: React.FC<DirectionsPillProps> = ({
-  post,
   isOpen,
   setIsOpen,
+  destination,
 }) => {
   const { location: userLocation, theme } = useStore();
 
@@ -56,8 +55,8 @@ export const DirectionsPill: React.FC<DirectionsPillProps> = ({
       return;
     }
     const url = urlPattern
-      .replace("{dest_lat}", post.position[0].toString())
-      .replace("{dest_lng}", post.position[1].toString())
+      .replace("{dest_lat}", destination[1].toString())
+      .replace("{dest_lng}", destination[0].toString())
       .replace("{origin_lat}", userLocation.coords[0].toString())
       .replace("{origin_lng}", userLocation.coords[1].toString());
     window.open(url, "_blank");
@@ -75,6 +74,11 @@ export const DirectionsPill: React.FC<DirectionsPillProps> = ({
       logo: "/logos/neshan.jpg",
       url: "https://nshn.ir/maps/routing?origin={origin_lat},{origin_lng}&destination={dest_lat},{dest_lng}",
     },
+    {
+      name: "Waze",
+      logo: "/logos/waze.png",
+      url: "https://waze.com/ul?ll={dest_lat},{dest_lng}&navigate=yes",
+    },
   ];
 
   return (
@@ -87,21 +91,33 @@ export const DirectionsPill: React.FC<DirectionsPillProps> = ({
             initial="hidden"
             animate="visible"
             exit="hidden"
-            className={`flex items-center gap-2`}
+            className="flex items-center justify-center gap-3"
           >
-            {mapProviders.map((provider) => (
+            {mapProviders.map((provider, index) => (
               <motion.button
                 key={provider.name}
+                custom={index}
                 variants={iconVariants}
+                initial="hidden"
+                animate="visible"
+                exit="hidden"
+                transition={{
+                  type: "spring",
+                  stiffness: 300,
+                  damping: 20,
+                  delay: index * 0.1,
+                }}
                 onClick={() => handleNavigation(provider.url)}
-                className={`p-1 rounded-full transition-colors`}
+                className=""
+                whileHover={{ scale: 1.1 }}
+                aria-label={`Maps with ${provider.name}`}
               >
                 <Image
                   src={provider.logo}
                   alt={provider.name}
-                  width={30}
-                  height={30}
-                  className={`${provider.name === "Neshan" && "rounded-sm"}`}
+                  width={34}
+                  height={34}
+                  className="shadow-md rounded-md"
                 />
               </motion.button>
             ))}
@@ -110,16 +126,13 @@ export const DirectionsPill: React.FC<DirectionsPillProps> = ({
           <motion.button
             key="pill-closed"
             onClick={() => setIsOpen(true)}
-            exit={{
-              scale: 0.9,
-              opacity: 0,
-              transition: { duration: 0.2, ease: "easeInOut" },
-            }}
+            exit={{ scale: 0.9, opacity: 0 }}
             className={`p-2 rounded-full transition-colors ${
               theme === "dark"
                 ? "text-gray-400 hover:text-blue-400"
                 : "text-gray-500 hover:text-blue-600"
             }`}
+            aria-label="Open navigation options"
           >
             <Navigation size={20} />
           </motion.button>
