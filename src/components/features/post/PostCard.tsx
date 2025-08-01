@@ -249,7 +249,7 @@ const PostCard: React.FC<PostCardProps> = ({ post }) => {
             transition={{ duration: 0.3, ease: "easeOut" }}
           >
             <DirectionsPill
-              post={post}
+              destination={[post.position[0], post.position[1]]}
               isOpen={isDirectionsPillOpen}
               setIsOpen={setDirectionsPillOpen}
             />

@@ -7,9 +7,9 @@ export async function refreshAccessToken(token: any) {
       {
         method: "POST",
         headers: {
+          Authorization: `Bearer ${token.refreshToken}`,
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ refreshToken: token.refreshToken }),
       }
     );
 
