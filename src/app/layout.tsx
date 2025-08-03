@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import { Providers } from "./providers";
-import { inter, nabla, nahid } from "@/lib/fonts";
+import { inter, nabla, nahid, concert } from "@/lib/fonts";
 import { QueryProvider } from "./QueryProvider";
 
 export const metadata: Metadata = {
@@ -16,7 +16,9 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className={`${inter.variable} ${nahid.variable} ${nabla.variable}`}>
+      <body
+        className={`${inter.variable} ${nahid.variable} ${nabla.variable} ${concert.variable}`}
+      >
         <Providers>
           <QueryProvider>{children}</QueryProvider>
         </Providers>

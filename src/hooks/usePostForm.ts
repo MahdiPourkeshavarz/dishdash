@@ -105,7 +105,7 @@ export const usePostForm = ({ postToEdit, onSuccess }: UsePostFormProps) => {
         : null;
 
       const positionToUse = postTargetLocation?.coords
-        ? [postTargetLocation.coords[1], postTargetLocation.coords[0]]
+        ? [postTargetLocation.coords[0], postTargetLocation.coords[1]]
         : userGpsLocation;
 
       if (

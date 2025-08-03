@@ -52,17 +52,23 @@ export const authOptions: NextAuthOptions = {
   ],
 
   callbacks: {
-    jwt: async ({ token, user }) => {
+    jwt: async ({ token, user, trigger, session }) => {
       if (user) {
         token.id = (user as any).user._id;
         token.username = (user as any).user.username;
         token.picture = (user as any).user.image;
         token.accessToken = (user as any).access_token;
         token.refreshToken = (user as any).refresh_token;
-
         token.accessTokenExpires = Date.now() + 59 * 60 * 1000;
+      }
 
-        return token;
+      if (trigger === "update" && session) {
+        if (session.username) {
+          token.username = session.username;
+        }
+        if (session.image) {
+          token.picture = session.image;
+        }
       }
 
       if (Date.now() < (token.accessTokenExpires as number)) {
@@ -74,7 +80,7 @@ export const authOptions: NextAuthOptions = {
     },
 
     session: async ({ session, token }) => {
-      if (session?.user) {
+      if (token && session.user) {
         session.user.id = token.id as string;
         session.user.username = token.username as string;
         session.user.image = token.picture as string;

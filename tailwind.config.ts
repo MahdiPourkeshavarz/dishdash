@@ -46,6 +46,8 @@ const config: Config = {
         farsi: ["var(--font-nahid)", "sans-serif"],
 
         nabla: ["var(--font-nabla)", "sans-serif"],
+
+        concert: ["var(--font-concert)", "sans-serif"],
       },
     },
   },

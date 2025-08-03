@@ -1,7 +1,7 @@
 "use client";
 
 import apiClient from "@/lib/axiosClient";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useSession } from "next-auth/react";
 
 interface UpdateProfileData {
@@ -29,11 +29,16 @@ const updateProfile = async (data: UpdateProfileData) => {
 
 export const useUpdateProfile = () => {
   const { update: updateSession } = useSession();
+  const queryClient = useQueryClient();
 
   return useMutation({
     mutationFn: updateProfile,
-    onSuccess: async () => {
-      await updateSession();
+    onSuccess: async (data) => {
+      await updateSession({
+        username: data.username,
+        image: data.image,
+      });
+      queryClient.invalidateQueries({ queryKey: ["user"] });
     },
   });
 };

@@ -8,7 +8,7 @@ export const useGroupedPosts = (posts: Post[]): Post[][] => {
       return [];
     }
 
-    const DISTANCE_THRESHOLD = 20;
+    const DISTANCE_THRESHOLD = 3;
     const groups: Post[][] = [];
     const processedPostIds = new Set<string>();
 

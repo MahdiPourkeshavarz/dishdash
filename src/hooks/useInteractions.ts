@@ -29,7 +29,20 @@ export const useDislikePost = () => {
 };
 
 const addToWishlist = (poi: Poi) => {
-  return apiClient.post("interactions/wishlist", { poi });
+  console.log(poi);
+  const positionToUse: [number, number] = poi.position
+    ? [poi.position[1], poi.position[0]]
+    : [poi.lon, poi.lat];
+
+  const osmId = poi.id || (poi.osmId as number);
+  const placeToSave = {
+    name: poi.tags.name,
+    osmId,
+    position: positionToUse,
+    tags: poi.tags,
+    _id: poi._id,
+  };
+  return apiClient.post("interactions/wishlist", { poi: placeToSave });
 };
 
 const removeFromWishlist = (placeId: string) => {
