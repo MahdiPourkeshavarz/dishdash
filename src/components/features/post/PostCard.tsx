@@ -22,7 +22,7 @@ const satisfactionStyles = {
   awesome: {
     badge: "bg-yellow-100 text-yellow-800",
     badgeDark: "bg-yellow-900/50 text-yellow-300",
-    text: "Awesome!",
+    text: "خوشمزه",
     emoji: "/awesome.png",
     shadowColorLight: "rgba(251, 191, 36, 0.15)",
     shadowColorDark: "rgba(251, 191, 36, 0.15)",
@@ -30,7 +30,7 @@ const satisfactionStyles = {
   good: {
     badge: "bg-green-100 text-green-800",
     badgeDark: "bg-green-900/50 text-green-300",
-    text: "Good",
+    text: "خوب",
     emoji: "/good.png",
     shadowColorLight: "rgba(134, 239, 172, 0.15)",
     shadowColorDark: "rgba(134, 239, 172, 0.15)",
@@ -38,7 +38,7 @@ const satisfactionStyles = {
   bad: {
     badge: "bg-red-100 text-red-800",
     badgeDark: "bg-red-900/50 text-red-300",
-    text: "Bad",
+    text: "بد",
     emoji: "/bad.png",
     shadowColorLight: "rgba(248, 113, 113, 0.15)",
     shadowColorDark: "rgba(248, 113, 113, 0.15)",
@@ -46,7 +46,7 @@ const satisfactionStyles = {
   disgusted: {
     badge: "bg-purple-100 text-purple-800",
     badgeDark: "bg-purple-900/50 text-purple-300",
-    text: "Disgusted",
+    text: "افتضاح",
     emoji: "/disgusted.png",
     shadowColorLight: "rgba(192, 132, 252, 0.15)",
     shadowColorDark: "rgba(192, 132, 252, 0.15)",

@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo } from "react";
-import { Marker, Tooltip, useMap } from "react-leaflet";
+import { Marker } from "react-leaflet";
 import L from "leaflet";
 import { useStore } from "@/store/useStore";
 import { Poi } from "@/types";
@@ -12,7 +12,7 @@ interface PoiMarkersLayerProps {
 
 export const PlacesMarker: React.FC<PoiMarkersLayerProps> = ({ pois }) => {
   const { theme, setSelectedPoi, setHighlightedPoi } = useStore();
-  const map = useMap();
+  // const map = useMap();
 
   const restaurantIcon = L.icon({
     iconUrl: theme === "light" ? "./restaurants.png" : "./restaurants-dark.png",
@@ -65,8 +65,8 @@ export const PlacesMarker: React.FC<PoiMarkersLayerProps> = ({ pois }) => {
             return null;
         }
 
-        const currentZoom = map.getZoom();
-        const showlabel = currentZoom >= 18;
+        // const currentZoom = map.getZoom();
+        // const showlabel = currentZoom >= 18;
 
         return (
           <Marker
@@ -80,7 +80,7 @@ export const PlacesMarker: React.FC<PoiMarkersLayerProps> = ({ pois }) => {
               },
             }}
           >
-            {showlabel && (
+            {/* {showlabel && (
               <Tooltip
                 direction="top"
                 offset={[43, -30]}
@@ -92,7 +92,7 @@ export const PlacesMarker: React.FC<PoiMarkersLayerProps> = ({ pois }) => {
               >
                 <span>{poi.tags.name}</span>
               </Tooltip>
-            )}
+            )} */}
           </Marker>
         );
       })

@@ -39,6 +39,7 @@ export default function HomePage() {
     toggleAuthModal,
     setIsSearching,
     isSearching,
+    isProfileModalOpen,
   } = useStore();
 
   const { data: session } = useSession();
@@ -72,7 +73,7 @@ export default function HomePage() {
     <main className="w-screen h-[100dvh] relative overflow-hidden">
       <Navbar onLoginClick={() => toggleAuthModal(true)} />
 
-      {isMounted && (
+      {isMounted && !isProfileModalOpen && (
         <div
           ref={searchRef}
           className="absolute top-16 left-1/2 -translate-x-1/2 z-[200000] flex flex-col items-center"

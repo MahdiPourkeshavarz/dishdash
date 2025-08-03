@@ -1,38 +1,16 @@
 "use client";
 
-import Lottie from "lottie-react";
-import loader from "../../../../public/loader.json";
-import { useStore } from "@/store/useStore";
+import { SpinnerIcon } from "@/components/layout/SpinnerIcon";
 
-export function MapLoader() {
-  const { theme } = useStore();
-
+export const MapLoader: React.FC = () => {
   return (
-    <div
-      className={`flex h-full w-full flex-col items-center justify-center transition-colors
-      ${theme === "dark" ? "bg-gray-900" : "bg-gray-100"}
-    `}
-    >
-      <div
-        className={`w-full max-w-sm p-8 flex flex-col items-center justify-center rounded-2xl
-        ${theme === "dark" ? "bg-black/20" : "bg-white/30"}
-        backdrop-blur-lg border ${
-          theme === "dark" ? "border-white/10" : "border-black/10"
-        }
-      `}
-      >
-        <div className="w-48 h-48">
-          <Lottie animationData={loader} loop={true} />
-        </div>
-
-        <p
-          className={`mt-4 text-lg font-semibold ${
-            theme === "dark" ? "text-slate-300" : "text-slate-700"
-          }`}
-        >
+    <div className="flex h-full w-full flex-col items-center justify-center bg-black/25">
+      <div className="flex w-full max-w-xs flex-col items-center justify-center rounded-2xl bg-white/10 p-8 backdrop-blur-xl">
+        <SpinnerIcon className="h-12 w-12 text-white/80" />
+        <p className="mt-5 text-base font-medium text-white">
           در حال بارگذاری نقشه...
         </p>
       </div>
     </div>
   );
-}
+};

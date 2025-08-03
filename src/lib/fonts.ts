@@ -18,3 +18,9 @@ export const nahid = localFont({
   display: "swap",
   variable: "--font-nahid",
 });
+
+export const concert = localFont({
+  src: "../app/fonts/concert.ttf",
+  display: "swap",
+  variable: "--font-concert",
+});

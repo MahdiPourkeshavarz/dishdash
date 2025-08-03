@@ -1,5 +1,5 @@
 import apiClient from "@/lib/axiosClient";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 interface ChangePasswordData {
   currentPassword: string;
@@ -11,7 +11,11 @@ const changePassword = (data: ChangePasswordData) => {
 };
 
 export const useChangePassword = () => {
+  const queryClient = useQueryClient();
   return useMutation({
     mutationFn: changePassword,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["user"] });
+    },
   });
 };

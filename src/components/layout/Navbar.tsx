@@ -58,7 +58,7 @@ export function Navbar({ onLoginClick }: NavbarProps) {
           href="/"
           className="flex items-center text-2xl sm:text-2xl font-bold text-blue-600"
         >
-          <span style={{ fontFamily: "var(--font-nabla)" }}>DISH DASH</span>
+          <span style={{ fontFamily: "var(--font-concert)" }}>DISH DASH</span>
           <Image
             src={"/Logo.png"}
             alt="logo"
