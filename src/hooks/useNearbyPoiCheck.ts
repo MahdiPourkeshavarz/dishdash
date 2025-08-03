@@ -30,7 +30,7 @@ export const useNearbyPoiCheck = ({
       if (!location) return null;
 
       const center = L.latLng(location.lat, location.lng);
-      const bounds = createBoundingBox(center, 6);
+      const bounds = createBoundingBox(center, 10);
       const pois = await fetchPoisInBounds(bounds);
 
       if (!pois || pois.length === 0) {

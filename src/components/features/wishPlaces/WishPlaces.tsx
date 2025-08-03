@@ -6,7 +6,6 @@ import { useStore } from "@/store/useStore";
 import { motion } from "framer-motion";
 import { Map, Coffee, Pizza, UtensilsCrossed, Loader } from "lucide-react";
 import { usePopulatedWishlist } from "@/hooks/usePopulatedWishlist";
-import { useSession } from "next-auth/react";
 
 export function WishPlacesModal({
   isOpen,
@@ -15,15 +14,14 @@ export function WishPlacesModal({
   isOpen: boolean;
   onClose: () => void;
 }) {
-  const { theme, setFlyToTarget } = useStore();
+  const { theme, setFlyToTarget, user } = useStore();
   const [activeTab, setActiveTab] = useState("restaurant");
 
-  const { data: wishlist = [], isLoading } = usePopulatedWishlist({
-    enabled: isOpen,
-  });
+  const isUserLoggedIn = user ? true : false;
 
-  const { status } = useSession();
-  const isLoggedIn = status === "authenticated";
+  const { data: wishlist = [], isLoading } = usePopulatedWishlist({
+    enabled: isUserLoggedIn && isOpen,
+  });
 
   const categories = [
     {
@@ -94,7 +92,7 @@ export function WishPlacesModal({
         ))}
       </div>
       <div className="p-2 max-h-48 overflow-y-auto">
-        {!isLoggedIn ? (
+        {!isUserLoggedIn ? (
           <div className="flex justify-center items-center p-4">
             <p className="text-xs text-center text-gray-500">
               لطفا وارد حساب کاربری خود شوید
