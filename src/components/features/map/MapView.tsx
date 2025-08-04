@@ -161,8 +161,8 @@ const MapView: React.FC<MapViewProps> = ({ center, user, onMarkerClick }) => {
               onClick={() => setWishlistOpen(!isWishlistOpen)}
               className={`p-3 rounded-full shadow-lg ${
                 theme === "dark"
-                  ? "bg-gray-800 text-white"
-                  : "bg-white text-gray-900"
+                  ? "bg-gray-800/80 text-white"
+                  : "bg-white/80 text-gray-900"
               }`}
               whileHover={{ scale: 1.1 }}
               whileTap={{ scale: 0.9 }}

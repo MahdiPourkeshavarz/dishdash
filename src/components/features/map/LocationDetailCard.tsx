@@ -33,9 +33,13 @@ export const LocationDetailCard: React.FC<LocationDetailCardProps> = ({
   onClose,
   onAddPost,
 }) => {
-  const { theme } = useStore();
+  const { theme, user } = useStore();
 
-  const { data: wishlist = [] } = usePopulatedWishlist();
+  const isUserLoggedIn = !!user;
+
+  const { data: wishlist = [] } = usePopulatedWishlist({
+    enabled: isUserLoggedIn,
+  });
 
   const addToWishlistMutation = useAddToWishlist();
   const removeFromWishlistMutation = useRemoveFromWishlist();
@@ -101,6 +105,7 @@ export const LocationDetailCard: React.FC<LocationDetailCardProps> = ({
             <button
               onClick={handleWishlistClick}
               className={`absolute top-3 right-3 p-1 rounded-full ...`}
+              disabled={!isUserLoggedIn}
             >
               {isInWishlist ? (
                 <BookmarkCheck size={18} className="text-green-400" />

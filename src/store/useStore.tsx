@@ -67,7 +67,7 @@ interface StoreActions {
   setPosts: (posts: Post[]) => void;
   setSearchResults: (results: Poi[] | null) => void;
   setIsSearching: (isSearching: boolean) => void;
-  clearSearch: () => void
+  clearSearch: () => void;
 }
 
 type Store = StoreState & StoreActions;
@@ -75,8 +75,8 @@ type Store = StoreState & StoreActions;
 export const useStore = create<Store>()(
   persist(
     (set, get) => ({
-      theme: "dark",
-      mapStyleKey: "dark",
+      theme: "light",
+      mapStyleKey: "lightV2",
       user: null as User | null,
       accessToken: null,
       wishlist: [],
@@ -86,7 +86,7 @@ export const useStore = create<Store>()(
       flyToTarget: null,
       highlightedPoiId: null,
       posts: initialState,
-      mapUrl: cartoMapStyles.dark.url,
+      mapUrl: cartoMapStyles.lightV2.url,
       isProfileModalOpen: false,
       postTargetLocation: null,
       editingPost: null,
@@ -252,6 +252,7 @@ export const useStore = create<Store>()(
       partialize: (state) => ({
         mapStyleKey: state.mapStyleKey,
         theme: state.theme,
+        mapUrl: state.mapUrl,
         posts: state.posts,
         wishlist: state.wishlist,
       }),
