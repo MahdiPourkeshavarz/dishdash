@@ -2,7 +2,7 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { signIn } from "next-auth/react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Input } from "./Input";
@@ -69,6 +69,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
     handleSubmit: handleSignUpSubmit,
     watch,
     formState: { errors: signUpErrors },
+    reset: resetSignUpForm,
   } = useForm<SignUpData>({
     resolver: zodResolver(SignUpSchema),
   });
@@ -95,19 +96,35 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
 
   const onSignUp = (data: SignUpData) => {
     setIsLoading(true);
+    setServerError(null);
     signUp(data, {
       onSuccess: () => {
         setAuthType("success");
         setIsLoading(false);
         setTimeout(() => onClose(), 2000);
       },
-      onError: (err) => {
+      onError: (err: any) => {
         setIsLoading(false);
-        setServerError("ثبت نام موفق نبود");
-        setAuthType("error");
+        if (err.response && err.response.status === 409) {
+          setServerError("این ایمیل قبلا ثبت نام کرده است.");
+        } else {
+          setServerError(null);
+          setAuthType("error");
+        }
       },
     });
   };
+
+  useEffect(() => {
+    if (serverError && authType === "signup") {
+      const timer = setTimeout(() => {
+        setServerError(null);
+        resetSignUpForm();
+      }, 2000);
+
+      return () => clearTimeout(timer);
+    }
+  }, [serverError, authType, resetSignUpForm]);
 
   const modalBgClass = theme === "dark" ? "bg-gray-900/80" : "bg-white/80";
   const inactiveTabClass = theme === "dark" ? "text-gray-500" : "text-gray-400";
@@ -264,6 +281,11 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
                       autoComplete="off"
                     />
                     <PasswordStrength password={passwordValue} />
+                    {serverError && (
+                      <p className="text-red-400 text-sm text-center pt-2">
+                        {serverError}
+                      </p>
+                    )}
                     <motion.button
                       type="submit"
                       disabled={isLoading}
@@ -343,6 +365,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
                   <button
                     onClick={() => signIn("google")}
                     className={`p-3 border flex items-center gap-3 rounded-full transition-colors ${socialButtonClass}`}
+                    disabled={true}
                   >
                     <GoogleIcon />
                     <span className="font-semibold text-sm">Google</span>

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/no-empty-object-type */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
@@ -47,15 +48,8 @@ interface MapViewProps {
 
 const MapView: React.FC<MapViewProps> = ({ center, user, onMarkerClick }) => {
   const defaultPosition: [number, number] = [35.6892, 51.389];
-  const {
-    theme,
-    posts,
-    selectedPoi,
-    setSelectedPoi,
-    mapUrl,
-    setPosts,
-    searchResults,
-  } = useStore();
+  const { theme, posts, selectedPoi, setSelectedPoi, mapUrl, searchResults } =
+    useStore();
   const [pois, setPois] = useState<Poi[]>([]);
 
   const [isWishlistOpen, setWishlistOpen] = useState(false);
@@ -67,12 +61,6 @@ const MapView: React.FC<MapViewProps> = ({ center, user, onMarkerClick }) => {
   const isMounted = useIsMounted();
 
   const { data: fetchedPosts } = usePosts(bbox);
-
-  useEffect(() => {
-    if (fetchedPosts) {
-      setPosts(fetchedPosts);
-    }
-  }, [fetchedPosts]);
 
   const groupedPosts = useGroupedPosts(posts);
 

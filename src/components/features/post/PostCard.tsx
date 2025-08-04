@@ -60,13 +60,17 @@ interface PostCardProps {
 const PostCard: React.FC<PostCardProps> = ({ post }) => {
   const { theme, setEditingPost, togglePostModal, setDeletingPost } =
     useStore();
-  const styles = satisfactionStyles[post.satisfaction];
+  const styles = post
+    ? satisfactionStyles[post.satisfaction]
+    : satisfactionStyles.awesome;
   const [isProfileCardVisible, setProfileCardVisible] = useState(false);
   const [isDirectionsPillOpen, setDirectionsPillOpen] = useState(false);
   const [isMenuOpen, setMenuOpen] = useState(false);
   const [vote, setVote] = useState<"like" | "dislike" | null>(null);
-  const [likeCount, setLikeCount] = useState(post.likes as number);
-  const [dislikeCount, setDislikeCount] = useState(post.dislikes as number);
+  const [likeCount, setLikeCount] = useState(post ? (post.likes as number) : 0);
+  const [dislikeCount, setDislikeCount] = useState(
+    post ? (post.dislikes as number) : 0
+  );
 
   const { data: session } = useSession();
 

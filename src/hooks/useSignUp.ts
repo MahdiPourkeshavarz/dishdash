@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
 import { SignUpData } from "@/lib/authValidation";
@@ -6,11 +7,12 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { signIn } from "next-auth/react";
 
 const signUpUser = async (data: SignUpData) => {
-  const response = await apiClient.post("auth/register", data);
-  if (response.status !== 201) {
-    throw new Error("ثبت نام موفق نبود");
+  try {
+    const response = await apiClient.post("auth/register", data);
+    return response.data;
+  } catch (error: any) {
+    throw error;
   }
-  return data;
 };
 
 export const useSignUp = () => {
