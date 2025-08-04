@@ -7,6 +7,13 @@ import { cartoMapStyles } from "@/lib/mapStyles";
 
 export type MapStyleKey = "lightV1" | "lightV2" | "dark";
 
+export type UploadStatus =
+  | "idle"
+  | "classifying"
+  | "uploading"
+  | "success"
+  | "error";
+
 export interface LocationState {
   coords: [number, number] | null;
   areaName: string | null;
@@ -40,6 +47,7 @@ interface StoreState {
   isAuthModalOpen: boolean;
   searchResults: Poi[] | null;
   isSearching: boolean;
+  uploadStatus: UploadStatus;
 }
 
 interface StoreActions {
@@ -48,6 +56,7 @@ interface StoreActions {
   toggleAuthModal: (isOpen: boolean) => void;
   setUser: (user: User | null) => void;
   setAccessToken: (token: string | null) => void;
+  setUploadStatus: (status: UploadStatus) => void;
   logout: () => void;
   fetchUserLocation: () => Promise<boolean>;
   addPost: (post: Post) => void;
@@ -84,6 +93,7 @@ export const useStore = create<Store>()(
       flyToLocation: null,
       selectedPoi: null,
       flyToTarget: null,
+      uploadStatus: "idle",
       highlightedPoiId: null,
       posts: initialState,
       mapUrl: cartoMapStyles.lightV2.url,
@@ -107,6 +117,8 @@ export const useStore = create<Store>()(
           mapUrl: cartoMapStyles[key].url,
         }),
       clearSearch: () => set({ searchResults: null, isSearching: false }),
+
+      setUploadStatus: (status) => set({ uploadStatus: status }),
 
       setPosts: (posts) => set({ posts }),
 

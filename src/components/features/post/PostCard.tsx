@@ -141,7 +141,7 @@ const PostCard: React.FC<PostCardProps> = ({ post }) => {
         }`}
         style={{ boxShadow: shadowValue }}
       >
-        <div className="flex mt-8 pt-6 text-right">
+        <div className="flex mt-10 pt-10 text-right">
           <p
             className={`text-base font-bold leading-tight break-words overflow-hidden ${
               theme === "dark" ? "text-white" : "text-gray-900"
@@ -152,7 +152,7 @@ const PostCard: React.FC<PostCardProps> = ({ post }) => {
           {post.areaName && (
             <motion.div
               className={`
-                absolute top-13 left-4 flex items-center gap-1
+                absolute top-[49px] left-4 flex items-center gap-1
                 p-1.5 pr-2 rounded-full text-xs font-semibold shadow-md
                 backdrop-blur-sm border
                 ${

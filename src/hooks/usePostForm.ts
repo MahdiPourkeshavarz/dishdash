@@ -14,16 +14,20 @@ interface UsePostFormProps {
 }
 
 export const usePostForm = ({ postToEdit, onSuccess }: UsePostFormProps) => {
-  const { user, location: userLocation, postTargetLocation } = useStore();
+  const {
+    user,
+    location: userLocation,
+    postTargetLocation,
+    setUploadStatus,
+  } = useStore();
 
   const [view, setView] = useState<"initial" | "expanded">("initial");
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [description, setDescription] = useState("");
   const [satisfaction, setSatisfaction] = useState<Satisfaction>("");
-  const [tags, setTags] = useState<string[]>([]);
-  const [isClassifying, setIsClassifying] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const [error, setError] = useState<string>("");
 
   const classifyMutation = useClassifyImage();
   const createPostMutation = useCreatePost();
@@ -44,7 +48,6 @@ export const usePostForm = ({ postToEdit, onSuccess }: UsePostFormProps) => {
     setImagePreview(null);
     setDescription("");
     setSatisfaction("");
-    setTags([]);
   };
 
   const handleImageChange = async (e: ChangeEvent<HTMLInputElement>) => {
@@ -60,95 +63,115 @@ export const usePostForm = ({ postToEdit, onSuccess }: UsePostFormProps) => {
     setImageFile(compressedFile);
     setImagePreview(URL.createObjectURL(compressedFile));
     setView("expanded");
-
-    setIsClassifying(true);
-    classifyMutation.mutate(compressedFile, {
-      onSuccess: (data) => {
-        const extractedLabels = data.map(
-          (item: { label: string }) => item.label
-        );
-        setTags(extractedLabels);
-        setIsClassifying(false);
-      },
-      onError: (error) => {
-        console.error("Image classification failed:", error);
-        setIsClassifying(false);
-      },
-    });
   };
 
-  const handleSubmit = async (e: FormEvent) => {
+  const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
 
     if (postToEdit) {
       if (!user) {
-        alert("You must be logged in to edit a post.");
+        setError("لطفا وارد حساب کاربری خود شوید");
         return;
       }
-
-      try {
-        await updatePostMutation.mutateAsync({
+      updatePostMutation.mutate(
+        {
           postId: postToEdit._id as string,
-          updateData: {
+          updateData: { description, satisfaction },
+        },
+        {
+          onSuccess: () => onSuccess(),
+          onError: (error) => {
+            console.error("Update failed:", error);
+            setError("لطفا دوباره عکس را بارگذاری نمایید");
+          },
+        }
+      );
+      return;
+    }
+
+    const userGpsLocation = userLocation.coords
+      ? [userLocation.coords[1], userLocation.coords[0]]
+      : null;
+    const positionToUse = postTargetLocation?.coords
+      ? [postTargetLocation.coords[0], postTargetLocation.coords[1]]
+      : userGpsLocation;
+
+    if (
+      !user ||
+      !positionToUse ||
+      !imageFile ||
+      !description ||
+      !satisfaction
+    ) {
+      setError("لطفا اطلاعات پست را تکمیل نمایید");
+      return;
+    }
+
+    onSuccess();
+
+    setUploadStatus("classifying");
+
+    classifyMutation.mutate(imageFile, {
+      onSuccess: (classificationData) => {
+        const extractedLabels = classificationData.map(
+          (item: { label: string }) => item.label
+        );
+
+        setUploadStatus("uploading");
+        createPostMutation.mutate(
+          {
+            imageFile,
             description,
             satisfaction,
+            position: positionToUse as [number, number],
+            areaName: postTargetLocation?.name || userLocation.areaName || "",
+            osmId: postTargetLocation?.osmId,
+            tags: extractedLabels,
           },
-        });
-        onSuccess();
-      } catch (error) {
-        console.error("Update failed:", error);
-        alert("Failed to update post. Please try again.");
-      }
-    } else {
-      const userGpsLocation = userLocation.coords
-        ? [userLocation.coords[1], userLocation.coords[0]]
-        : null;
-
-      const positionToUse = postTargetLocation?.coords
-        ? [postTargetLocation.coords[0], postTargetLocation.coords[1]]
-        : userGpsLocation;
-
-      if (
-        !user ||
-        !positionToUse ||
-        !imageFile ||
-        !description ||
-        !satisfaction
-      ) {
-        if (!positionToUse) {
-          alert("Location not found. Please enable location services.");
-        } else {
-          alert("Please complete all fields to create a post.");
-        }
-        return;
-      }
-
-      try {
-        await createPostMutation.mutateAsync({
-          imageFile,
-          description,
-          satisfaction,
-          position: positionToUse as [number, number],
-          areaName: postTargetLocation?.name || userLocation.areaName || "",
-          osmId: postTargetLocation?.osmId,
-          tags,
-        });
-        onSuccess();
-      } catch (error) {
-        console.error("Create failed:", error);
-        alert("Failed to create post. Please try again.");
-      }
-    }
+          {
+            onSuccess: () => setUploadStatus("success"),
+            onError: () => setUploadStatus("error"),
+          }
+        );
+      },
+      onError: (error) => {
+        console.error("Image classification failed:", error);
+        setUploadStatus("uploading");
+        createPostMutation.mutate(
+          {
+            imageFile,
+            description,
+            satisfaction,
+            position: positionToUse as [number, number],
+            areaName: postTargetLocation?.name || userLocation.areaName || "",
+            osmId: postTargetLocation?.osmId,
+            tags: [],
+          },
+          {
+            onSuccess: () => setUploadStatus("success"),
+            onError: () => setUploadStatus("error"),
+          }
+        );
+      },
+    });
   };
+
+  useEffect(() => {
+    if (error) {
+      const timer = setTimeout(() => {
+        setError("");
+      }, 2000);
+      return () => clearTimeout(timer);
+    }
+  }, [error]);
 
   return {
     view,
+    error,
     imagePreview,
     description,
     satisfaction,
-    tags,
-    isClassifying,
-    isSubmitting: createPostMutation.isPending,
+    isSubmitting: createPostMutation.isPending || updatePostMutation.isPending,
     fileInputRef,
     setView,
     setDescription,

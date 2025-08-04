@@ -5,6 +5,7 @@ import { inter, nabla, nahid, concert } from "@/lib/fonts";
 import { QueryProvider } from "./QueryProvider";
 import { ZustandSessionSync } from "@/components/layout/ZustandSessionSync";
 import { ThemeSync } from "@/components/layout/ThemeSync";
+import { UploadNotifier } from "@/components/layout/UploadNotifier";
 
 export const metadata: Metadata = {
   title: "DishDash",
@@ -25,6 +26,7 @@ export default function RootLayout({
           <QueryProvider>
             <ZustandSessionSync />
             <ThemeSync />
+            <UploadNotifier />
             {children}
           </QueryProvider>
         </Providers>

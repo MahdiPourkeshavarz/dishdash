@@ -86,8 +86,8 @@ export const PostModal: React.FC<PostModalProps> = ({
     imagePreview,
     description,
     satisfaction,
-    isClassifying,
     isSubmitting,
+    error,
     fileInputRef,
     setView,
     setDescription,
@@ -171,6 +171,11 @@ export const PostModal: React.FC<PostModalProps> = ({
                         rows={3}
                         dir="rtl"
                       />
+                      {error && (
+                        <p className="text-red-500 text-sm text-center -mb-2">
+                          {error}
+                        </p>
+                      )}
                       <div className="flex items-center justify-between text-sm">
                         <div
                           className={`flex items-center gap-2 ${
@@ -285,11 +290,7 @@ export const PostModal: React.FC<PostModalProps> = ({
                     form="post-form"
                     className="flex items-center gap-2 bg-blue-600 px-4 py-2 rounded-full text-sm font-semibold text-white hover:bg-blue-500"
                   >
-                    {isSubmitting
-                      ? "Posting..."
-                      : isClassifying
-                      ? "Analyzing..."
-                      : "Post"}
+                    {isSubmitting ? "Posting..." : "Post"}
                     <Send size={16} />
                   </button>
                 </div>
