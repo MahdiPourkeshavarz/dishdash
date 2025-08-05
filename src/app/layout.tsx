@@ -3,9 +3,9 @@ import "./globals.css";
 import { Providers } from "./providers";
 import { inter, nabla, nahid, concert } from "@/lib/fonts";
 import { QueryProvider } from "./QueryProvider";
-import { ZustandSessionSync } from "@/components/layout/ZustandSessionSync";
 import { ThemeSync } from "@/components/layout/ThemeSync";
 import { UploadNotifier } from "@/components/layout/UploadNotifier";
+import { ZustandSessionSync } from "@/components/layout/ZustandSessionSync";
 
 export const metadata: Metadata = {
   title: "DishDash",
