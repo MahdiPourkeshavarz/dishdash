@@ -1,7 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
-import { ThemeInitializer } from "@/components/layout/ThemeInitializer";
 import { useStore } from "@/store/useStore";
 import { SessionProvider, useSession } from "next-auth/react";
 import { useEffect } from "react";
@@ -30,10 +29,7 @@ export const Providers: React.FC<ProvidersProps> = ({ children }) => {
   return (
     <>
       <SessionProvider>
-        <ZustandSessionSync>
-          <ThemeInitializer />
-          {children}
-        </ZustandSessionSync>
+        <ZustandSessionSync>{children}</ZustandSessionSync>
       </SessionProvider>
     </>
   );
