@@ -1,15 +1,26 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
-import { useState, FormEvent } from "react";
+import { motion } from "framer-motion";
 import { z } from "zod";
 import { Input } from "../auth/Input";
 import { useChangePassword } from "@/hooks/useUpdatePassword";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useEffect, useState } from "react";
 
 const passwordSchema = z.object({
   currentPassword: z.string().min(1, "رمز عبور فعلی الزامی است"),
-  newPassword: z.string().min(8, "رمز عبور جدید باید حداقل 8 کاراکتر باشد"),
+  newPassword: z
+    .string()
+    .min(8, "حداقل ۸ کاراکتر")
+    .regex(/[A-Z]/, "یک حرف بزرگ انگلیسی")
+    .regex(/[a-z]/, "یک حرف کوچک انگلیسی")
+    .regex(/[0-9]/, "یک عدد")
+    .regex(/[^a-zA-Z0-9]/, "یک کاراکتر خاص (!@#...)"),
 });
+
+type PasswordFormData = z.infer<typeof passwordSchema>;
 
 interface ChangePasswordFormProps {
   onSuccess: () => void;
@@ -18,85 +29,85 @@ interface ChangePasswordFormProps {
 export const ChangePasswordForm: React.FC<ChangePasswordFormProps> = ({
   onSuccess,
 }) => {
-  const [currentPassword, setCurrentPassword] = useState("");
-  const [newPassword, setNewPassword] = useState("");
-  const [errors, setErrors] = useState<{ [key: string]: string }>({});
-  const [isSuccess, setIsSuccess] = useState(false);
+  const {
+    register,
+    handleSubmit,
+    formState: { errors, isSubmitSuccessful },
+  } = useForm<PasswordFormData>({
+    resolver: zodResolver(passwordSchema),
+  });
+
+  const [error, setError] = useState<string>("");
 
   const { mutate: changePassword, isPending } = useChangePassword();
 
-  const handleSubmit = (e: FormEvent) => {
-    e.preventDefault();
-    setErrors({});
-
-    const validationResult = passwordSchema.safeParse({
-      currentPassword,
-      newPassword,
+  const onSubmit = (data: PasswordFormData) => {
+    changePassword(data, {
+      onSuccess: () => {
+        setTimeout(() => {
+          onSuccess();
+        }, 1000);
+      },
+      onError: (error: any) => {
+        console.log(error);
+        setError("تغییر رمز موفقیت آمیز نبود");
+      },
     });
-
-    if (!validationResult.success) {
-      const newErrors: { [key: string]: string } = {};
-      validationResult.error.errors.forEach((err) => {
-        newErrors[err.path[0]] = err.message;
-      });
-      setErrors(newErrors);
-      return;
-    }
-
-    changePassword(
-      { currentPassword, newPassword },
-      {
-        onSuccess: () => {
-          setIsSuccess(true);
-
-          setTimeout(() => {
-            onSuccess();
-          }, 500);
-        },
-        onError: (error: any) => {
-          alert(`Error: ${error.response?.data?.message || error.message}`);
-        },
-      }
-    );
   };
+
+  useEffect(() => {
+    if (error) {
+      const timer = setTimeout(() => {
+        setError("");
+      }, 2000);
+      return () => clearTimeout(timer);
+    }
+  }, [error]);
 
   const buttonText = isPending
     ? "در حال تغییر..."
-    : isSuccess
+    : isSubmitSuccessful
     ? "رمز با موفقیت تغییر کرد"
     : "تغییر رمز عبور";
 
   const buttonClassName = `w-full mt-2 p-2 rounded-lg font-semibold transition-colors text-white disabled:opacity-75 ${
-    isSuccess ? "bg-green-600" : "bg-blue-600 hover:bg-blue-500"
+    isSubmitSuccessful ? "bg-green-600" : "bg-blue-600 hover:bg-blue-500"
   }`;
 
   return (
-    <form className="flex flex-col items-center gap-4" onSubmit={handleSubmit}>
+    <form
+      className="flex flex-col items-center gap-4"
+      onSubmit={handleSubmit(onSubmit)}
+    >
       <Input
         label="رمز عبور فعلی"
         type="password"
         dir="ltr"
-        value={currentPassword}
-        onChange={(e) => setCurrentPassword(e.target.value)}
-        error={errors.currentPassword}
+        {...register("currentPassword")}
+        error={errors.currentPassword?.message}
         autoComplete="off"
       />
       <Input
         label="رمز عبور جدید"
         type="password"
         dir="ltr"
-        value={newPassword}
-        onChange={(e) => setNewPassword(e.target.value)}
-        error={errors.newPassword}
+        {...register("newPassword")}
+        error={errors.newPassword?.message}
         autoComplete="off"
       />
-      <button
+
+      {error && (
+        <p className="text-red-500 text-sm text-center -mb-2">{error}</p>
+      )}
+
+      <motion.button
         type="submit"
-        disabled={isPending || isSuccess}
+        disabled={isPending || isSubmitSuccessful}
         className={buttonClassName}
+        whileTap={{ scale: 0.95 }}
       >
         {buttonText}
-      </button>
+      </motion.button>
     </form>
   );
 };
