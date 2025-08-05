@@ -17,8 +17,8 @@ export const UploadNotifier = () => {
       icon: <Loader size={16} className="animate-spin" />,
       text: "در حال ایجاد پست",
     },
-    success: { icon: <CheckCircle size={16} />, text: "Post successful!" },
-    error: { icon: <AlertTriangle size={16} />, text: "Upload failed." },
+    success: { icon: <CheckCircle size={16} />, text: "پست ایجاد شد" },
+    error: { icon: <AlertTriangle size={16} />, text: "پست ایجاد نشد" },
   };
 
   useEffect(() => {

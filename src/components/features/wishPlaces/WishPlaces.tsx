@@ -79,6 +79,7 @@ export function WishPlacesModal({
           <button
             key={cat.name}
             onClick={() => setActiveTab(cat.name)}
+            aria-label={cat.label}
             className={`flex-1 p-2 flex justify-center items-center gap-2 text-sm transition-colors ${
               activeTab === cat.name
                 ? "text-blue-400"
@@ -122,6 +123,7 @@ export function WishPlacesModal({
                       setFlyToTarget(place);
                       onClose();
                     }}
+                    aria-label={`Navigate to ${place.tags.name}`}
                     className={`p-1 rounded ${
                       theme === "dark"
                         ? "hover:bg-gray-600"

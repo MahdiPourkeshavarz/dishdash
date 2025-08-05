@@ -34,8 +34,8 @@ export const useSearch = () => {
 
       const distanceRadiusMap = {
         walking: 1000, // 1km
-        near: 7000, // 7km
-        driving: 24000, // 24km
+        near: 7500, // 7km
+        driving: 21000, // 21km
       };
       const maxDistance = distanceRadiusMap[params.distance];
 
