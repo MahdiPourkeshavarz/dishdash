@@ -60,13 +60,17 @@ interface PostCardProps {
 const PostCard: React.FC<PostCardProps> = ({ post }) => {
   const { theme, setEditingPost, togglePostModal, setDeletingPost } =
     useStore();
-  const styles = satisfactionStyles[post.satisfaction];
+  const styles = post
+    ? satisfactionStyles[post.satisfaction]
+    : satisfactionStyles.awesome;
   const [isProfileCardVisible, setProfileCardVisible] = useState(false);
   const [isDirectionsPillOpen, setDirectionsPillOpen] = useState(false);
   const [isMenuOpen, setMenuOpen] = useState(false);
   const [vote, setVote] = useState<"like" | "dislike" | null>(null);
-  const [likeCount, setLikeCount] = useState(post.likes as number);
-  const [dislikeCount, setDislikeCount] = useState(post.dislikes as number);
+  const [likeCount, setLikeCount] = useState(post ? (post.likes as number) : 0);
+  const [dislikeCount, setDislikeCount] = useState(
+    post ? (post.dislikes as number) : 0
+  );
 
   const { data: session } = useSession();
 
@@ -137,7 +141,7 @@ const PostCard: React.FC<PostCardProps> = ({ post }) => {
         }`}
         style={{ boxShadow: shadowValue }}
       >
-        <div className="flex mt-8 pt-6 text-right">
+        <div className="flex mt-10 pt-10 text-right">
           <p
             className={`text-base font-bold leading-tight break-words overflow-hidden ${
               theme === "dark" ? "text-white" : "text-gray-900"
@@ -148,7 +152,7 @@ const PostCard: React.FC<PostCardProps> = ({ post }) => {
           {post.areaName && (
             <motion.div
               className={`
-                absolute top-13 left-4 flex items-center gap-1
+                absolute top-[49px] left-4 flex items-center gap-1
                 p-1.5 pr-2 rounded-full text-xs font-semibold shadow-md
                 backdrop-blur-sm border
                 ${

@@ -7,6 +7,13 @@ import { cartoMapStyles } from "@/lib/mapStyles";
 
 export type MapStyleKey = "lightV1" | "lightV2" | "dark";
 
+export type UploadStatus =
+  | "idle"
+  | "classifying"
+  | "uploading"
+  | "success"
+  | "error";
+
 export interface LocationState {
   coords: [number, number] | null;
   areaName: string | null;
@@ -40,6 +47,7 @@ interface StoreState {
   isAuthModalOpen: boolean;
   searchResults: Poi[] | null;
   isSearching: boolean;
+  uploadStatus: UploadStatus;
 }
 
 interface StoreActions {
@@ -48,6 +56,7 @@ interface StoreActions {
   toggleAuthModal: (isOpen: boolean) => void;
   setUser: (user: User | null) => void;
   setAccessToken: (token: string | null) => void;
+  setUploadStatus: (status: UploadStatus) => void;
   logout: () => void;
   fetchUserLocation: () => Promise<boolean>;
   addPost: (post: Post) => void;
@@ -67,7 +76,7 @@ interface StoreActions {
   setPosts: (posts: Post[]) => void;
   setSearchResults: (results: Poi[] | null) => void;
   setIsSearching: (isSearching: boolean) => void;
-  clearSearch: () => void
+  clearSearch: () => void;
 }
 
 type Store = StoreState & StoreActions;
@@ -75,8 +84,8 @@ type Store = StoreState & StoreActions;
 export const useStore = create<Store>()(
   persist(
     (set, get) => ({
-      theme: "dark",
-      mapStyleKey: "dark",
+      theme: "light",
+      mapStyleKey: "lightV2",
       user: null as User | null,
       accessToken: null,
       wishlist: [],
@@ -84,9 +93,10 @@ export const useStore = create<Store>()(
       flyToLocation: null,
       selectedPoi: null,
       flyToTarget: null,
+      uploadStatus: "idle",
       highlightedPoiId: null,
       posts: initialState,
-      mapUrl: cartoMapStyles.dark.url,
+      mapUrl: cartoMapStyles.lightV2.url,
       isProfileModalOpen: false,
       postTargetLocation: null,
       editingPost: null,
@@ -107,6 +117,8 @@ export const useStore = create<Store>()(
           mapUrl: cartoMapStyles[key].url,
         }),
       clearSearch: () => set({ searchResults: null, isSearching: false }),
+
+      setUploadStatus: (status) => set({ uploadStatus: status }),
 
       setPosts: (posts) => set({ posts }),
 
@@ -252,6 +264,7 @@ export const useStore = create<Store>()(
       partialize: (state) => ({
         mapStyleKey: state.mapStyleKey,
         theme: state.theme,
+        mapUrl: state.mapUrl,
         posts: state.posts,
         wishlist: state.wishlist,
       }),

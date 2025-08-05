@@ -3,6 +3,9 @@ import "./globals.css";
 import { Providers } from "./providers";
 import { inter, nabla, nahid, concert } from "@/lib/fonts";
 import { QueryProvider } from "./QueryProvider";
+import { ThemeSync } from "@/components/layout/ThemeSync";
+import { UploadNotifier } from "@/components/layout/UploadNotifier";
+import { ZustandSessionSync } from "@/components/layout/ZustandSessionSync";
 
 export const metadata: Metadata = {
   title: "DishDash",
@@ -20,7 +23,12 @@ export default function RootLayout({
         className={`${inter.variable} ${nahid.variable} ${nabla.variable} ${concert.variable}`}
       >
         <Providers>
-          <QueryProvider>{children}</QueryProvider>
+          <QueryProvider>
+            <ZustandSessionSync />
+            <ThemeSync />
+            <UploadNotifier />
+            {children}
+          </QueryProvider>
         </Providers>
       </body>
     </html>

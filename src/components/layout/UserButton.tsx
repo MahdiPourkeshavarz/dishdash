@@ -14,24 +14,21 @@ export function UserButton() {
   const user = session?.user;
 
   const handleInteraction = () => {
-    // Check for touch capability. This is a more reliable way to infer mobile.
     const isTouchDevice =
       "ontouchstart" in window || navigator.maxTouchPoints > 0;
 
     if (isTouchDevice) {
       if (isNameVisible || isProfileModalOpen) {
-        toggleProfileModal(); // Second tap: open the main modal
+        toggleProfileModal();
         setIsNameVisible(false);
       } else {
-        setIsNameVisible(true); // First tap: just show the name
+        setIsNameVisible(true);
       }
     } else {
-      // For non-touch devices (desktop), a click always opens the modal.
       toggleProfileModal();
     }
   };
 
-  // This effect closes the name pop-out if the modal is closed from another source
   useEffect(() => {
     if (!isProfileModalOpen) {
       setIsNameVisible(false);
