@@ -101,6 +101,11 @@ export function ProfileModal() {
     }
   };
 
+  const handleSignOut = () => {
+    toggleProfileModal();
+    signOut({ redirect: false });
+  };
+
   return (
     <AnimatePresence>
       {isProfileModalOpen && (
@@ -230,7 +235,7 @@ export function ProfileModal() {
               }`}
             >
               <button
-                onClick={() => signOut({ callbackUrl: "/" })}
+                onClick={handleSignOut}
                 className="w-full flex items-center justify-center gap-2 p-2 text-red-400 hover:bg-red-500/20 rounded-lg transition-colors"
               >
                 <LogOut size={16} /> خروج

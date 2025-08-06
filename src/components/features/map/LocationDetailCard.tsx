@@ -21,6 +21,7 @@ import {
 import { AddPostButton } from "../post/AddPostButton";
 import { DirectionsPill } from "../post/DirectionPill";
 import { useState } from "react";
+import { PlaceRating } from "./PlaceRating";
 
 interface LocationDetailCardProps {
   poi: Poi | null;
@@ -85,12 +86,12 @@ export const LocationDetailCard: React.FC<LocationDetailCardProps> = ({
           transition={{ type: "spring", damping: 30, stiffness: 250 }}
         >
           <div
+            onClick={handleCardClick}
             className={`relative w-full max-w-md mx-auto rounded-2xl shadow-2xl p-4 text-sm backdrop-blur-xl border ${
               theme === "dark"
                 ? "bg-gray-800/80 border-gray-700 text-white"
                 : "bg-white/80 border-gray-200 text-black"
             }`}
-            onClick={handleCardClick}
           >
             <button
               onClick={onClose}
@@ -104,8 +105,9 @@ export const LocationDetailCard: React.FC<LocationDetailCardProps> = ({
 
             <button
               onClick={handleWishlistClick}
-              className={`absolute top-3 right-3 p-1 rounded-full ...`}
+              className="absolute top-3 right-3 p-1 rounded-full"
               disabled={!isUserLoggedIn}
+              aria-label="Toggle Wishlist"
             >
               {isInWishlist ? (
                 <BookmarkCheck size={18} className="text-green-400" />
@@ -114,15 +116,11 @@ export const LocationDetailCard: React.FC<LocationDetailCardProps> = ({
               )}
             </button>
 
-            <h3 className={`font-bold text-xl mb-2 pr-6 text-center`}>
+            <h3 className="font-bold text-xl mb-2 text-center">
               {poi.tags.name}
             </h3>
 
-            <div
-              className={`space-y-2 text-xs pt-2 my-2 ${
-                theme === "dark" ? "border-white/10" : "border-black/10"
-              } `}
-            >
+            <div className="space-y-2 text-xs py-3 my-2 border-y border-white/10">
               {poi.tags["addr:street"] &&
                 (() => {
                   const isFarsi = /[\u0600-\u06FF]/.test(
@@ -142,15 +140,7 @@ export const LocationDetailCard: React.FC<LocationDetailCardProps> = ({
                     </div>
                   );
                 })()}
-              {poi.tags.opening_hours && (
-                <div
-                  className="flex items-center gap-2 flex-row text-left w-full justify-between"
-                  dir="ltr"
-                >
-                  <Clock className="w-4 h-4 text-gray-400 flex-shrink-0" />
-                  <span className="flex-1">{poi.tags.opening_hours}</span>
-                </div>
-              )}
+
               {poi.tags.phone && (
                 <a
                   href={`tel:${poi.tags.phone}`}
@@ -162,6 +152,7 @@ export const LocationDetailCard: React.FC<LocationDetailCardProps> = ({
                   <span className="flex-1">{poi.tags.phone}</span>
                 </a>
               )}
+
               {poi.tags.website && (
                 <a
                   href={poi.tags.website}
@@ -175,21 +166,35 @@ export const LocationDetailCard: React.FC<LocationDetailCardProps> = ({
                   <span className="flex-1 truncate">{poi.tags.website}</span>
                 </a>
               )}
+
+              {poi.tags.opening_hours && (
+                <div className="flex items-center justify-between w-full gap-2">
+                  <div className="flex items-center gap-2" dir="ltr">
+                    <Clock className="w-4 h-4 text-gray-400 flex-shrink-0" />
+                    <span className="flex-1 text-left">
+                      {poi.tags.opening_hours}
+                    </span>
+                  </div>
+                  <PlaceRating
+                    placeId={poi._id as unknown as string}
+                    averageRating={poi.averageRating || 0}
+                    ratingCount={poi.ratingCount || 0}
+                  />
+                </div>
+              )}
             </div>
 
             <div
-              className={`flex items-center justify-between mt-4 pt-1 border-t ${
+              className={`flex items-center justify-between mt-4 pt-3 border-t ${
                 theme === "dark" ? "border-white/10" : "border-black/10"
               }`}
             >
               <AddPostButton poi={poi} onAddPost={onAddPost} />
-              <div className="pt-3 pr-2">
-                <DirectionsPill
-                  destination={positionToUse}
-                  isOpen={isDirectionsPillOpen}
-                  setIsOpen={setDirectionsPillOpen}
-                />
-              </div>
+              <DirectionsPill
+                destination={positionToUse}
+                isOpen={isDirectionsPillOpen}
+                setIsOpen={setDirectionsPillOpen}
+              />
             </div>
           </div>
         </motion.div>

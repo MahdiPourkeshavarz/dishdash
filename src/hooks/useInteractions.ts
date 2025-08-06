@@ -68,3 +68,27 @@ export const useRemoveFromWishlist = () => {
     },
   });
 };
+
+interface RatePlacePayload {
+  placeId: string;
+  score: number;
+}
+
+const ratePlace = async ({ placeId, score }: RatePlacePayload) => {
+  const { data } = await apiClient.post(`/interactions/${placeId}/rate`, {
+    score,
+  });
+  return data;
+};
+
+export const useRatePlace = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ratePlace,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["pois"] });
+      queryClient.invalidateQueries({ queryKey: ["wishlist"] });
+    },
+  });
+};

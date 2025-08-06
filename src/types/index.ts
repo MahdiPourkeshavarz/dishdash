@@ -32,6 +32,8 @@ export interface Poi {
   lon: number;
   position?: [number, number];
   osmId?: number;
+  averageRating?: number;
+  ratingCount?: number;
   tags: {
     [key: string]: string | undefined;
     name?: string;
