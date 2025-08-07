@@ -53,7 +53,7 @@ export const PlaceRating: React.FC<PlaceRatingProps> = ({
   };
 
   return (
-    <div className="flex items-center gap-2" dir="ltr">
+    <div className="flex items-center gap-2 flex-row-reverse">
       <AnimatePresence mode="wait">
         {!hasRated && isUserLoggedIn ? (
           <motion.div

@@ -85,7 +85,7 @@ export const useStore = create<Store>()(
   persist(
     (set, get) => ({
       theme: "light",
-      mapStyleKey: "lightV2",
+      mapStyleKey: "lightV1",
       user: null as User | null,
       accessToken: null,
       wishlist: [],
@@ -96,7 +96,7 @@ export const useStore = create<Store>()(
       uploadStatus: "idle",
       highlightedPoiId: null,
       posts: initialState,
-      mapUrl: cartoMapStyles.lightV2.url,
+      mapUrl: cartoMapStyles.lightV1.url,
       isProfileModalOpen: false,
       postTargetLocation: null,
       editingPost: null,

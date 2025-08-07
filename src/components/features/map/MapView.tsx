@@ -14,7 +14,7 @@ import { useStore } from "@/store/useStore";
 import { Poi, User } from "@/types";
 import UserLocationMarker from "./UserLocationMarker";
 import ChangeView from "./ChangeView";
-import { useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import PostMarker from "../post/PostMarker";
 import { MapStyleSwitcher } from "./MapStyleSwitcher";
 import { FindLocationButton } from "./FindLocationButton";

@@ -15,9 +15,12 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
     const [showPassword, setShowPassword] = useState(false);
     const isPassword = type === "password";
 
+    const inputId = props.name;
+
     return (
       <div className="relative w-full">
         <label
+          htmlFor={inputId}
           className={`block text-sm font-medium mb-1 ${
             theme === "dark" ? "text-gray-300" : "text-gray-700"
           }`}
@@ -25,6 +28,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
           {label}
         </label>
         <input
+          id={inputId}
           {...props}
           ref={ref}
           type={isPassword && showPassword ? "text" : type}

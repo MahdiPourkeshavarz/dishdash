@@ -19,6 +19,13 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
+      <head>
+        <link
+          rel="preconnect"
+          href="https://www.openstreetmap.org"
+          crossOrigin=""
+        />
+      </head>
       <body
         className={`${inter.variable} ${nahid.variable} ${nabla.variable} ${concert.variable}`}
       >

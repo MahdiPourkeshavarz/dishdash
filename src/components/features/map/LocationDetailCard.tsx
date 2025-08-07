@@ -167,21 +167,21 @@ export const LocationDetailCard: React.FC<LocationDetailCardProps> = ({
                 </a>
               )}
 
-              {poi.tags.opening_hours && (
-                <div className="flex items-center justify-between w-full gap-2">
-                  <div className="flex items-center gap-2" dir="ltr">
-                    <Clock className="w-4 h-4 text-gray-400 flex-shrink-0" />
+              <div className="flex items-center justify-between w-full gap-2">
+                <PlaceRating
+                  placeId={poi._id as unknown as string}
+                  averageRating={poi.averageRating || 0}
+                  ratingCount={poi.ratingCount || 0}
+                />
+                {poi.tags.opening_hours && (
+                  <div className="flex items-center gap-2">
                     <span className="flex-1 text-left">
                       {poi.tags.opening_hours}
                     </span>
+                    <Clock className="w-4 h-4 text-gray-400 flex-shrink-0" />
                   </div>
-                  <PlaceRating
-                    placeId={poi._id as unknown as string}
-                    averageRating={poi.averageRating || 0}
-                    ratingCount={poi.ratingCount || 0}
-                  />
-                </div>
-              )}
+                )}
+              </div>
             </div>
 
             <div
