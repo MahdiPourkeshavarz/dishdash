@@ -22,9 +22,15 @@ export default function RootLayout({
       <head>
         <link
           rel="preconnect"
-          href="https://www.openstreetmap.org"
+          href="https://a.tile.openstreetmap.fr"
           crossOrigin=""
         />
+        <link
+          rel="preconnect"
+          href="https://a.basemaps.cartocdn.com"
+          crossOrigin=""
+        />
+        <link rel="preconnect" href="https://api.maptiler.com" crossOrigin="" />
       </head>
       <body
         className={`${inter.variable} ${nahid.variable} ${nabla.variable} ${concert.variable}`}

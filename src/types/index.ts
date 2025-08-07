@@ -23,6 +23,9 @@ export interface Post {
   likes?: number;
   dislikes?: number;
   userId?: string;
+  placeId: string;
+  place: Partial<Poi>;
+  createdAt: Date;
 }
 
 export interface Poi {

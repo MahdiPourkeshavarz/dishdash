@@ -32,6 +32,8 @@ import { usePosts } from "@/hooks/usePost";
 import { useGroupedPosts } from "@/hooks/useGroupPosts";
 import { useIsMounted } from "@/hooks/useIsmounted";
 import { FitBounds } from "./FitBounds";
+import { FeedFlyToHandler } from "./FeedFlyToHandler";
+import { PostFeedButton } from "../feed/FeedModalButton";
 
 delete (L.Icon.Default.prototype as any)._getIconUrl;
 L.Icon.Default.mergeOptions({
@@ -90,6 +92,7 @@ const MapView: React.FC<MapViewProps> = ({ center, user, onMarkerClick }) => {
         <MapEvents onBoundsChange={setBbox} />
 
         <FlyToLocation />
+        <FeedFlyToHandler />
 
         {center && (
           <UserLocationMarker
@@ -166,6 +169,7 @@ const MapView: React.FC<MapViewProps> = ({ center, user, onMarkerClick }) => {
             </AnimatePresence>
           </div>
           <FindLocationButton />
+          <PostFeedButton />
         </>
       )}
     </div>

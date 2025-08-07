@@ -40,7 +40,7 @@ interface StoreState {
   deletingPost: Post | null;
   isPostModalOpen: boolean;
   wishlist: Poi[];
-  flyToLocation: [number, number] | null;
+  feedFlyToCoords: [number, number] | null;
   selectedPoi: Poi | null;
   flyToTarget: Poi | null;
   highlightedPoiId: number | null;
@@ -48,6 +48,7 @@ interface StoreState {
   searchResults: Poi[] | null;
   isSearching: boolean;
   uploadStatus: UploadStatus;
+  lastSeenPostTimestamp: number | null;
 }
 
 interface StoreActions {
@@ -69,7 +70,7 @@ interface StoreActions {
   togglePostModal: (isOpen: boolean) => void;
   addToWishlist: (place: Poi) => void;
   removeFromWishlist: (placeId: number) => void;
-  setFlyToLocation: (coords: [number, number] | null) => void;
+  setFeedFlyToCoords: (coords: [number, number] | null) => void;
   setSelectedPoi: (poi: Poi | null) => void;
   setFlyToTarget: (poi: Poi | null) => void;
   setHighlightedPoi: (id: number | null) => void;
@@ -77,6 +78,7 @@ interface StoreActions {
   setSearchResults: (results: Poi[] | null) => void;
   setIsSearching: (isSearching: boolean) => void;
   clearSearch: () => void;
+  markPostsAsSeen: () => void;
 }
 
 type Store = StoreState & StoreActions;
@@ -90,7 +92,7 @@ export const useStore = create<Store>()(
       accessToken: null,
       wishlist: [],
       isAuthModalOpen: false,
-      flyToLocation: null,
+      feedFlyToCoords: null,
       selectedPoi: null,
       flyToTarget: null,
       uploadStatus: "idle",
@@ -101,6 +103,7 @@ export const useStore = create<Store>()(
       postTargetLocation: null,
       editingPost: null,
       deletingPost: null,
+      lastSeenPostTimestamp: null,
       isPostModalOpen: false,
       location: {
         coords: null,
@@ -117,6 +120,8 @@ export const useStore = create<Store>()(
           mapUrl: cartoMapStyles[key].url,
         }),
       clearSearch: () => set({ searchResults: null, isSearching: false }),
+
+      markPostsAsSeen: () => set({ lastSeenPostTimestamp: Date.now() }),
 
       setUploadStatus: (status) => set({ uploadStatus: status }),
 
@@ -249,7 +254,7 @@ export const useStore = create<Store>()(
         set((state) => ({
           wishlist: state.wishlist.filter((p) => p.id !== placeId),
         })),
-      setFlyToLocation: (coords) => set({ flyToLocation: coords }),
+      setFeedFlyToCoords: (coords) => set({ feedFlyToCoords: coords }),
 
       setAccessToken: (token) => set({ accessToken: token }),
 
@@ -267,6 +272,7 @@ export const useStore = create<Store>()(
         mapUrl: state.mapUrl,
         posts: state.posts,
         wishlist: state.wishlist,
+        lastSeenPostTimestamp: state.lastSeenPostTimestamp,
       }),
     }
   )
