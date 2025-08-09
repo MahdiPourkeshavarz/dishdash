@@ -71,8 +71,8 @@ export const FeedPostCard: React.FC<FeedPostCardProps> = ({
         className={`group mx-auto max-w-sm rounded-3xl shadow-xl p-6 space-y-5
         ${
           theme === "dark"
-            ? "bg-gradient-to-b from-gray-900 to-gray-800 shadow-black/30"
-            : "bg-gradient-to-b from-white to-gray-50 shadow-black/10"
+            ? "bg-gradient-to-b from-gray-900/55 to-gray-800/55 shadow-black/30"
+            : "bg-gradient-to-b from-white/55 to-gray-50/55 shadow-black/10"
         }`}
       >
         {userData && (
