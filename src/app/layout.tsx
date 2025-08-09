@@ -19,6 +19,19 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
+      <head>
+        <link
+          rel="preconnect"
+          href="https://a.tile.openstreetmap.fr"
+          crossOrigin=""
+        />
+        <link
+          rel="preconnect"
+          href="https://a.basemaps.cartocdn.com"
+          crossOrigin=""
+        />
+        <link rel="preconnect" href="https://api.maptiler.com" crossOrigin="" />
+      </head>
       <body
         className={`${inter.variable} ${nahid.variable} ${nabla.variable} ${concert.variable}`}
       >

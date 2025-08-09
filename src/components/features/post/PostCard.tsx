@@ -152,7 +152,7 @@ const PostCard: React.FC<PostCardProps> = ({ post }) => {
           {post.areaName && (
             <motion.div
               className={`
-                absolute top-[49px] left-4 flex items-center gap-1
+                absolute top-[50px] left-4 flex items-center gap-1
                 p-1.5 pr-2 rounded-full text-xs font-semibold shadow-md
                 backdrop-blur-sm border
                 ${

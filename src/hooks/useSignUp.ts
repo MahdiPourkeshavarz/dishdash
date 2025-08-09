@@ -20,10 +20,10 @@ export const useSignUp = () => {
 
   return useMutation({
     mutationFn: signUpUser,
-    onSuccess: async (data) => {
+    onSuccess: async (data, variables) => {
       const result = await signIn("credentials", {
-        email: data.email,
-        password: data.password,
+        email: variables.email,
+        password: variables.password,
         redirect: false,
       });
 

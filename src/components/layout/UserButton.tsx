@@ -6,12 +6,14 @@ import Image from "next/image";
 import { useSession } from "next-auth/react";
 import { useStore } from "@/store/useStore";
 import { ProfileModal } from "../features/user/ProfileModal";
+import { useUser } from "@/hooks/useUser";
 
 export function UserButton() {
   const { data: session } = useSession();
   const { isProfileModalOpen, toggleProfileModal } = useStore();
   const [isNameVisible, setIsNameVisible] = useState(false);
   const user = session?.user;
+  const { data: userData } = useUser(user?.id);
 
   const handleInteraction = () => {
     const isTouchDevice =
@@ -55,8 +57,8 @@ export function UserButton() {
         className="flex items-center rounded-full bg-white/10 p-1 transition-all pl-2"
       >
         <Image
-          src={user.image || "/user-photo.jpg"}
-          alt={user.name || "User"}
+          src={userData?.image || "/user-photo.jpg"}
+          alt={userData?.username || "User"}
           width={40}
           height={40}
           className="rounded-full object-cover border-2 border-gray-400 group-hover:border-blue-400 transition-colors"

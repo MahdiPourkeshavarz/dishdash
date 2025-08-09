@@ -1,4 +1,4 @@
-export type SatisfactionStatus = "awesome" | "good" | "bad";
+export type SatisfactionStatus = "awesome" | "good" | "bad" | "disgusted";
 
 export interface User {
   id: string | null;
@@ -23,15 +23,21 @@ export interface Post {
   likes?: number;
   dislikes?: number;
   userId?: string;
+  placeId: string;
+  place: Partial<Poi>;
+  createdAt: Date;
 }
 
 export interface Poi {
   _id?: number;
+  name?: string;
   id: number;
   lat: number;
   lon: number;
   position?: [number, number];
   osmId?: number;
+  averageRating?: number;
+  ratingCount?: number;
   tags: {
     [key: string]: string | undefined;
     name?: string;

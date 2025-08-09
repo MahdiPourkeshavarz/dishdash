@@ -13,6 +13,7 @@ import { useSession } from "next-auth/react";
 import { useIsMounted } from "@/hooks/useIsmounted";
 import { SearchBar } from "@/components/features/search/SearchBar";
 import { useClickOutside } from "@/hooks/useClickOutside";
+import "leaflet/dist/leaflet.css";
 
 const currentUser: User = {
   id: "currentUser123",

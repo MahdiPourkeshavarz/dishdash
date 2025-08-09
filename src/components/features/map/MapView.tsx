@@ -4,7 +4,6 @@
 "use client";
 
 import { MapContainer, TileLayer } from "react-leaflet";
-import "leaflet/dist/leaflet.css";
 import L from "leaflet";
 
 import markerIcon2x from "leaflet/dist/images/marker-icon-2x.png";
@@ -14,7 +13,7 @@ import { useStore } from "@/store/useStore";
 import { Poi, User } from "@/types";
 import UserLocationMarker from "./UserLocationMarker";
 import ChangeView from "./ChangeView";
-import { useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import PostMarker from "../post/PostMarker";
 import { MapStyleSwitcher } from "./MapStyleSwitcher";
 import { FindLocationButton } from "./FindLocationButton";
@@ -32,6 +31,8 @@ import { usePosts } from "@/hooks/usePost";
 import { useGroupedPosts } from "@/hooks/useGroupPosts";
 import { useIsMounted } from "@/hooks/useIsmounted";
 import { FitBounds } from "./FitBounds";
+import { FeedFlyToHandler } from "./FeedFlyToHandler";
+import { PostFeedButton } from "../feed/FeedModalButton";
 
 delete (L.Icon.Default.prototype as any)._getIconUrl;
 L.Icon.Default.mergeOptions({
@@ -90,6 +91,7 @@ const MapView: React.FC<MapViewProps> = ({ center, user, onMarkerClick }) => {
         <MapEvents onBoundsChange={setBbox} />
 
         <FlyToLocation />
+        <FeedFlyToHandler />
 
         {center && (
           <UserLocationMarker
@@ -166,6 +168,7 @@ const MapView: React.FC<MapViewProps> = ({ center, user, onMarkerClick }) => {
             </AnimatePresence>
           </div>
           <FindLocationButton />
+          <PostFeedButton />
         </>
       )}
     </div>
