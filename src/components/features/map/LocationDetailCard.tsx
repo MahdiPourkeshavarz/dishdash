@@ -120,7 +120,7 @@ export const LocationDetailCard: React.FC<LocationDetailCardProps> = ({
               {poi.tags.name}
             </h3>
 
-            <div className="space-y-2 text-xs py-3 my-2 border-y border-white/10">
+            <div className="space-y-2 text-xs py-3 my-2 border-t border-white/10">
               {poi.tags["addr:street"] &&
                 (() => {
                   const isFarsi = /[\u0600-\u06FF]/.test(

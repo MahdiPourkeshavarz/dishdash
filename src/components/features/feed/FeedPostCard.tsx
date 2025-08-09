@@ -8,20 +8,9 @@ import { Post } from "@/types";
 import { useEffect, useState } from "react";
 import { useDislikePost, useLikePost } from "@/hooks/useInteractions";
 import { useInView } from "react-intersection-observer";
-
-const SatisfactionBadge = ({ satisfaction }: { satisfaction: string }) => {
-  const satisfactionEmojis: { [key: string]: string } = {
-    awesome: "🤩",
-    good: "😊",
-    bad: "😕",
-    disgusted: "🤢",
-  };
-  return (
-    <div className="flex items-center justify-center w-8 h-8 rounded-full bg-black/10 dark:bg-white/10 text-xl">
-      {satisfactionEmojis[satisfaction] || "🤔"}
-    </div>
-  );
-};
+import { SatisfactionDisplay } from "./SatisfactionDisplay";
+import { useUser } from "@/hooks/useUser";
+import { formatTimeAgo } from "@/lib/timeCalculation";
 
 interface FeedPostCardProps {
   post: Post;
@@ -35,6 +24,8 @@ export const FeedPostCard: React.FC<FeedPostCardProps> = ({
   onInView,
 }) => {
   const { theme, user } = useStore();
+
+  const { data: userData } = useUser(post.userId);
 
   const [vote, setVote] = useState<"like" | "dislike" | null>(null);
   const [likeCount, setLikeCount] = useState(post.likes || 0);
@@ -71,109 +62,144 @@ export const FeedPostCard: React.FC<FeedPostCardProps> = ({
   return (
     <motion.div
       ref={ref}
-      data-post-id={post._id}
       className="w-full snap-center flex-shrink-0"
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.4 }}
+      initial={{ opacity: 0, scale: 0.98, y: 20 }}
+      animate={{ opacity: 1, scale: 1, y: 0 }}
+      transition={{ type: "spring", stiffness: 180, damping: 20 }}
     >
-      <motion.div
-        whileHover={{ y: -5 }}
-        className={`mx-auto max-w-sm rounded-3xl p-3 space-y-3 transition-colors ${
-          theme === "dark" ? "bg-gray-800/60" : "bg-white/60"
+      <div
+        className={`group mx-auto max-w-sm rounded-3xl shadow-xl p-6 space-y-5
+        ${
+          theme === "dark"
+            ? "bg-gradient-to-b from-gray-900 to-gray-800 shadow-black/30"
+            : "bg-gradient-to-b from-white to-gray-50 shadow-black/10"
         }`}
       >
-        <div className="flex items-center gap-3 px-2">
-          <Image
-            src={post.user?.imgUrl || "/user-photo.jpg"}
-            alt={post.user?.username || "User"}
-            width={32}
-            height={32}
-            className="rounded-full object-cover"
-          />
-          <div className="flex flex-col">
-            <span
-              className={`text-sm font-semibold ${
-                theme === "dark" ? "text-gray-200" : "text-gray-800"
-              }`}
-            >
-              {post.user?.username}
-            </span>
-            <span
-              className={`text-xs ${
-                theme === "dark" ? "text-gray-400" : "text-gray-500"
-              }`}
-            >
-              {post.areaName}
-            </span>
+        {userData && (
+          <div className="flex items-center gap-3">
+            <Image
+              src={userData.image || "/user-photo.jpg"}
+              alt={userData.username || "User"}
+              width={44}
+              height={44}
+              className="rounded-full object-cover transition-transform duration-300 group-hover:scale-105"
+            />
+            <div>
+              <span
+                className={`block font-semibold ${
+                  theme === "dark" ? "text-gray-100" : "text-gray-800"
+                }`}
+              >
+                {userData.username}
+              </span>
+              <span className="text-xs text-gray-500">
+                {formatTimeAgo(post.createdAt)}
+              </span>
+            </div>
           </div>
-        </div>
+        )}
 
-        <div className="relative w-full aspect-[4/3] rounded-2xl overflow-hidden">
+        <div className="relative w-full aspect-[16/10] rounded-2xl overflow-hidden">
           <Image
             src={post.imageUrl}
             alt={post.description}
             fill
-            className="object-cover"
-            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+            className="object-cover transition-transform duration-500 group-hover:scale-105"
+            sizes="(max-width: 768px) 100vw, 33vw"
           />
+          <div className="absolute top-3 right-3">
+            <SatisfactionDisplay satisfaction={post.satisfaction} />
+          </div>
+          {post.place?.name && (
+            <motion.div
+              initial={{ opacity: 0, y: 8 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.15 }}
+              className="absolute bottom-3 left-3 px-3 py-1.5 rounded-full text-xs font-semibold bg-black/40 text-white backdrop-blur-md border border-white/20"
+            >
+              {post.place.name}
+            </motion.div>
+          )}
         </div>
 
-        <div className="px-2 space-y-3">
-          <p
-            className={`text-sm leading-relaxed ${
-              theme === "dark" ? "text-gray-300" : "text-gray-700"
-            }`}
-          >
-            {post.description}
-          </p>
-          <div
-            className={`flex items-center justify-between pt-2 border-t ${
-              theme === "dark" ? "border-white/10" : "border-black/10"
-            }`}
-          >
-            <div className="flex items-center gap-4">
-              <SatisfactionBadge satisfaction={post.satisfaction} />
-              <button
-                onClick={handleLike}
-                disabled={!user}
-                className="flex items-center gap-1.5"
+        <p
+          className={`leading-relaxed line-clamp-3 ${
+            theme === "dark" ? "text-gray-300" : "text-gray-700"
+          }`}
+        >
+          {post.description}
+        </p>
+
+        <div className="flex items-center justify-between pt-2">
+          <div className="flex items-center gap-3">
+            <motion.button
+              whileHover={{ scale: 1.08 }}
+              whileTap={{ scale: 0.95 }}
+              onClick={handleLike}
+              disabled={!user}
+              className={`flex items-center gap-2 px-3 py-1.5 rounded-full transition
+              ${
+                vote === "like"
+                  ? theme === "dark"
+                    ? "bg-blue-900/30 text-blue-600"
+                    : "bg-blue-100 text-blue-600"
+                  : theme === "dark"
+                  ? "bg-gray-700 text-gray-500"
+                  : "bg-gray-100 text-gray-500"
+              }`}
+            >
+              <ThumbsUp size={20} />
+              <motion.span
+                key={likeCount}
+                initial={{ opacity: 0, y: -5 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.2 }}
+                className="text-sm font-medium"
               >
-                <ThumbsUp
-                  size={16}
-                  className={
-                    vote === "like" ? "text-blue-500" : "text-gray-500"
-                  }
-                />
-                <span className="text-xs">{likeCount}</span>
-              </button>
-              <button
-                onClick={handleDislike}
-                disabled={!user}
-                className="flex items-center gap-1.5"
-              >
-                <ThumbsDown
-                  size={16}
-                  className={
-                    vote === "dislike" ? "text-red-500" : "text-gray-500"
-                  }
-                />
-                <span className="text-xs">{dislikeCount}</span>
-              </button>
-            </div>
+                {likeCount}
+              </motion.span>
+            </motion.button>
 
             <motion.button
-              onClick={() => onShowOnMap(post)}
-              className="flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-semibold bg-blue-500 text-white hover:bg-blue-600 transition-colors"
-              whileHover={{ scale: 1.05 }}
+              whileHover={{ scale: 1.08 }}
               whileTap={{ scale: 0.95 }}
+              onClick={handleDislike}
+              disabled={!user}
+              className={`flex items-center gap-2 px-3 py-1.5 rounded-full transition
+              ${
+                vote === "dislike"
+                  ? theme === "dark"
+                    ? "bg-red-900/30 text-red-600"
+                    : "bg-red-100 text-red-600"
+                  : theme === "dark"
+                  ? "bg-gray-700 text-gray-500"
+                  : "bg-gray-100 text-gray-500"
+              }`}
             >
-              <MapPin size={14} />
-              Show on Map
+              <ThumbsDown size={20} />
+              <motion.span
+                key={dislikeCount}
+                initial={{ opacity: 0, y: -5 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.2 }}
+                className="text-sm font-medium"
+              >
+                {dislikeCount}
+              </motion.span>
             </motion.button>
           </div>
+
+          <motion.button
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            onClick={() => onShowOnMap(post)}
+            className="flex items-center gap-2 px-4 py-2 rounded-full text-sm font-semibold bg-gradient-to-r from-blue-500 to-indigo-500 text-white shadow-md hover:shadow-lg hover:shadow-blue-500/30"
+          >
+            <MapPin size={16} />
+            نمایش روی نقشه
+          </motion.button>
         </div>
-      </motion.div>
+      </div>
     </motion.div>
   );
 };

@@ -1,15 +1,18 @@
 import { useStore } from "@/store/useStore";
 import { useEffect, useMemo, useState } from "react";
 import { PostFeedModal } from "./FeedModal";
-import { Newspaper } from "lucide-react";
+import { MailIcon } from "lucide-react";
 import { motion } from "framer-motion";
 import { usePostFeed } from "@/hooks/useFeedPosts";
 
 export const PostFeedButton = () => {
-  const { theme, lastSeenPostTimestamp, markPostsAsSeen } = useStore(); //should be implemented
+  const { theme, lastSeenPostTimestamp, markPostsAsSeen } = useStore();
   const [isFeedOpen, setIsFeedOpen] = useState(false);
   const [pulse, setPulse] = useState(false);
-  const { data: posts = [] } = usePostFeed();
+
+  const { data } = usePostFeed();
+
+  const posts = useMemo(() => data?.pages.flat() || [], [data]);
 
   const hasNewPosts = useMemo(() => {
     if (!posts || posts.length === 0) return false;
@@ -20,12 +23,12 @@ export const PostFeedButton = () => {
   }, [posts, lastSeenPostTimestamp]);
 
   useEffect(() => {
-    if (hasNewPosts) {
+    if (hasNewPosts && !isFeedOpen) {
       setPulse(true);
       const timer = setTimeout(() => setPulse(false), 1200);
       return () => clearTimeout(timer);
     }
-  }, [posts, hasNewPosts]);
+  }, [posts, hasNewPosts, isFeedOpen]);
 
   const handleOpenFeed = () => {
     setIsFeedOpen(true);
@@ -49,7 +52,7 @@ export const PostFeedButton = () => {
           animate={{ scale: pulse ? [1, 1.2, 1] : 1 }}
           transition={{ duration: 1.2, ease: "easeInOut" }}
         >
-          <Newspaper size={24} />
+          <MailIcon size={24} />
           {hasNewPosts && (
             <span className="absolute top-0 right-0 block h-3 w-3 rounded-full bg-red-500 ring-2 ring-white dark:ring-gray-800" />
           )}

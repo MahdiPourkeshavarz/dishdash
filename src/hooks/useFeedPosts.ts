@@ -1,13 +1,20 @@
+import { useMemo } from "react";
+import { useInfiniteQuery } from "@tanstack/react-query";
+import L from "leaflet";
+import { useStore } from "@/store/useStore";
 import apiClient from "@/lib/axiosClient";
 import { createBoundingBox } from "@/lib/createBoundingBox";
-import { useStore } from "@/store/useStore";
-import { useMemo } from "react";
-import L from "leaflet";
-import { useQuery } from "@tanstack/react-query";
 
-const fetchFeedPosts = async (bbox: L.LatLngBounds) => {
-  const { data } = await apiClient.get("posts", {
+const fetchFeedPosts = async ({
+  pageParam = 1,
+  bbox,
+}: {
+  pageParam?: number;
+  bbox: L.LatLngBounds;
+}) => {
+  const { data } = await apiClient.get("posts/feed", {
     params: {
+      page: pageParam,
       sw_lat: bbox.getSouth(),
       sw_lng: bbox.getWest(),
       ne_lat: bbox.getNorth(),
@@ -26,10 +33,14 @@ export const usePostFeed = () => {
     return createBoundingBox(center, 30000);
   }, [userLocation.coords]);
 
-  return useQuery({
-    queryKey: ["posts", "feed"],
-    queryFn: () => fetchFeedPosts(feedBbox!),
+  return useInfiniteQuery({
+    queryKey: ["posts", "feed", feedBbox?.toBBoxString()],
+    queryFn: ({ pageParam }) => fetchFeedPosts({ pageParam, bbox: feedBbox! }),
     enabled: !!feedBbox,
+    initialPageParam: 1,
+    getNextPageParam: (lastPage, allPages) => {
+      return lastPage.length > 0 ? allPages.length + 1 : undefined;
+    },
     staleTime: 1000 * 60 * 5,
   });
 };

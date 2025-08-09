@@ -1,4 +1,4 @@
-export type SatisfactionStatus = "awesome" | "good" | "bad";
+export type SatisfactionStatus = "awesome" | "good" | "bad" | "disgusted";
 
 export interface User {
   id: string | null;
@@ -30,6 +30,7 @@ export interface Post {
 
 export interface Poi {
   _id?: number;
+  name?: string;
   id: number;
   lat: number;
   lon: number;

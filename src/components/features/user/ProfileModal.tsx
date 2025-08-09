@@ -32,7 +32,7 @@ const profileCardVariants: Variants = {
 
 export function ProfileModal() {
   const { theme, isProfileModalOpen, toggleProfileModal } = useStore();
-  const { data: session, update } = useSession();
+  const { data: session } = useSession();
   const user = session?.user;
 
   const [activeTab, setActiveTab] = useState<"profile" | "security">("profile");
@@ -40,7 +40,6 @@ export function ProfileModal() {
   const [imagePreview, setImagePreview] = useState<string | null>(
     user?.image || null
   );
-
   const [imageFile, setImageFile] = useState<File | null>(null);
   const profileCardRef = useRef<HTMLDivElement>(null);
 
@@ -53,8 +52,9 @@ export function ProfileModal() {
   });
 
   useEffect(() => {
-    if (user?.name) setUsername(user.name);
-  }, [user?.name]);
+    if (user?.username) setUsername(user.username);
+    if (user?.image) setImagePreview(user.image);
+  }, [user]);
 
   const handleProfileUpdate = (e: FormEvent) => {
     e.preventDefault();
@@ -86,16 +86,8 @@ export function ProfileModal() {
 
     try {
       const compressedFile = await imageCompression(file, options);
-      const extension = file.name.split(".").pop() || "jpg";
-      const fileWithName = new File(
-        [compressedFile],
-        `${file.name.split(".")[0]}.${extension}`,
-        {
-          type: compressedFile.type,
-        }
-      );
-      setImageFile(fileWithName);
-      setImagePreview(URL.createObjectURL(fileWithName));
+      setImageFile(compressedFile);
+      setImagePreview(URL.createObjectURL(compressedFile));
     } catch (error) {
       console.error("Error compressing profile image:", error);
     }
@@ -122,7 +114,7 @@ export function ProfileModal() {
               theme === "dark"
                 ? "bg-gray-800/80 border-gray-700"
                 : "bg-white/80 border-gray-200"
-            } backdrop-blur-md text-white`}
+            } backdrop-blur-md`}
           >
             <nav
               className={`flex border-b ${

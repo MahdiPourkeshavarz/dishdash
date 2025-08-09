@@ -6,17 +6,15 @@ import { useStore } from "@/store/useStore";
 
 export function FeedFlyToHandler() {
   const map = useMap();
-  const { feedFlyToCoords, setFeedFlyToCoords } = useStore();
+  const { feedFlyToCoords } = useStore();
 
   useEffect(() => {
     if (feedFlyToCoords) {
-      map.flyTo(feedFlyToCoords, 18, {
+      map.flyTo(feedFlyToCoords, map.getZoom(), {
         duration: 1.5,
         easeLinearity: 0.5,
       });
-      setFeedFlyToCoords(null);
     }
-  }, [feedFlyToCoords, map, setFeedFlyToCoords]);
-
+  }, [feedFlyToCoords, map]);
   return null;
 }
