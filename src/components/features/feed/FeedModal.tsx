@@ -86,18 +86,12 @@ export const PostFeedModal: React.FC<PostFeedModalProps> = ({
         >
           <style>
             {`
-              .custom-scrollbar::-webkit-scrollbar {
-                width: 6px;
+              .no-scrollbar::-webkit-scrollbar {
+                display: none;
               }
-              .custom-scrollbar::-webkit-scrollbar-track {
-                background: transparent;
-              }
-              .custom-scrollbar::-webkit-scrollbar-thumb {
-                background: #555;
-                border-radius: 10px;
-              }
-              .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-                background: #888;
+              .no-scrollbar {
+                -ms-overflow-style: none;
+                scrollbar-width: none;
               }
             `}
           </style>
@@ -112,12 +106,12 @@ export const PostFeedModal: React.FC<PostFeedModalProps> = ({
                         md:w-[380px] md:h-[70vh] md:max-h-[600px] md:rounded-3xl md:border
                         backdrop-blur-xl ${
                           theme === "dark"
-                            ? "bg-gray-900/70 border-white/10"
-                            : "bg-white/70 border-black/10"
+                            ? "bg-gray-900/30 border-white/10"
+                            : "bg-white/30 border-black/10"
                         }`}
           >
             <div
-              className={`flex items-center justify-between pb-3 mb-3 border-b ${
+              className={`flex items-center justify-between pb-3 mb-3  ${
                 theme === "dark" ? "border-white/10" : "border-black/10"
               }`}
             >
@@ -126,7 +120,7 @@ export const PostFeedModal: React.FC<PostFeedModalProps> = ({
                   theme === "dark" ? "text-white" : "text-gray-800"
                 }`}
               >
-                Latest Posts
+                پست های اخیر
               </h2>
               <button
                 onClick={onClose}
@@ -138,7 +132,7 @@ export const PostFeedModal: React.FC<PostFeedModalProps> = ({
               </button>
             </div>
 
-            <div className="custom-scrollbar h-[calc(100%-60px)] w-full overflow-y-auto snap-y snap-mandatory space-y-4 pr-2">
+            <div className="no-scrollbar h-[calc(100%-60px)] w-full overflow-y-auto snap-y snap-mandatory space-y-4">
               {isLoading ? (
                 <div className="flex justify-center items-center h-full">
                   <Loader className="animate-spin text-gray-500" />

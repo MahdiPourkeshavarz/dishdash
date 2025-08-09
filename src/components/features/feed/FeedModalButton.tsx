@@ -39,7 +39,7 @@ export const PostFeedButton = () => {
 
   return (
     <>
-      <div className="absolute top-2/5 left-4 z-[10000]">
+      <div className="absolute top-3/7 left-4 z-[10000]">
         <motion.button
           onClick={handleOpenFeed}
           className={`relative p-3 rounded-full shadow-lg ${

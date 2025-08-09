@@ -10,7 +10,7 @@ export function FeedFlyToHandler() {
 
   useEffect(() => {
     if (feedFlyToCoords) {
-      map.flyTo(feedFlyToCoords, map.getZoom(), {
+      map.flyTo(feedFlyToCoords, 17, {
         duration: 1.5,
         easeLinearity: 0.5,
       });
