@@ -4,12 +4,8 @@ export const posts: Post[] = [
   {
     _id: "68930d19b1f94414a1e0fe26",
     description: "کباب و جیگر هاش خوب بود",
-<<<<<<< HEAD
     imageUrl:
       "https://res.cloudinary.com/dcr7qgyew/image/upload/v1754467607/dishdash_posts/kw3x0f3tnhf3jgcy5juo.jpg",
-=======
-    imageUrl: "https://res.cloudinary.com/dcr7qgyew/image/upload/v1754467607/dishdash_posts/kw3x0f3tnhf3jgcy5juo.jpg",
->>>>>>> 603c27ffce05644aabab45100cc6e2f4106ca680
     position: [51.3118336, 35.6119359],
     areaName: "کبابسرای چهار دانگه",
     satisfaction: "awesome",
@@ -35,4 +31,3 @@ export const posts: Post[] = [
     placeId: "68809061ad65c6cc6e728bb6",
   },
 ];
-
