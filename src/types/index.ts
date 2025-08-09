@@ -8,10 +8,10 @@ export interface User {
 
 export interface Post {
   _id?: string;
-  id: string;
+  id?: string;
   position: [number, number];
   satisfaction: SatisfactionStatus;
-  user: {
+  user?: {
     id: string;
     username: string;
     imgUrl: string;
@@ -29,7 +29,7 @@ export interface Post {
 }
 
 export interface Poi {
-  _id?: number;
+  _id?: string;
   name?: string;
   id: number;
   lat: number;
