@@ -136,7 +136,7 @@ const PostCard: React.FC<PostCardProps> = ({ post }) => {
     <div className="relative w-full max-w-sm pt-7" onClick={handleCardClick}>
       <div className="h-21" aria-hidden />
       <div
-        className={`relative z-10 rounded-xl shadow-lg pb-2 px-4 flex flex-col ${
+        className={`relative z-[2000300] rounded-xl shadow-lg pb-2 px-4 flex flex-col ${
           theme === "dark" ? "bg-gray-800" : "bg-gray-50"
         }`}
         style={{ boxShadow: shadowValue }}
@@ -261,7 +261,7 @@ const PostCard: React.FC<PostCardProps> = ({ post }) => {
         </motion.div>
       </div>
 
-      <div className="absolute z-20 top-0 left-1/2 -translate-x-1/2 w-11/12 h-40 rounded-xl shadow-lg overflow-hidden">
+      <div className="absolute z-[2100000] top-0 left-1/2 -translate-x-1/2 w-11/12 h-40 rounded-xl shadow-lg overflow-hidden">
         <Image
           src={post.imageUrl}
           alt={post?._id || "post"}

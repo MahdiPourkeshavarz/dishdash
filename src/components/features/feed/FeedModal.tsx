@@ -81,7 +81,7 @@ export const PostFeedModal: React.FC<PostFeedModalProps> = ({
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
-          className="fixed inset-0 z-[10000] bg-black/30"
+          className="fixed inset-0 z-[2000010] bg-black/30"
           onClick={onClose}
         >
           <style>

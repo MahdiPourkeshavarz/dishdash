@@ -151,7 +151,7 @@ input[type="password"]::-ms-clear {
 }
 
 .custom-label {
-  font-size: 12px !important;
+  font-size: 10px !important;
   font-weight: bold !important;
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif !important;
 }
@@ -161,5 +161,5 @@ input[type="password"]::-ms-clear {
 }
 
 .custom-label.dark-theme span {
-  color: #ddd !important;
+  color: #9ddbf3 !important;
 }

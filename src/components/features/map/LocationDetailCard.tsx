@@ -169,6 +169,7 @@ export const LocationDetailCard: React.FC<LocationDetailCardProps> = ({
 
               <div className="flex items-center justify-between w-full gap-2">
                 <PlaceRating
+                  key={poi._id as string}
                   placeId={poi._id as unknown as string}
                   averageRating={poi.averageRating || 0}
                   ratingCount={poi.ratingCount || 0}
