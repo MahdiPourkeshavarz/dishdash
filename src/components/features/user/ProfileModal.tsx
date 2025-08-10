@@ -103,7 +103,7 @@ export function ProfileModal() {
       {isProfileModalOpen && (
         <div
           ref={profileCardRef}
-          className="absolute top-14 right-6 z-[100010]"
+          className="absolute top-14 right-6 z-[400010000]"
         >
           <motion.div
             variants={profileCardVariants}

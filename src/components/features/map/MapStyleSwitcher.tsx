@@ -51,7 +51,7 @@ export function MapStyleSwitcher() {
   return (
     <div
       ref={switcherRef}
-      className="absolute top-2/7 -translate-y-1/2 right-4 z-[1001]"
+      className="absolute top-3/9 -translate-y-1/2 right-4 z-[1001]"
     >
       <div className="relative flex items-center">
         <AnimatePresence>
@@ -97,7 +97,7 @@ export function MapStyleSwitcher() {
           }`}
           whileTap={{ scale: 0.9 }}
         >
-          <Layers size={24} />
+          <Layers size={21} />
         </motion.button>
       </div>
     </div>
