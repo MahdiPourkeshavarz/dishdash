@@ -91,7 +91,7 @@ export const DirectionsPill: React.FC<DirectionsPillProps> = ({
             initial="hidden"
             animate="visible"
             exit="hidden"
-            className="flex items-center justify-center gap-3"
+            className="flex items-center justify-center gap-3 mr-1"
           >
             {mapProviders.map((provider, index) => (
               <motion.button
@@ -115,8 +115,8 @@ export const DirectionsPill: React.FC<DirectionsPillProps> = ({
                 <Image
                   src={provider.logo}
                   alt={provider.name}
-                  width={34}
-                  height={34}
+                  width={35}
+                  height={35}
                   className="shadow-md rounded-md"
                 />
               </motion.button>
@@ -127,7 +127,7 @@ export const DirectionsPill: React.FC<DirectionsPillProps> = ({
             key="pill-closed"
             onClick={() => setIsOpen(true)}
             exit={{ scale: 0.9, opacity: 0 }}
-            className={`p-2 rounded-full transition-colors ${
+            className={`p-2 pt-4 mr-1 rounded-full transition-colors ${
               theme === "dark"
                 ? "text-gray-400 hover:text-blue-400"
                 : "text-gray-500 hover:text-blue-600"

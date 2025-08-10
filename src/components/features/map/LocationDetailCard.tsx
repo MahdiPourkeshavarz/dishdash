@@ -186,7 +186,7 @@ export const LocationDetailCard: React.FC<LocationDetailCardProps> = ({
             </div>
 
             <div
-              className={`flex items-center justify-between mt-4 pt-3 border-t ${
+              className={`flex items-center justify-between pt-2 border-t ${
                 theme === "dark" ? "border-white/10" : "border-black/10"
               }`}
             >
