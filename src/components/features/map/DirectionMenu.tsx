@@ -22,15 +22,14 @@ export const DirectionsMenu: React.FC<DirectionsMenuProps> = ({
 
   const handleNavigation = (urlPattern: string) => {
     if (!userLocation.coords) {
-      alert("موقعیت شما هنوز پیدا نشده.");
+      alert("مکان شما هنوز یافت نشده است.");
       return;
     }
     const url = urlPattern
-      .replace("{dest_lat}", destination[0].toString())
-      .replace("{dest_lng}", destination[1].toString())
+      .replace("{dest_lat}", destination[1].toString())
+      .replace("{dest_lng}", destination[0].toString())
       .replace("{origin_lat}", userLocation.coords[0].toString())
       .replace("{origin_lng}", userLocation.coords[1].toString());
-
     window.open(url, "_blank");
     setIsOpen(false);
   };
