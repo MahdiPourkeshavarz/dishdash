@@ -19,9 +19,9 @@ import {
   Bookmark,
 } from "lucide-react";
 import { AddPostButton } from "../post/AddPostButton";
-import { DirectionsPill } from "../post/DirectionPill";
 import { useState } from "react";
 import { PlaceRating } from "./PlaceRating";
+import { DirectionsMenu } from "./DirectionMenu";
 
 interface LocationDetailCardProps {
   poi: Poi | null;
@@ -190,12 +190,8 @@ export const LocationDetailCard: React.FC<LocationDetailCardProps> = ({
                 theme === "dark" ? "border-white/10" : "border-black/10"
               }`}
             >
+              <DirectionsMenu destination={positionToUse} />
               <AddPostButton poi={poi} onAddPost={onAddPost} />
-              <DirectionsPill
-                destination={positionToUse}
-                isOpen={isDirectionsPillOpen}
-                setIsOpen={setDirectionsPillOpen}
-              />
             </div>
           </div>
         </motion.div>

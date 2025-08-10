@@ -127,7 +127,7 @@ export const DirectionsPill: React.FC<DirectionsPillProps> = ({
             key="pill-closed"
             onClick={() => setIsOpen(true)}
             exit={{ scale: 0.9, opacity: 0 }}
-            className={`p-2 pt-4 mr-1 rounded-full transition-colors ${
+            className={`p-2 rounded-full transition-colors ${
               theme === "dark"
                 ? "text-gray-400 hover:text-blue-400"
                 : "text-gray-500 hover:text-blue-600"
