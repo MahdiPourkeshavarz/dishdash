@@ -12,7 +12,9 @@ const ChangeView: React.FC<ChangeViewProps> = ({ center, zoom }) => {
   const map = useMap(); // Get the map instance
 
   useEffect(() => {
-    map.setView(center, zoom);
+    if (center) {
+      map.setView(center, zoom);
+    }
   }, [center, zoom, map]);
 
   return null;
