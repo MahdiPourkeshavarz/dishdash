@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { create } from "zustand";
 import { createJSONStorage, persist } from "zustand/middleware";
-import { Poi, Post, User } from "@/types";
+import { ChatMessage, Poi, Post, User } from "@/types";
 import { posts as initialState } from "@/lib/posts";
 import { cartoMapStyles } from "@/lib/mapStyles";
 
@@ -49,6 +49,7 @@ interface StoreState {
   isSearching: boolean;
   uploadStatus: UploadStatus;
   lastSeenPostTimestamp: number | null;
+  chatMessages: ChatMessage[];
 }
 
 interface StoreActions {
@@ -79,6 +80,8 @@ interface StoreActions {
   setIsSearching: (isSearching: boolean) => void;
   clearSearch: () => void;
   markPostsAsSeen: () => void;
+  addChatMessage: (message: ChatMessage) => void;
+  clearMessages: () => void;
 }
 
 type Store = StoreState & StoreActions;
@@ -91,6 +94,7 @@ export const useStore = create<Store>()(
       user: null as User | null,
       accessToken: null,
       wishlist: [],
+      chatMessages: [],
       isAuthModalOpen: false,
       feedFlyToCoords: null,
       selectedPoi: null,
@@ -120,6 +124,16 @@ export const useStore = create<Store>()(
           mapUrl: cartoMapStyles[key].url,
         }),
       clearSearch: () => set({ searchResults: null, isSearching: false }),
+
+      addChatMessage: (message) =>
+        set((state) => ({
+          chatMessages: [...state.chatMessages, message],
+        })),
+
+      clearMessages: () =>
+        set(() => ({
+          chatMessages: [],
+        })),
 
       markPostsAsSeen: () => set({ lastSeenPostTimestamp: Date.now() }),
 
