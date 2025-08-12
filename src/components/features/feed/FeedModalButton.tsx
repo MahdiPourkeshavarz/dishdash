@@ -39,7 +39,7 @@ export const PostFeedButton = () => {
 
   return (
     <>
-      <div className="absolute top-3/7 left-4 z-[10000]">
+      <div className="absolute top-4/9 left-4 z-[10000]">
         <motion.button
           onClick={handleOpenFeed}
           className={`relative p-3 rounded-full shadow-lg ${
@@ -52,7 +52,7 @@ export const PostFeedButton = () => {
           animate={{ scale: pulse ? [1, 1.2, 1] : 1 }}
           transition={{ duration: 1.2, ease: "easeInOut" }}
         >
-          <MailIcon size={24} />
+          <MailIcon size={21} />
           {hasNewPosts && (
             <span className="absolute top-0 right-0 block h-3 w-3 rounded-full bg-red-500 ring-2 ring-white dark:ring-gray-800" />
           )}

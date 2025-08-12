@@ -146,10 +146,10 @@ const MapView: React.FC<MapViewProps> = ({ center, user, onMarkerClick }) => {
       {isMounted && (
         <>
           <MapStyleSwitcher />
-          <div className="absolute top-3/7 right-4 z-[10000]">
+          <div className="absolute top-4/9 right-4 z-[10000]">
             <motion.button
               onClick={() => setWishlistOpen(!isWishlistOpen)}
-              className={`p-3 rounded-full shadow-lg ${
+              className={`p-[10px] rounded-full shadow-lg ${
                 theme === "dark"
                   ? "bg-gray-800/80 text-white"
                   : "bg-white/80 text-gray-900"
@@ -158,7 +158,7 @@ const MapView: React.FC<MapViewProps> = ({ center, user, onMarkerClick }) => {
               whileTap={{ scale: 0.9 }}
               transition={{ type: "spring", stiffness: 400, damping: 17 }}
             >
-              <Heart size={24} />
+              <Heart size={22} />
             </motion.button>
             <AnimatePresence>
               <WishPlacesModal

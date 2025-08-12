@@ -48,8 +48,16 @@ export function ProfileModal() {
   useClickOutside(profileCardRef, () => {
     if (isProfileModalOpen) {
       toggleProfileModal();
+      setUsername(user?.username as string);
     }
   });
+
+  const getTextDirection = (text: string): "rtl" | "ltr" => {
+    const farsiRegex = /[\u0600-\u06FF]/;
+    return farsiRegex.test(text) ? "rtl" : "ltr";
+  };
+
+  const usernameDir = getTextDirection(username);
 
   useEffect(() => {
     if (user?.username) setUsername(user.username);
@@ -103,7 +111,7 @@ export function ProfileModal() {
       {isProfileModalOpen && (
         <div
           ref={profileCardRef}
-          className="absolute top-14 right-6 z-[100010]"
+          className="absolute top-14 right-6 z-[400010000]"
         >
           <motion.div
             variants={profileCardVariants}
@@ -197,7 +205,7 @@ export function ProfileModal() {
                         type="text"
                         value={username}
                         onChange={(e) => setUsername(e.target.value)}
-                        dir="ltr"
+                        dir={usernameDir}
                       />
                       <button
                         type="submit"

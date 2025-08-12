@@ -91,7 +91,7 @@ export const DirectionsPill: React.FC<DirectionsPillProps> = ({
             initial="hidden"
             animate="visible"
             exit="hidden"
-            className="flex items-center justify-center gap-3"
+            className="flex items-center justify-center gap-3 mr-1"
           >
             {mapProviders.map((provider, index) => (
               <motion.button
@@ -115,8 +115,8 @@ export const DirectionsPill: React.FC<DirectionsPillProps> = ({
                 <Image
                   src={provider.logo}
                   alt={provider.name}
-                  width={34}
-                  height={34}
+                  width={35}
+                  height={35}
                   className="shadow-md rounded-md"
                 />
               </motion.button>

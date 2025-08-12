@@ -19,9 +19,9 @@ import {
   Bookmark,
 } from "lucide-react";
 import { AddPostButton } from "../post/AddPostButton";
-import { DirectionsPill } from "../post/DirectionPill";
 import { useState } from "react";
 import { PlaceRating } from "./PlaceRating";
+import { DirectionsMenu } from "./DirectionMenu";
 
 interface LocationDetailCardProps {
   poi: Poi | null;
@@ -169,6 +169,7 @@ export const LocationDetailCard: React.FC<LocationDetailCardProps> = ({
 
               <div className="flex items-center justify-between w-full gap-2">
                 <PlaceRating
+                  key={poi._id as string}
                   placeId={poi._id as unknown as string}
                   averageRating={poi.averageRating || 0}
                   ratingCount={poi.ratingCount || 0}
@@ -185,16 +186,12 @@ export const LocationDetailCard: React.FC<LocationDetailCardProps> = ({
             </div>
 
             <div
-              className={`flex items-center justify-between mt-4 pt-3 border-t ${
+              className={`flex items-center justify-between pt-2 border-t ${
                 theme === "dark" ? "border-white/10" : "border-black/10"
               }`}
             >
+              <DirectionsMenu destination={positionToUse} />
               <AddPostButton poi={poi} onAddPost={onAddPost} />
-              <DirectionsPill
-                destination={positionToUse}
-                isOpen={isDirectionsPillOpen}
-                setIsOpen={setDirectionsPillOpen}
-              />
             </div>
           </div>
         </motion.div>

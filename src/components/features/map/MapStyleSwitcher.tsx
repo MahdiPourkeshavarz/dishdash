@@ -51,7 +51,7 @@ export function MapStyleSwitcher() {
   return (
     <div
       ref={switcherRef}
-      className="absolute top-2/7 -translate-y-1/2 right-4 z-[1001]"
+      className="absolute top-3/9 -translate-y-1/2 right-4 z-[1001]"
     >
       <div className="relative flex items-center">
         <AnimatePresence>
@@ -90,14 +90,14 @@ export function MapStyleSwitcher() {
 
         <motion.button
           onClick={() => setIsOpen(!isOpen)}
-          className={`relative z-10 p-3 rounded-full shadow-lg transition-colors ${
+          className={`relative z-10 p-[11px] rounded-full shadow-lg transition-colors ${
             theme === "dark"
               ? "bg-gray-800/80 text-white hover:bg-gray-700"
               : "bg-white/80 text-black hover:bg-gray-100"
           }`}
           whileTap={{ scale: 0.9 }}
         >
-          <Layers size={24} />
+          <Layers size={21} />
         </motion.button>
       </div>
     </div>
