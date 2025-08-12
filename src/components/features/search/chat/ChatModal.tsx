@@ -54,11 +54,12 @@ export const ChatModal: React.FC<ChatModalProps> = ({ isOpen, onClose }) => {
     const userMessage = { sender: "user", text: inputText };
     addChatMessage(userMessage as ChatMessage);
 
-    sendMessage(inputText, {
-      setNotification({
+    setNotification({
           message: "پاسخ ممکن است کمی طول بکشد...",
           type: "info",
         });
+
+    sendMessage(inputText, {
       onSuccess: (data) => {
         const processedPlaces = data.places
           ? data.places
