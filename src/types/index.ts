@@ -56,3 +56,11 @@ export interface SearchParams {
   amenity: string;
   distance: "walking" | "near" | "driving";
 }
+
+export type MessageSender = "user" | "bot";
+
+export interface ChatMessage {
+  sender: MessageSender;
+  text: string;
+  places?: Poi[];
+}
