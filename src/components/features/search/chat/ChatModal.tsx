@@ -55,7 +55,7 @@ export const ChatModal: React.FC<ChatModalProps> = ({ isOpen, onClose }) => {
     addChatMessage(userMessage as ChatMessage);
 
     setNotification({
-          message: "پاسخ ممکن است کمی طول بکشد...",
+          message: "پاسخ ممکن است کمی طول بکشد",
           type: "info",
         });
 
