@@ -66,7 +66,6 @@ export const ChatModal: React.FC<ChatModalProps> = ({ isOpen, onClose }) => {
                 accumulator.push(currentPlace);
                 return accumulator;
               }, [])
-              .slice(0, 8)
           : [];
         const botMessage = {
           sender: "bot",
