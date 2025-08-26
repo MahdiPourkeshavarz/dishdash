@@ -50,10 +50,12 @@ interface StoreState {
   uploadStatus: UploadStatus;
   lastSeenPostTimestamp: number | null;
   chatMessages: ChatMessage[];
+  thread_id: string | null;
 }
 
 interface StoreActions {
   toggleTheme: () => void;
+  initializeThreadId: () => void;
   setMapStyle: (key: MapStyleKey) => void;
   toggleAuthModal: (isOpen: boolean) => void;
   setUser: (user: User | null) => void;
@@ -109,6 +111,7 @@ export const useStore = create<Store>()(
       deletingPost: null,
       lastSeenPostTimestamp: null,
       isPostModalOpen: false,
+      thread_id: null,
       location: {
         coords: null,
         areaName: null,
@@ -124,6 +127,14 @@ export const useStore = create<Store>()(
           mapUrl: cartoMapStyles[key].url,
         }),
       clearSearch: () => set({ searchResults: null, isSearching: false }),
+
+      initializeThreadId: () => {
+        if (!get().thread_id) {
+          set({
+            thread_id: `thread_${Date.now()}_${Math.random() / 2}`,
+          });
+        }
+      },
 
       addChatMessage: (message) =>
         set((state) => ({
@@ -287,6 +298,8 @@ export const useStore = create<Store>()(
         posts: state.posts,
         wishlist: state.wishlist,
         lastSeenPostTimestamp: state.lastSeenPostTimestamp,
+        thread_id: state.thread_id,
+        chatMessages: state.chatMessages,
       }),
     }
   )
