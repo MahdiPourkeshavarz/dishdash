@@ -24,14 +24,14 @@ const itemVariants = {
 };
 
 const amenityOptions: FilterOption<string>[] = [
-  { value: "restaurant", label: "رستوران ها" },
-  { value: "cafe", label: "کافه ها" },
+  { value: "restaurant", label: "رستوران" },
+  { value: "cafe", label: "کافه" },
   { value: "fast_food", label: "فست فود" },
 ];
 
 const atmosphereOptions: FilterOption<string>[] = [
-  { value: "خوب", label: "خوب و تمیز" },
-  { value: "شیک", label: "شیک و خوشمزه" },
+  { value: "خوب", label: "خوب" },
+  { value: "شیک", label: "شیک" },
 ];
 
 const distanceOptions: FilterOption<"near" | "walking" | "driving">[] = [
