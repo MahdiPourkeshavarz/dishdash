@@ -7,7 +7,7 @@ import { AlertTriangle, Info, Loader, X } from "lucide-react";
 import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
 import { BotMessage, BotMessageSkeleton, UserMessage } from "./ChatMessage";
-import { ChatMessage } from "@/types";
+import { ChatMessage, Poi } from "@/types";
 
 interface Notification {
   message: string;
@@ -55,23 +55,16 @@ export const ChatModal: React.FC<ChatModalProps> = ({ isOpen, onClose }) => {
     addChatMessage(userMessage as ChatMessage);
 
     setNotification({
-          message: "پاسخ ممکن است کمی طول بکشد",
-          type: "info",
-        });
+      message: "پاسخ ممکن است کمی طول بکشد",
+      type: "info",
+    });
 
     sendMessage(inputText, {
       onSuccess: (data) => {
-        const processedPlaces = data.places
-          ? data.places
-              .reduceRight((accumulator: any[], currentPlace: any) => {
-                accumulator.push(currentPlace);
-                return accumulator;
-              }, [])
-          : [];
         const botMessage = {
           sender: "bot",
           text: data.aiResponse,
-          places: processedPlaces,
+          places: data.places,
         };
         addChatMessage(botMessage as ChatMessage);
       },
@@ -94,6 +87,10 @@ export const ChatModal: React.FC<ChatModalProps> = ({ isOpen, onClose }) => {
     }
   };
 
+  function handlePlaceClick(poi: Poi) {
+    console.log(poi);
+  }
+
   return (
     <AnimatePresence>
       {isOpen && (
@@ -111,12 +108,12 @@ export const ChatModal: React.FC<ChatModalProps> = ({ isOpen, onClose }) => {
             transition={{ type: "spring", damping: 30, stiffness: 250 }}
             onClick={(e) => e.stopPropagation()}
             style={{ paddingBottom: keyboardHeight }}
-            className={`absolute inset-y-10 inset-x-5 rounded-3xl shadow-2xl p-4 border flex flex-col
+            className={`absolute inset-y-10 inset-x-5 rounded-3xl shadow-2xl p-[6px] border flex flex-col
                         md:inset-auto md:bottom-0 md:left-1/2 md:-translate-x-1/2 md:w-full md:max-w-md md:h-[85vh] md:rounded-t-3xl md:rounded-b-none
                         backdrop-blur-xl ${
                           theme === "dark"
-                            ? "bg-gray-900/70 border-white/10"
-                            : "bg-white/70 border-black/10"
+                            ? "bg-gray-900/60 border-white/10"
+                            : "bg-white/60 border-black/10"
                         }`}
           >
             <div className="absolute top-5 left-1/2 -translate-x-1/2">
@@ -153,7 +150,11 @@ export const ChatModal: React.FC<ChatModalProps> = ({ isOpen, onClose }) => {
                 msg.sender === "user" ? (
                   <UserMessage key={index} text={msg.text} />
                 ) : (
-                  <BotMessage key={index} message={msg} />
+                  <BotMessage
+                    key={index}
+                    message={msg}
+                    onPlaceClick={handlePlaceClick}
+                  />
                 )
               )}
               {isLoading && <BotMessageSkeleton />}

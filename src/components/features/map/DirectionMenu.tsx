@@ -74,7 +74,7 @@ export const DirectionsMenu: React.FC<DirectionsMenuProps> = ({
                 className="flex items-center justify-between px-3 py-2 text-sm hover:bg-gray-100/70 dark:hover:bg-gray-700/60 w-full transition-colors"
                 dir="rtl"
               >
-                <span className="font-medium text-gray-800 dark:text-gray-100">
+                <span className="font-medium text-blue-400">
                   {provider.name}
                 </span>
                 <Image

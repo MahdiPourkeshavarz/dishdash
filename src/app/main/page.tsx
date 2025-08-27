@@ -38,6 +38,7 @@ export default function HomePage() {
     isAuthModalOpen,
     toggleAuthModal,
     isProfileModalOpen,
+    initializeThreadId,
   } = useStore();
 
   const { data: session } = useSession();
@@ -56,6 +57,10 @@ export default function HomePage() {
       }),
     []
   );
+
+  useEffect(() => {
+    initializeThreadId();
+  }, []);
 
   return (
     <main className="w-screen h-[100dvh] relative overflow-hidden">
