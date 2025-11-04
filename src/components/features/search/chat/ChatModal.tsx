@@ -3,7 +3,7 @@ import { useChat } from "@/hooks/useChat";
 import { useVirtualKeyboard } from "@/hooks/useVirtualKeyboard";
 import { useStore } from "@/store/useStore";
 import { AnimatePresence, motion } from "framer-motion";
-import { AlertTriangle, Info, Loader, X } from "lucide-react";
+import { AlertTriangle, Info, Loader, Sparkles, X } from "lucide-react";
 import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
 import { BotMessage, BotMessageSkeleton, UserMessage } from "./ChatMessage";
@@ -24,6 +24,7 @@ export const ChatModal: React.FC<ChatModalProps> = ({ isOpen, onClose }) => {
   const [inputText, setInputText] = useState("");
   const { mutate: sendMessage, isPending: isLoading } = useChat();
   const keyboardHeight = useVirtualKeyboard();
+  const [showGreeting, setShowGreeting] = useState(true);
 
   const [notification, setNotification] = useState<Notification | null>(null);
 
@@ -47,6 +48,14 @@ export const ChatModal: React.FC<ChatModalProps> = ({ isOpen, onClose }) => {
       return () => clearTimeout(timer);
     }
   }, [notification]);
+
+  useEffect(() => {
+    if (isOpen && chatMessages.length === 0) {
+      setShowGreeting(true);
+    } else {
+      setShowGreeting(false);
+    }
+  }, [isOpen, chatMessages.length]);
 
   const handleSend = () => {
     if (!inputText.trim() || isLoading) return;
@@ -98,86 +107,261 @@ export const ChatModal: React.FC<ChatModalProps> = ({ isOpen, onClose }) => {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
-          className="fixed inset-0 z-[4000000] bg-black/30 backdrop-blur-sm"
+          className="fixed inset-0 z-[4000000] bg-gradient-to-b from-black/40 to-black/60 backdrop-blur-md"
           onClick={onClose}
         >
           <motion.div
-            initial={{ y: "100%" }}
-            animate={{ y: "0%" }}
-            exit={{ y: "100%" }}
-            transition={{ type: "spring", damping: 30, stiffness: 250 }}
+            initial={{ scale: 0.9, opacity: 0, y: 20 }}
+            animate={{ scale: 1, opacity: 1, y: 0 }}
+            exit={{ scale: 0.95, opacity: 0, y: 10 }}
+            transition={{ type: "spring", damping: 25, stiffness: 300 }}
             onClick={(e) => e.stopPropagation()}
             style={{ paddingBottom: keyboardHeight }}
-            className={`absolute inset-y-10 inset-x-5 rounded-3xl shadow-2xl p-[6px] border flex flex-col
-                        md:inset-auto md:bottom-0 md:left-1/2 md:-translate-x-1/2 md:w-full md:max-w-md md:h-[85vh] md:rounded-t-3xl md:rounded-b-none
-                        backdrop-blur-xl ${
+            className={`absolute inset-x-4 top-4 bottom-4 rounded-3xl shadow-2xl flex flex-col overflow-hidden
+                        md:inset-auto md:top-1/2 md:left-1/2 md:-translate-x-1/2 md:-translate-y-1/2 md:w-full md:max-w-2xl md:h-[85vh]
+                        ${
                           theme === "dark"
-                            ? "bg-gray-900/60 border-white/10"
-                            : "bg-white/60 border-black/10"
+                            ? "bg-gradient-to-br from-gray-900 via-gray-900 to-gray-800"
+                            : "bg-gradient-to-br from-white via-gray-50 to-gray-100"
                         }`}
           >
-            <div className="absolute top-5 left-1/2 -translate-x-1/2">
-              <Image src={"/bot.png"} alt="bot" width={100} height={100} />
-            </div>
-            {/* Header */}
-            <div className="flex-shrink-0 flex items-center justify-end pb-3 mb-3 border-b border-black/10 dark:border-white/10">
-              <button
-                onClick={onClose}
-                className="p-2 rounded-full text-gray-500 hover:bg-black/10 dark:hover:bg-white/10"
-              >
-                <X size={20} />
-              </button>
+            {/* Animated Background Pattern */}
+            <div className="absolute inset-0 opacity-5">
+              <motion.div
+                animate={{
+                  backgroundPosition: ["0% 0%", "100% 100%"],
+                }}
+                transition={{
+                  duration: 20,
+                  repeat: Infinity,
+                  repeatType: "reverse",
+                }}
+                className="w-full h-full"
+                style={{
+                  backgroundImage:
+                    "radial-gradient(circle at 20% 50%, rgba(120, 119, 198, 0.3), transparent 50%), radial-gradient(circle at 80% 80%, rgba(74, 144, 226, 0.3), transparent 50%)",
+                  backgroundSize: "200% 200%",
+                }}
+              />
             </div>
 
-            <style>
-              {`
-                .no-scrollbar::-webkit-scrollbar {
-                  display: none;
-                }
-                .no-scrollbar {
-                  -ms-overflow-style: none;  /* IE and Edge */
-                  scrollbar-width: none;  /* Firefox */
-                }
-              `}
-            </style>
+            {/* Header */}
+            <div className="relative flex-shrink-0 flex items-center justify-between px-6 py-4 border-b border-white/10">
+              <div className="flex items-center gap-3">
+                <motion.div
+                  animate={{
+                    rotate: [0, 10, -10, 0],
+                    scale: [1, 1.1, 1],
+                  }}
+                  transition={{
+                    duration: 2,
+                    repeat: Infinity,
+                    repeatDelay: 3,
+                  }}
+                >
+                  <Image
+                    src={"/bot.png"}
+                    alt="bot"
+                    width={40}
+                    height={40}
+                    className="drop-shadow-lg"
+                  />
+                </motion.div>
+                <div>
+                  <h3
+                    className={`font-bold text-lg ${
+                      theme === "dark" ? "text-white" : "text-gray-900"
+                    }`}
+                  >
+                    دیش دش
+                  </h3>
+                  <p
+                    className={`text-xs ${
+                      theme === "dark" ? "text-gray-400" : "text-gray-600"
+                    }`}
+                  >
+                    دستیار هوشمند شما
+                  </p>
+                </div>
+              </div>
+              <motion.button
+                whileHover={{ scale: 1.1, rotate: 90 }}
+                whileTap={{ scale: 0.9 }}
+                onClick={onClose}
+                className={`p-2 rounded-full transition-colors ${
+                  theme === "dark"
+                    ? "hover:bg-white/10 text-gray-400"
+                    : "hover:bg-black/5 text-gray-600"
+                }`}
+              >
+                <X size={22} />
+              </motion.button>
+            </div>
+
+            <style jsx>{`
+              .no-scrollbar::-webkit-scrollbar {
+                display: none;
+              }
+              .no-scrollbar {
+                -ms-overflow-style: none;
+                scrollbar-width: none;
+              }
+            `}</style>
 
             {/* Conversation Area */}
             <div
               ref={chatContainerRef}
-              className="no-scrollbar flex-grow overflow-y-auto p-4 space-y-4 mt-7"
+              className="relative no-scrollbar flex-grow overflow-y-auto px-6 py-4"
             >
-              {chatMessages.map((msg, index) =>
-                msg.sender === "user" ? (
-                  <UserMessage key={index} text={msg.text} />
-                ) : (
-                  <BotMessage
-                    key={index}
-                    message={msg}
-                    onPlaceClick={handlePlaceClick}
-                  />
-                )
-              )}
-              {isLoading && <BotMessageSkeleton />}
+              {/* Greeting Animation */}
+              <AnimatePresence>
+                {showGreeting && (
+                  <motion.div
+                    initial={{ opacity: 0, scale: 0.8 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    exit={{ opacity: 0, scale: 0.8, y: -20 }}
+                    transition={{ duration: 0.5, ease: "easeOut" }}
+                    className="absolute inset-0 flex items-center justify-center pointer-events-none"
+                  >
+                    <div className="text-center space-y-6 max-w-md px-8">
+                      {/* Animated Sparkles */}
+                      <motion.div
+                        animate={{
+                          rotate: [0, 360],
+                        }}
+                        transition={{
+                          duration: 3,
+                          repeat: Infinity,
+                          ease: "linear",
+                        }}
+                        className="relative mx-auto w-20 h-20"
+                      >
+                        <Sparkles
+                          className={`w-full h-full ${
+                            theme === "dark" ? "text-blue-400" : "text-blue-500"
+                          }`}
+                        />
+                        <motion.div
+                          animate={{
+                            scale: [1, 1.2, 1],
+                            opacity: [0.5, 1, 0.5],
+                          }}
+                          transition={{
+                            duration: 2,
+                            repeat: Infinity,
+                          }}
+                          className="absolute inset-0 bg-blue-400 rounded-full blur-xl opacity-30"
+                        />
+                      </motion.div>
+
+                      {/* Greeting Text */}
+                      <motion.div
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: 0.3 }}
+                      >
+                        <motion.h2
+                          className={`text-3xl font-bold mb-3 bg-gradient-to-r ${
+                            theme === "dark"
+                              ? "from-blue-400 via-purple-400 to-pink-400"
+                              : "from-blue-600 via-purple-600 to-pink-600"
+                          } bg-clip-text text-transparent`}
+                          animate={{
+                            backgroundPosition: ["0%", "100%"],
+                          }}
+                          transition={{
+                            duration: 3,
+                            repeat: Infinity,
+                            repeatType: "reverse",
+                          }}
+                          style={{
+                            backgroundSize: "200% auto",
+                          }}
+                        >
+                          من دیش دش هستم!
+                        </motion.h2>
+                        <motion.p
+                          initial={{ opacity: 0 }}
+                          animate={{ opacity: 1 }}
+                          transition={{ delay: 0.5 }}
+                          className={`text-lg ${
+                            theme === "dark" ? "text-gray-300" : "text-gray-700"
+                          }`}
+                        >
+                          بگو چی هوس کردی تا برات پیدا کنم!
+                        </motion.p>
+                      </motion.div>
+
+                      {/* Animated Dots */}
+                      <motion.div
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        transition={{ delay: 0.7 }}
+                        className="flex justify-center gap-2"
+                      >
+                        {[0, 1, 2].map((i) => (
+                          <motion.div
+                            key={i}
+                            animate={{
+                              y: [0, -10, 0],
+                            }}
+                            transition={{
+                              duration: 0.6,
+                              repeat: Infinity,
+                              delay: i * 0.2,
+                            }}
+                            className={`w-2 h-2 rounded-full ${
+                              theme === "dark" ? "bg-blue-400" : "bg-blue-600"
+                            }`}
+                          />
+                        ))}
+                      </motion.div>
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+
+              {/* Chat Messages */}
+              <motion.div
+                initial={false}
+                animate={{
+                  opacity: showGreeting ? 0 : 1,
+                }}
+                className="space-y-4"
+              >
+                {chatMessages.map((msg, index) =>
+                  msg.sender === "user" ? (
+                    <UserMessage key={index} text={msg.text} />
+                  ) : (
+                    <BotMessage
+                      key={index}
+                      message={msg}
+                      onPlaceClick={handlePlaceClick}
+                    />
+                  )
+                )}
+                {isLoading && <BotMessageSkeleton />}
+              </motion.div>
             </div>
 
             {/* Input Area */}
-            <div className="relative flex-shrink-0 py-4">
+            <div className="relative flex-shrink-0 px-6 py-4 border-t border-white/10">
               <AnimatePresence>
                 {notification && (
                   <motion.div
                     initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, y: 10 }}
-                    className={`absolute bottom-full mb-2 left-1/2 -translate-x-1/2 flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-semibold shadow-lg ${
+                    className={`absolute bottom-full mb-3 left-1/2 -translate-x-1/2 flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium shadow-lg backdrop-blur-xl ${
                       theme === "dark"
-                        ? "bg-gray-700 text-white"
-                        : "bg-gray-200 text-black"
+                        ? "bg-gray-800/90 text-white border border-white/10"
+                        : "bg-white/90 text-gray-900 border border-black/10"
                     }`}
                   >
                     {notification.type === "info" ? (
-                      <Info size={14} />
+                      <Info size={16} className="text-blue-500" />
                     ) : (
-                      <AlertTriangle size={14} />
+                      <AlertTriangle size={16} className="text-red-500" />
                     )}
                     <span>{notification.message}</span>
                   </motion.div>
@@ -185,35 +369,41 @@ export const ChatModal: React.FC<ChatModalProps> = ({ isOpen, onClose }) => {
               </AnimatePresence>
 
               <div
-                className={`flex items-center gap-2 px-2 py-3.5 rounded-full border ${
+                className={`flex items-center gap-3 px-5 py-3 rounded-full transition-all duration-300 ${
                   theme === "dark"
-                    ? "border-gray-700 text-white"
-                    : "border-gray-800 text-black"
+                    ? "bg-white/5 border border-white/10 hover:bg-white/10 focus-within:bg-white/10 focus-within:border-blue-500/50"
+                    : "bg-black/5 border border-black/10 hover:bg-black/10 focus-within:bg-black/10 focus-within:border-blue-500/50"
                 }`}
               >
                 <textarea
                   value={inputText}
                   onChange={(e) => setInputText(e.target.value)}
                   onKeyDown={handleKeyDown}
-                  placeholder="چی دوست داری بخوری"
-                  className="flex-grow bg-transparent focus:outline-none resize-none"
+                  placeholder="چی دوست داری بخوری؟"
+                  className={`flex-grow bg-transparent focus:outline-none resize-none placeholder:text-sm ${
+                    theme === "dark"
+                      ? "text-white placeholder:text-gray-500"
+                      : "text-gray-900 placeholder:text-gray-400"
+                  }`}
                   rows={1}
                   dir="rtl"
                 />
                 <motion.button
                   onClick={handleSend}
+                  whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
-                  className="p-2 rounded-full bg-blue-200 shadow-lg text-white disabled:opacity-50 flex items-center justify-center w-9 h-9"
+                  className="p-2.5 rounded-full bg-gradient-to-r from-blue-500 to-purple-600 shadow-lg disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center w-10 h-10 transition-all"
                   disabled={!inputText.trim() || isLoading}
                 >
                   {isLoading ? (
-                    <Loader size={18} className="animate-spin" />
+                    <Loader size={20} className="animate-spin text-white" />
                   ) : (
                     <Image
                       src={"/send.png"}
                       alt="send"
-                      width={22}
-                      height={22}
+                      width={20}
+                      height={20}
+                      className="brightness-0 invert"
                     />
                   )}
                 </motion.button>
