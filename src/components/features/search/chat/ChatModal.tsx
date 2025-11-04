@@ -226,9 +226,6 @@ export const ChatModal: React.FC<ChatModalProps> = ({ isOpen, onClose }) => {
                     <div className="text-center space-y-6 max-w-md px-8">
                       {/* Animated Sparkles */}
                       <motion.div
-                        animate={{
-                          rotate: [0, 360],
-                        }}
                         transition={{
                           duration: 3,
                           repeat: Infinity,
