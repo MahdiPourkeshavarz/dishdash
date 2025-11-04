@@ -226,9 +226,6 @@ export const ChatModal: React.FC<ChatModalProps> = ({ isOpen, onClose }) => {
                     <div className="text-center space-y-6 max-w-md px-8">
                       {/* Animated Sparkles */}
                       <motion.div
-                        animate={{
-                          rotate: [0, 360],
-                        }}
                         transition={{
                           duration: 3,
                           repeat: Infinity,
@@ -278,7 +275,7 @@ export const ChatModal: React.FC<ChatModalProps> = ({ isOpen, onClose }) => {
                             backgroundSize: "200% auto",
                           }}
                         >
-                          من دیش دش هستم!
+                          !من دیش دش هستم
                         </motion.h2>
                         <motion.p
                           initial={{ opacity: 0 }}
@@ -288,33 +285,8 @@ export const ChatModal: React.FC<ChatModalProps> = ({ isOpen, onClose }) => {
                             theme === "dark" ? "text-gray-300" : "text-gray-700"
                           }`}
                         >
-                          بگو چی هوس کردی تا برات پیدا کنم!
+                          !بگو چی هوس کردی تا برات پیدا کنم
                         </motion.p>
-                      </motion.div>
-
-                      {/* Animated Dots */}
-                      <motion.div
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        transition={{ delay: 0.7 }}
-                        className="flex justify-center gap-2"
-                      >
-                        {[0, 1, 2].map((i) => (
-                          <motion.div
-                            key={i}
-                            animate={{
-                              y: [0, -10, 0],
-                            }}
-                            transition={{
-                              duration: 0.6,
-                              repeat: Infinity,
-                              delay: i * 0.2,
-                            }}
-                            className={`w-2 h-2 rounded-full ${
-                              theme === "dark" ? "bg-blue-400" : "bg-blue-600"
-                            }`}
-                          />
-                        ))}
                       </motion.div>
                     </div>
                   </motion.div>
