@@ -41,7 +41,7 @@ export const PlacesMarker: React.FC<PoiMarkersLayerProps> = ({ pois }) => {
   const poiMarkers = useMemo(() => {
     return pois
       .map((poi) => {
-        if (!poi.tags?.name) return null;
+        if (!poi?.name) return null;
 
         const lat = poi.lat ?? poi.position?.[1];
         const lon = poi.lon ?? poi.position?.[0];
@@ -72,7 +72,7 @@ export const PlacesMarker: React.FC<PoiMarkersLayerProps> = ({ pois }) => {
 
         return (
           <Marker
-            key={keyId + poi.tags.name}
+            key={keyId + poi?.name}
             position={[lat, lon]}
             icon={iconToUse}
             eventHandlers={{
@@ -92,7 +92,7 @@ export const PlacesMarker: React.FC<PoiMarkersLayerProps> = ({ pois }) => {
                   theme === "dark" ? "dark-theme" : "light-theme"
                 }`}
               >
-                <span>{poi.tags.name}</span>
+                <span>{poi.name}</span>
               </Tooltip>
             )}
           </Marker>

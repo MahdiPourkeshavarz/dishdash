@@ -17,7 +17,7 @@ const performSearch = async (params: SearchParams): Promise<Poi[]> => {
 
 export const useSearch = () => {
   const userLocation = useStore((state) => state.location.coords);
-  const { setIsSearching } = useStore();
+  const { setIsSearching, mapCurrentBounds } = useStore();
 
   return useMutation({
     mutationFn: async (params: SearchParams) => {

@@ -29,6 +29,7 @@ interface TargetLocation {
 interface StoreState {
   theme: "light" | "dark";
   mapStyleKey: MapStyleKey;
+  mapCurrentBounds: number[];
   mapUrl: string;
   user: User | null;
   accessToken: string | null;
@@ -55,6 +56,7 @@ interface StoreState {
 
 interface StoreActions {
   toggleTheme: () => void;
+  setMapCurrentBounds: (bounds: number[]) => void;
   initializeThreadId: () => void;
   setMapStyle: (key: MapStyleKey) => void;
   toggleAuthModal: (isOpen: boolean) => void;
@@ -92,6 +94,7 @@ export const useStore = create<Store>()(
   persist(
     (set, get) => ({
       theme: "light",
+      mapCurrentBounds: [],
       mapStyleKey: "lightV1",
       user: null as User | null,
       accessToken: null,
@@ -134,6 +137,10 @@ export const useStore = create<Store>()(
             thread_id: `thread_${Date.now()}_${Math.random() / 2}`,
           });
         }
+      },
+
+      setMapCurrentBounds(bounds: number[]) {
+        set({ mapCurrentBounds: bounds });
       },
 
       addChatMessage: (message) =>

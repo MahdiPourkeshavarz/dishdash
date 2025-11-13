@@ -116,9 +116,7 @@ export const LocationDetailCard: React.FC<LocationDetailCardProps> = ({
               )}
             </button>
 
-            <h3 className="font-bold text-xl mb-2 text-center">
-              {poi.tags.name}
-            </h3>
+            <h3 className="font-bold text-xl mb-2 text-center">{poi.name}</h3>
 
             <div className="space-y-2 text-xs py-3 my-2 border-t border-white/10">
               {poi.tags["addr:street"] &&

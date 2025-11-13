@@ -6,6 +6,7 @@ import { Poi } from "@/types";
 import { useQuery } from "@tanstack/react-query";
 import { fetchPoisInBounds } from "@/services/osmService";
 import { useEffect, useState } from "react";
+import { useStore } from "@/store/useStore";
 
 interface PoiLoaderProps {
   setPois: (pois: Poi[]) => void;
@@ -17,6 +18,8 @@ export const PoiLoader: React.FC<PoiLoaderProps> = ({ setPois }) => {
     map.getBounds()
   );
   const [currentZoom, setCurrentZoom] = useState(() => map.getZoom());
+
+  const { setMapCurrentBounds } = useStore();
 
   const { data: fetchedPois } = useQuery({
     queryKey: ["pois", bounds?.toBBoxString()],
@@ -36,6 +39,11 @@ export const PoiLoader: React.FC<PoiLoaderProps> = ({ setPois }) => {
 
   useMapEvents({
     moveend: () => {
+      const bbox = bounds?.toBBoxString().split(",");
+      const normalizedBoundingBox = bbox?.map((v) =>
+        Number(Number(v).toFixed(4))
+      );
+      setMapCurrentBounds(normalizedBoundingBox as number[]);
       setBounds(map.getBounds());
       setCurrentZoom(map.getZoom());
     },
