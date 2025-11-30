@@ -28,6 +28,7 @@ interface TargetLocation {
 
 interface StoreState {
   theme: "light" | "dark";
+  foodTruckMode: boolean;
   mapStyleKey: MapStyleKey;
   mapCurrentBounds: number[];
   mapUrl: string;
@@ -58,6 +59,7 @@ interface StoreActions {
   toggleTheme: () => void;
   setMapCurrentBounds: (bounds: number[]) => void;
   initializeThreadId: () => void;
+  setPoiMode: (type: "foodTruck", value: boolean) => void;
   setMapStyle: (key: MapStyleKey) => void;
   toggleAuthModal: (isOpen: boolean) => void;
   setUser: (user: User | null) => void;
@@ -94,6 +96,7 @@ export const useStore = create<Store>()(
   persist(
     (set, get) => ({
       theme: "light",
+      foodTruckMode: false,
       mapCurrentBounds: [],
       mapStyleKey: "lightV1",
       user: null as User | null,
@@ -130,6 +133,12 @@ export const useStore = create<Store>()(
           mapUrl: cartoMapStyles[key].url,
         }),
       clearSearch: () => set({ searchResults: null, isSearching: false }),
+
+      setPoiMode: (type, value) => {
+        if (type === "foodTruck") {
+          set({ foodTruckMode: value });
+        }
+      },
 
       initializeThreadId: () => {
         if (!get().thread_id) {

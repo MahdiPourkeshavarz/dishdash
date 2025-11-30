@@ -10,7 +10,7 @@ import markerIcon2x from "leaflet/dist/images/marker-icon-2x.png";
 import markerIcon from "leaflet/dist/images/marker-icon.png";
 import markerShadow from "leaflet/dist/images/marker-shadow.png";
 import { useStore } from "@/store/useStore";
-import { Poi, User } from "@/types";
+import { FoodTruckData, Poi, User } from "@/types";
 import UserLocationMarker from "./UserLocationMarker";
 import ChangeView from "./ChangeView";
 import { useRef, useState } from "react";
@@ -33,6 +33,7 @@ import { useIsMounted } from "@/hooks/useIsmounted";
 import { FitBounds } from "./FitBounds";
 import { FeedFlyToHandler } from "./FeedFlyToHandler";
 import { PostFeedButton } from "../feed/FeedModalButton";
+import { FoodTruckToggleButton } from "./FoodTruckToggleButton";
 
 delete (L.Icon.Default.prototype as any)._getIconUrl;
 L.Icon.Default.mergeOptions({
@@ -49,8 +50,15 @@ interface MapViewProps {
 
 const MapView: React.FC<MapViewProps> = ({ center, user, onMarkerClick }) => {
   const defaultPosition: [number, number] = [35.6892, 51.389];
-  const { theme, posts, selectedPoi, setSelectedPoi, mapUrl, searchResults } =
-    useStore();
+  const {
+    theme,
+    posts,
+    selectedPoi,
+    setSelectedPoi,
+    mapUrl,
+    searchResults,
+    foodTruckMode,
+  } = useStore();
   const [pois, setPois] = useState<Poi[]>([]);
 
   const [isWishlistOpen, setWishlistOpen] = useState(false);
@@ -118,6 +126,18 @@ const MapView: React.FC<MapViewProps> = ({ center, user, onMarkerClick }) => {
             <PlacesMarker pois={pois} />
           </>
         )}
+
+        {foodTruckMode ? (
+          <>
+            <FitBounds pois={FoodTruckData as Poi[]} />
+            <PlacesMarker pois={FoodTruckData as Poi[]} />
+          </>
+        ) : (
+          <>
+            <PoiLoader setPois={setPois} />
+            <PlacesMarker pois={pois} />
+          </>
+        )}
       </MapContainer>
 
       <AnimatePresence>
@@ -169,6 +189,7 @@ const MapView: React.FC<MapViewProps> = ({ center, user, onMarkerClick }) => {
           </div>
           <FindLocationButton />
           <PostFeedButton />
+          <FoodTruckToggleButton />
         </>
       )}
     </div>

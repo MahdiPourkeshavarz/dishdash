@@ -11,8 +11,17 @@ interface PoiMarkersLayerProps {
 }
 
 export const PlacesMarker: React.FC<PoiMarkersLayerProps> = ({ pois }) => {
-  const { theme, setSelectedPoi, setHighlightedPoi } = useStore();
+  const { theme, setSelectedPoi, setHighlightedPoi, foodTruckMode } =
+    useStore();
   const map = useMap();
+
+  const foodTruckIcon = L.icon({
+    iconUrl: "food-truck.png",
+    iconSize: theme === "light" ? [30, 32] : [27, 36],
+    iconAnchor: [15, 32],
+    popupAnchor: [0, 0],
+    className: "map-poi-icon",
+  });
 
   const restaurantIcon = L.icon({
     iconUrl: theme === "light" ? "./restaurants.png" : "./restaurants-dark.png",
@@ -61,6 +70,9 @@ export const PlacesMarker: React.FC<PoiMarkersLayerProps> = ({ pois }) => {
           case "cafe":
             iconToUse = cafeIcon;
             break;
+          case "food_truck":
+            iconToUse = foodTruckIcon;
+            break;
           default:
             return null;
         }
@@ -99,7 +111,7 @@ export const PlacesMarker: React.FC<PoiMarkersLayerProps> = ({ pois }) => {
         );
       })
       .filter(Boolean);
-  }, [pois, theme]);
+  }, [pois, theme, foodTruckMode]);
 
   return <>{poiMarkers}</>;
 };
