@@ -22,7 +22,7 @@ Users can sign in, see their real-time location, explore nearby restaurants and 
   - **Profile Management**: A pop-up modal for logged-in users to update their profile picture and password through a tabbed interface.
   - **Advanced Animations**: Smooth, fluid animations throughout the app powered by **Framer Motion**, including "halo" effects, layout animations, and a Lottie-powered map loader.
 - **Robust Form Validation**: Client-side validation using **Zod** and **`react-hook-form`**, featuring an interactive password strength checker during sign-up.
-
+- **Preview Food truck mood is going to be featured in this application
 ---
 
 ## 🛠️ Tech Stack
